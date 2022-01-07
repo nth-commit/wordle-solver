@@ -25,6 +25,7 @@ export default function AutoSolverSetup({ draftWord, onDraftWordChange, onShuffl
                 .join('')
             )
           }
+          onKeyDown={(ev) => ev.key === 'Enter' && onStart()}
           type="text"
           minLength={5}
           maxLength={5}
