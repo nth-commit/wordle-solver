@@ -23304,7 +23304,7 @@ var _guess = require("./Guess");
 var _guessDefault = parcelHelpers.interopDefault(_guess);
 var _useAutoSolverState = require("./useAutoSolverState");
 var _s = $RefreshSig$();
-const GUESS_TIMEOUT = 25;
+const GUESS_TIMEOUT = 100;
 function AutoSolver({ solution: solutionRaw  }) {
     _s();
     const solution = solutionRaw.split('');
@@ -23602,6 +23602,6 @@ var _randomWord = require("./randomWord");
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}]},["emU3S","imGyl","ipvmp"], "ipvmp", "parcelRequire516f")
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}]},["emU3S","imGyl","ipvmp"], "ipvmp", "parcelRequireea44")
 
 //# sourceMappingURL=index.9978ec32.js.map
