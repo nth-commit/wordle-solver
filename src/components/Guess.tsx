@@ -1,17 +1,19 @@
 import {} from 'react'
 import { Character, Word } from '../domain'
+import { CharacterCheck, WordCheck } from '../domain/checkWord'
 
 export type GuessProps = {
-  word: Word
+  guess: Word
+  check: WordCheck
   readonly: boolean
 }
 
-export default function Guess({ word, readonly }: GuessProps) {
+export default function Guess({ guess, check, readonly }: GuessProps) {
   return (
     <div style={{ display: 'flex' }}>
-      {word.map((character, index) => (
+      {guess.map((characterGuess, index) => (
         <div key={index}>
-          <CharacterGuess character={character} readonly={readonly} />
+          <CharacterGuess guess={characterGuess} check={check[index]} readonly={readonly} />
         </div>
       ))}
     </div>
@@ -19,11 +21,12 @@ export default function Guess({ word, readonly }: GuessProps) {
 }
 
 type CharacterGuessProps = {
-  character: Character
+  guess: Character
+  check: CharacterCheck
   readonly: boolean
 }
 
-const CharacterGuess = ({ character }: CharacterGuessProps) => {
+const CharacterGuess = ({ guess, check }: CharacterGuessProps) => {
   return (
     <div
       style={{
@@ -36,9 +39,11 @@ const CharacterGuess = ({ character }: CharacterGuessProps) => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        color: 'white',
+        backgroundColor: check === 'c' ? 'green' : check === 'm' ? 'orange' : 'darkgray',
       }}
     >
-      {character.toUpperCase()}
+      {guess.toUpperCase()}
     </div>
   )
 }

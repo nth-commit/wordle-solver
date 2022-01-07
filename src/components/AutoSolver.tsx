@@ -48,7 +48,7 @@ export default function AutoSolver({ solution: solutionRaw }: AutoSolverProps) {
       </p>
       {guesses.map((attempt, i) => (
         <div key={i} style={{ marginTop: '1px' }}>
-          <Guess word={attempt[0]} readonly={true} />
+          <Guess guess={attempt[0]} check={attempt[1]} readonly={true} />
         </div>
       ))}
       {finalAutoSolverState !== null && <p>Result: {finalAutoSolverState}</p>}

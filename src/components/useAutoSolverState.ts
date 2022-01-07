@@ -23,12 +23,11 @@ export const useAutoSolverState = async (solution: Word): Promise<AutoSolverStat
 
   await guesser.begin()
 
-  let currentCheck = checkWord(solution, guesser.currentGuess!)
-
   const createState = (): NonTerminatedAutoSolverState => ({
     kind: 'nonTerminated',
     attempts: guesser.attempts,
     next: async (): Promise<AutoSolverState> => {
+      const currentCheck = checkWord(solution, guesser.currentGuess!)
       await guesser.next(currentCheck)
 
       switch (guesser.status) {
