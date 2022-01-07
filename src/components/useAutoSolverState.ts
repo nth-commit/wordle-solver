@@ -1,4 +1,4 @@
-import { checkWord, Word, WordCheck, RandomStatefulWordGuesser } from '../domain'
+import { checkWord, Word, WordCheck, StatefulWordGuesserV1 } from '../domain'
 
 export type TerminationStatus = 'wordGuessed' | 'wordFalsified' | 'exhausted'
 
@@ -19,7 +19,7 @@ export type AutoSolverState = TerminatedAutoSolverState | NonTerminatedAutoSolve
 const MAX_NUMBER_OF_GUESSES = 6
 
 export default async function useAutoSolverState(solution: Word): Promise<AutoSolverState> {
-  const guesser = new RandomStatefulWordGuesser()
+  const guesser = new StatefulWordGuesserV1()
 
   await guesser.begin()
 

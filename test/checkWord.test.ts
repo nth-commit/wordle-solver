@@ -1,40 +1,11 @@
 import fc from 'fast-check'
 import { checkWord } from '../src/domain/checkWord'
 import { Word } from '../src/domain/StatefulWordGuesser'
+import { arbitrary } from './utility'
 
-test.skip('correct guess is correct', () => {
-  const charArb = fc.constantFrom(
-    'a',
-    'b',
-    'c',
-    'd',
-    'e',
-    'f',
-    'g',
-    'h',
-    'i',
-    'j',
-    'k',
-    'l',
-    'm',
-    'n',
-    'o',
-    'p',
-    'q',
-    'r',
-    's',
-    't',
-    'u',
-    'v',
-    'w',
-    'x',
-    'y',
-    'z'
-  )
-  const wordArb = fc.tuple(charArb, charArb, charArb, charArb, charArb).map((cs) => cs as Word)
-
+test('correct guess is correct', () => {
   fc.assert(
-    fc.property(wordArb, (word) => {
+    fc.property(arbitrary.word(), (word) => {
       const result = checkWord(word, word)
 
       expect(result).toEqual(['c', 'c', 'c', 'c', 'c'])
@@ -61,8 +32,8 @@ test.each`
     guessShorthand: string
     expectedShorthand: string
   }) => {
-    const solution = Array.from(solutionShorthand) as Word
-    const guess = Array.from(guessShorthand) as Word
+    const solution = Array.from(solutionShorthand) as unknown as Word
+    const guess = Array.from(guessShorthand) as unknown as Word
     const actual = checkWord(solution, guess)
 
     const expected = Array.from(expectedShorthand)

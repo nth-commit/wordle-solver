@@ -1,5 +1,6 @@
-export { default as DICTIONARY } from './data/dictionary.json'
 export * from './StatefulWordGuesser'
-export { randomWord } from './randomWord'
 export { RandomStatefulWordGuesser } from './RandomStatefulWordGuesser'
+export { StatefulWordGuesserV1 } from './StatefulWordGuesserV1'
 export { checkWord, WordCheck, CharacterCheck } from './checkWord'
+export { default as buildWordList } from './buildWordList'
+export { default as filterWordList } from './filterWordList'

@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
-import { randomWord } from '../domain'
 import AutoSolverSetup from './AutoSolverSetup'
 import SupervisedSolverSetup from './SupervisedSolverSetup'
 import AutoSolver from './AutoSolver'
+import { buildWordList } from '../domain'
+import { randomElement } from '../utility'
 
 type AppState =
   | {
@@ -21,6 +22,8 @@ const INITIAL_STATE: AppState = {
   kind: 'initial',
   draftAutoSolverWord: '',
 }
+
+const allWords = buildWordList()
 
 export default function App() {
   const [shuffleInProgress, setShuffleInProgress] = useState<boolean>(false)
@@ -56,7 +59,7 @@ export default function App() {
     if (shuffleInProgress && appState.kind === 'initial') {
       setAppState({
         ...appState,
-        draftAutoSolverWord: randomWord().join(''),
+        draftAutoSolverWord: randomElement(allWords).join(''),
       })
       setShuffleInProgress(false)
     }

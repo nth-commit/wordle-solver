@@ -11,7 +11,7 @@ export type AutoSolverProps = {
 const GUESS_TIMEOUT = 100
 
 export default function AutoSolver({ solution: solutionRaw }: AutoSolverProps) {
-  const solution = solutionRaw.split('') as Word
+  const solution = solutionRaw.split('') as unknown as Word
   const [autoSolverStatePromise, setAutoSolverState] = useState(useAutoSolverState(solution))
   const [finalAutoSolverState, setFinalAutoSolverState] = useState<TerminationStatus | null>(null)
   const [guesses, setGuesses] = useState<ReadonlyArray<[Word, WordCheck]>>([])
@@ -22,11 +22,11 @@ export default function AutoSolver({ solution: solutionRaw }: AutoSolverProps) {
     autoSolverStatePromise.then((autoSolverState) => {
       if (autoSolverState.kind === 'terminated') {
         setFinalAutoSolverState(autoSolverState.status)
-        const fakeGuesses: ReadonlyArray<[Word, WordCheck]> = [
-          ...autoSolverState.attempts.slice(0, 5),
-          [solution, ['c', 'c', 'c', 'c', 'c'] as const],
-        ] as const as any
-        setGuesses(fakeGuesses)
+        // const fakeGuesses: ReadonlyArray<[Word, WordCheck]> = [
+        //   ...autoSolverState.attempts.slice(0, 5),
+        //   [solution, ['c', 'c', 'c', 'c', 'c'] as const],
+        // ] as const as any
+        setGuesses(autoSolverState.attempts)
       } else {
         setGuesses(autoSolverState.attempts)
         nextGuessTimeout = setTimeout(() => {
