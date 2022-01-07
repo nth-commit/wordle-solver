@@ -23050,6 +23050,8 @@ function AutoSolverSetup({ draftWord , onDraftWordChange , onShuffle , onStart  
                         onChange: (ev)=>onDraftWordChange(Array.from(ev.target.value.toLowerCase()).filter((c)=>alphaChars.has(c)
                             ).join(''))
                         ,
+                        onKeyDown: (ev)=>ev.key === 'Enter' && onStart()
+                        ,
                         type: "text",
                         minLength: 5,
                         maxLength: 5,
@@ -23069,7 +23071,7 @@ function AutoSolverSetup({ draftWord , onDraftWordChange , onShuffle , onStart  
                         children: "Shuffle"
                     }, void 0, false, {
                         fileName: "src/components/AutoSolverSetup.tsx",
-                        lineNumber: 35,
+                        lineNumber: 36,
                         columnNumber: 9
                     }, this)
                 ]
@@ -23085,12 +23087,12 @@ function AutoSolverSetup({ draftWord , onDraftWordChange , onShuffle , onStart  
                     children: "Go!"
                 }, void 0, false, {
                     fileName: "src/components/AutoSolverSetup.tsx",
-                    lineNumber: 40,
+                    lineNumber: 41,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "src/components/AutoSolverSetup.tsx",
-                lineNumber: 39,
+                lineNumber: 40,
                 columnNumber: 7
             }, this)
         ]
