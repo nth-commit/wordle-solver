@@ -8,6 +8,8 @@ export type AutoSolverSetupProps = {
   onStart(): void
 }
 
+const alphaChars = new Set('abcdefghijklmnopqrstuvwxyz'.split(''))
+
 export default function AutoSolverSetup({ draftWord, onDraftWordChange, onShuffle, onStart }: AutoSolverSetupProps) {
   return (
     <div>
@@ -16,7 +18,13 @@ export default function AutoSolverSetup({ draftWord, onDraftWordChange, onShuffl
       <p>
         <input
           value={draftWord}
-          onChange={(ev) => onDraftWordChange(ev.target.value.toLowerCase())}
+          onChange={(ev) =>
+            onDraftWordChange(
+              Array.from(ev.target.value.toLowerCase())
+                .filter((c) => alphaChars.has(c))
+                .join('')
+            )
+          }
           type="text"
           minLength={5}
           maxLength={5}
