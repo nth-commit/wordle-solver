@@ -22779,26 +22779,42 @@ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _jsxDevRuntime = require("react/jsx-dev-runtime");
 var _react = require("react");
-var _domain = require("../domain");
 var _autoSolverSetup = require("./AutoSolverSetup");
 var _autoSolverSetupDefault = parcelHelpers.interopDefault(_autoSolverSetup);
 var _supervisedSolverSetup = require("./SupervisedSolverSetup");
 var _supervisedSolverSetupDefault = parcelHelpers.interopDefault(_supervisedSolverSetup);
 var _autoSolver = require("./AutoSolver");
 var _autoSolverDefault = parcelHelpers.interopDefault(_autoSolver);
-var _randomStatefulWordGuesser = require("../domain/RandomStatefulWordGuesser");
+var _domain = require("../domain");
+var _utility = require("../utility");
 var _s = $RefreshSig$();
 const INITIAL_STATE = {
     kind: 'initial',
     draftAutoSolverWord: ''
 };
+const allWords = _domain.buildWordList();
 function App() {
     _s();
-    const statefulWordGuesser = new _randomStatefulWordGuesser.RandomStatefulWordGuesser(6);
     const [shuffleInProgress, setShuffleInProgress] = _react.useState(false);
+    const [hadObservedFailedSolve, setHadObservedFailedSolve] = _react.useState(false);
+    const [hasObservedFailedSolve, setHasObservedFailedSolve] = _react.useState(false);
+    const [hadAssertedAfterExhaustion, setHadAssertedAfterExhaustion] = _react.useState(false);
+    const [hasAssertedAfterExhaustion, setHasAssertedAfterExhaustion] = _react.useState(false);
     const [appState, setAppState] = _react.useState(INITIAL_STATE);
-    const onReset = _react.useCallback(()=>setAppState(INITIAL_STATE)
-    , []);
+    console.log({
+        hadObservedFailedSolve,
+        hasObservedFailedSolve
+    });
+    const onReset = _react.useCallback(()=>{
+        setAppState(INITIAL_STATE);
+        setHadObservedFailedSolve(hasObservedFailedSolve || hadObservedFailedSolve);
+        setHadAssertedAfterExhaustion(hasAssertedAfterExhaustion || hadAssertedAfterExhaustion);
+    }, [
+        hasObservedFailedSolve,
+        hadObservedFailedSolve,
+        hasAssertedAfterExhaustion,
+        hadAssertedAfterExhaustion
+    ]);
     const onDraftWordChange = _react.useCallback((value)=>{
         if (appState.kind === 'initial') setAppState({
             ...appState,
@@ -22820,11 +22836,21 @@ function App() {
     }, [
         appState
     ]);
+    const onObservedFailedSolve = _react.useCallback(()=>{
+        if (appState.kind === 'autoSolver') setHasObservedFailedSolve(true);
+    }, [
+        appState
+    ]);
+    const onAssertedAfterExhaustion = _react.useCallback(()=>{
+        if (appState.kind === 'autoSolver') setHasAssertedAfterExhaustion(true);
+    }, [
+        appState
+    ]);
     _react.useEffect(()=>{
         if (shuffleInProgress && appState.kind === 'initial') {
             setAppState({
                 ...appState,
-                draftAutoSolverWord: _domain.randomWord().join('')
+                draftAutoSolverWord: _utility.randomElement(allWords).join('')
             });
             setShuffleInProgress(false);
         }
@@ -22836,40 +22862,65 @@ function App() {
         children: [
             /*#__PURE__*/ _jsxDevRuntime.jsxDEV(AppBody, {
                 state: appState,
-                statefulWordGuesser: statefulWordGuesser,
+                hasAssertedAfterExhaustion: hadAssertedAfterExhaustion,
+                hadObservedFailedSolve: hadObservedFailedSolve,
                 onAutoSolverDraftWordChange: onDraftWordChange,
                 onAutoSolverDraftWordShuffle: onDraftWordShuffle,
-                onAutoSolverStart: onAutoSolverStart
+                onAutoSolverStart: onAutoSolverStart,
+                onObservedFailedSolve: onObservedFailedSolve,
+                onAssertedAfterExhaustion: onAssertedAfterExhaustion
             }, void 0, false, {
                 fileName: "src/components/App.tsx",
-                lineNumber: 71,
+                lineNumber: 95,
                 columnNumber: 7
             }, this),
-            /*#__PURE__*/ _jsxDevRuntime.jsxDEV("div", {
-                style: {
-                    marginTop: '30px'
-                },
+            /*#__PURE__*/ _jsxDevRuntime.jsxDEV("p", {
                 children: /*#__PURE__*/ _jsxDevRuntime.jsxDEV(ResetButton, {
                     onClick: onReset
                 }, void 0, false, {
                     fileName: "src/components/App.tsx",
-                    lineNumber: 79,
+                    lineNumber: 106,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "src/components/App.tsx",
-                lineNumber: 78,
+                lineNumber: 105,
+                columnNumber: 7
+            }, this),
+            /*#__PURE__*/ _jsxDevRuntime.jsxDEV("p", {
+                children: /*#__PURE__*/ _jsxDevRuntime.jsxDEV("em", {
+                    property: "italic",
+                    style: {
+                        color: 'gray',
+                        fontSize: '0.9em'
+                    },
+                    children: /*#__PURE__*/ _jsxDevRuntime.jsxDEV(LoggedInStatus, {
+                        hadObservedFailedSolve: hadObservedFailedSolve,
+                        hadAssertedAfterExhaustion: hadAssertedAfterExhaustion
+                    }, void 0, false, {
+                        fileName: "src/components/App.tsx",
+                        lineNumber: 110,
+                        columnNumber: 11
+                    }, this)
+                }, void 0, false, {
+                    fileName: "src/components/App.tsx",
+                    lineNumber: 109,
+                    columnNumber: 9
+                }, this)
+            }, void 0, false, {
+                fileName: "src/components/App.tsx",
+                lineNumber: 108,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "src/components/App.tsx",
-        lineNumber: 70,
+        lineNumber: 94,
         columnNumber: 5
     }, this));
 }
 exports.default = App;
-_s(App, "Pw+vqR/8uSeKRUEismtMkuxLwQQ=");
+_s(App, "AoWxw2K0+fEIolV0WZysXZe9iTU=");
 _c = App;
 const ResetButton = ({ onClick  })=>{
     return(/*#__PURE__*/ _jsxDevRuntime.jsxDEV("button", {
@@ -22877,12 +22928,12 @@ const ResetButton = ({ onClick  })=>{
         children: "Reset"
     }, void 0, false, {
         fileName: "src/components/App.tsx",
-        lineNumber: 90,
+        lineNumber: 125,
         columnNumber: 10
     }, undefined));
 };
 _c1 = ResetButton;
-const AppBody = ({ state , statefulWordGuesser , onAutoSolverDraftWordChange , onAutoSolverDraftWordShuffle , onAutoSolverStart  })=>{
+const AppBody = ({ state , hadObservedFailedSolve , hasAssertedAfterExhaustion , onAutoSolverDraftWordChange , onAutoSolverDraftWordShuffle , onAutoSolverStart , onObservedFailedSolve , onAssertedAfterExhaustion  })=>{
     switch(state.kind){
         case 'initial':
             return(/*#__PURE__*/ _jsxDevRuntime.jsxDEV("div", {
@@ -22894,126 +22945,90 @@ const AppBody = ({ state , statefulWordGuesser , onAutoSolverDraftWordChange , o
                         onStart: onAutoSolverStart
                     }, void 0, false, {
                         fileName: "src/components/App.tsx",
-                        lineNumber: 112,
+                        lineNumber: 153,
                         columnNumber: 11
                     }, undefined),
                     /*#__PURE__*/ _jsxDevRuntime.jsxDEV("hr", {
                     }, void 0, false, {
                         fileName: "src/components/App.tsx",
-                        lineNumber: 118,
+                        lineNumber: 159,
                         columnNumber: 11
                     }, undefined),
                     /*#__PURE__*/ _jsxDevRuntime.jsxDEV(_supervisedSolverSetupDefault.default, {
                     }, void 0, false, {
                         fileName: "src/components/App.tsx",
-                        lineNumber: 119,
+                        lineNumber: 160,
                         columnNumber: 11
                     }, undefined),
                     /*#__PURE__*/ _jsxDevRuntime.jsxDEV("hr", {
                     }, void 0, false, {
                         fileName: "src/components/App.tsx",
-                        lineNumber: 120,
+                        lineNumber: 161,
                         columnNumber: 11
                     }, undefined)
                 ]
             }, void 0, true, {
                 fileName: "src/components/App.tsx",
-                lineNumber: 111,
+                lineNumber: 152,
                 columnNumber: 9
             }, undefined));
         case 'autoSolver':
             return(/*#__PURE__*/ _jsxDevRuntime.jsxDEV(_autoSolverDefault.default, {
                 solution: state.solutionWord,
-                guesser: statefulWordGuesser
+                hadObservedFailedSolve: hadObservedFailedSolve,
+                hadAssertedAfterWordFalsified: hasAssertedAfterExhaustion,
+                onObservedFailedSolve: onObservedFailedSolve,
+                onAssertedAfterExhaustion: onAssertedAfterExhaustion
             }, void 0, false, {
                 fileName: "src/components/App.tsx",
-                lineNumber: 124,
-                columnNumber: 14
+                lineNumber: 166,
+                columnNumber: 9
             }, undefined));
         case 'supervisedSolver':
             return(/*#__PURE__*/ _jsxDevRuntime.jsxDEV("div", {
                 children: "supervisedSolver"
             }, void 0, false, {
                 fileName: "src/components/App.tsx",
-                lineNumber: 126,
+                lineNumber: 175,
                 columnNumber: 14
             }, undefined));
     }
 };
 _c2 = AppBody;
-var _c, _c1, _c2;
+const LoggedInStatus = (props)=>{
+    const name = deriveLoggedInName(props);
+    return(/*#__PURE__*/ _jsxDevRuntime.jsxDEV("em", {
+        property: "italic",
+        style: {
+            color: 'gray',
+            fontSize: '0.8em'
+        },
+        children: name === null ? '(Not logged in)' : `Logged in as ${name}`
+    }, void 0, false, {
+        fileName: "src/components/App.tsx",
+        lineNumber: 187,
+        columnNumber: 5
+    }, undefined));
+};
+_c3 = LoggedInStatus;
+const deriveLoggedInName = ({ hadAssertedAfterExhaustion , hadObservedFailedSolve  })=>{
+    if (hadAssertedAfterExhaustion && hadObservedFailedSolve) return 'Robo-Shakespear 5000';
+    if (hadAssertedAfterExhaustion) return 'Shakespear';
+    if (hadObservedFailedSolve) return 'bot';
+    return null;
+};
+var _c, _c1, _c2, _c3;
 $RefreshReg$(_c, "App");
 $RefreshReg$(_c1, "ResetButton");
 $RefreshReg$(_c2, "AppBody");
+$RefreshReg$(_c3, "LoggedInStatus");
 
   $parcel$ReactRefreshHelpers$b2cd.postlude(module);
 } finally {
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"3jZUD","react":"4mchR","../domain":"aGkYV","./AutoSolverSetup":"kTng1","./SupervisedSolverSetup":"a3h8w","./AutoSolver":"fOJBO","../domain/RandomStatefulWordGuesser":"33iDl","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"9pz13"}],"aGkYV":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "DICTIONARY", ()=>_dictionaryJsonDefault.default
-);
-parcelHelpers.export(exports, "randomWord", ()=>_randomWord.randomWord
-);
-var _dictionaryJson = require("./data/dictionary.json");
-var _dictionaryJsonDefault = parcelHelpers.interopDefault(_dictionaryJson);
-var _statefulWordGuesser = require("./StatefulWordGuesser");
-parcelHelpers.exportAll(_statefulWordGuesser, exports);
-var _randomWord = require("./randomWord");
-
-},{"./data/dictionary.json":"6SApC","./StatefulWordGuesser":"fiDfi","./randomWord":"91sYF","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}],"6SApC":[function(require,module,exports) {
-module.exports = JSON.parse("[\"abaca\",\"aback\",\"abada\",\"abaft\",\"aband\",\"abase\",\"abash\",\"abate\",\"abbey\",\"abbot\",\"abdal\",\"abeam\",\"abear\",\"abele\",\"aberr\",\"abhal\",\"abhor\",\"abide\",\"abies\",\"abime\",\"ablen\",\"abler\",\"ablet\",\"abnet\",\"abode\",\"aboma\",\"aboon\",\"abord\",\"abort\",\"about\",\"above\",\"abray\",\"absis\",\"abuna\",\"abuse\",\"abuzz\",\"abyme\",\"abysm\",\"abyss\",\"accoy\",\"acerb\",\"acock\",\"acold\",\"acorn\",\"acred\",\"acrid\",\"acton\",\"actor\",\"acute\",\"adact\",\"adage\",\"adapt\",\"adays\",\"addax\",\"adder\",\"addle\",\"adeem\",\"adeps\",\"adept\",\"adieu\",\"adios\",\"admit\",\"admix\",\"adobe\",\"adoor\",\"adopt\",\"adore\",\"adorn\",\"adown\",\"adrad\",\"adrip\",\"adult\",\"adunc\",\"adure\",\"adust\",\"aegis\",\"aerie\",\"aesir\",\"affix\",\"afire\",\"aflat\",\"aflow\",\"afoam\",\"afoot\",\"afore\",\"afoul\",\"afric\",\"afrit\",\"after\",\"again\",\"agama\",\"agami\",\"agape\",\"agasp\",\"agast\",\"agate\",\"agaty\",\"agave\",\"agend\",\"agent\",\"agger\",\"aggri\",\"aggry\",\"agile\",\"agist\",\"aglet\",\"agley\",\"aglow\",\"agnus\",\"agone\",\"agony\",\"agood\",\"agora\",\"agree\",\"agrin\",\"agrom\",\"agush\",\"ahead\",\"aheap\",\"ahigh\",\"ahold\",\"ahull\",\"aider\",\"aigre\",\"aimer\",\"airer\",\"airol\",\"aisle\",\"aitch\",\"ajava\",\"akene\",\"aknee\",\"aknow\",\"alack\",\"aland\",\"alarm\",\"alary\",\"alate\",\"alban\",\"albee\",\"album\",\"albyn\",\"alday\",\"alder\",\"aldol\",\"aleak\",\"alert\",\"alfet\",\"algal\",\"algid\",\"algin\",\"algol\",\"algor\",\"algum\",\"alias\",\"alibi\",\"alien\",\"alife\",\"align\",\"alike\",\"aline\",\"alish\",\"alive\",\"allah\",\"allay\",\"aller\",\"alley\",\"allis\",\"allod\",\"alloo\",\"allot\",\"allow\",\"alloy\",\"allyl\",\"almah\",\"alman\",\"almeh\",\"almry\",\"almug\",\"aloft\",\"alogy\",\"aloin\",\"alone\",\"along\",\"aloof\",\"alose\",\"aloud\",\"alpen\",\"alpha\",\"alpia\",\"altar\",\"alter\",\"altho\",\"alula\",\"alure\",\"alway\",\"amain\",\"amass\",\"amate\",\"amaze\",\"amber\",\"ambit\",\"amble\",\"ambon\",\"ambry\",\"ameer\",\"amend\",\"ament\",\"amess\",\"amice\",\"amide\",\"amido\",\"amigo\",\"amine\",\"amish\",\"amiss\",\"amity\",\"amole\",\"among\",\"amort\",\"amour\",\"amove\",\"ample\",\"amply\",\"ampul\",\"ampyx\",\"amsel\",\"amuck\",\"amuse\",\"amvis\",\"amyss\",\"amzel\",\"anaks\",\"ancle\",\"ancon\",\"anear\",\"anele\",\"anent\",\"angel\",\"anger\",\"angle\",\"angor\",\"angry\",\"anigh\",\"anile\",\"anime\",\"anion\",\"anise\",\"anito\",\"anker\",\"ankle\",\"ankus\",\"annal\",\"annat\",\"annex\",\"annoy\",\"annul\",\"anode\",\"anoil\",\"anomy\",\"anona\",\"anorn\",\"antae\",\"antes\",\"antic\",\"antre\",\"anura\",\"anury\",\"anvil\",\"aorta\",\"apace\",\"apaid\",\"apair\",\"apara\",\"apart\",\"apeak\",\"apert\",\"apery\",\"aphid\",\"aphis\",\"apian\",\"apiol\",\"apish\",\"apnea\",\"apoda\",\"apode\",\"aport\",\"appay\",\"appel\",\"apple\",\"apply\",\"appui\",\"april\",\"apron\",\"apsis\",\"aptly\",\"araba\",\"araby\",\"arace\",\"arara\",\"arbor\",\"archy\",\"ardor\",\"aread\",\"areal\",\"arear\",\"areca\",\"areed\",\"areek\",\"arefy\",\"arena\",\"areng\",\"arere\",\"arest\",\"arete\",\"argal\",\"argas\",\"argil\",\"argol\",\"argon\",\"argot\",\"argue\",\"argus\",\"arian\",\"ariel\",\"aries\",\"arise\",\"arist\",\"arles\",\"armed\",\"armet\",\"armil\",\"armor\",\"arnee\",\"arnot\",\"arnut\",\"aroid\",\"aroma\",\"aroph\",\"arose\",\"arpen\",\"arras\",\"array\",\"arret\",\"arrha\",\"arris\",\"arrow\",\"arsis\",\"arson\",\"artly\",\"artow\",\"arval\",\"aryan\",\"ascii\",\"ascus\",\"ashen\",\"ashes\",\"asian\",\"aside\",\"asker\",\"askew\",\"aslug\",\"asoak\",\"aspen\",\"asper\",\"aspic\",\"assai\",\"assay\",\"asset\",\"assot\",\"astay\",\"astel\",\"aster\",\"astir\",\"aston\",\"astun\",\"asura\",\"atake\",\"ataxy\",\"atilt\",\"atimy\",\"atlas\",\"atman\",\"atole\",\"atoll\",\"atomy\",\"atone\",\"atony\",\"atrip\",\"attal\",\"attar\",\"atter\",\"attic\",\"attle\",\"attry\",\"aubin\",\"aucht\",\"audit\",\"auger\",\"auget\",\"aught\",\"augur\",\"aulic\",\"aunty\",\"aural\",\"auric\",\"aurin\",\"aurum\",\"avail\",\"avale\",\"avant\",\"avast\",\"avena\",\"avens\",\"avert\",\"avian\",\"avile\",\"avise\",\"aviso\",\"avoid\",\"avoke\",\"await\",\"awake\",\"award\",\"aware\",\"awarn\",\"awash\",\"awful\",\"awing\",\"awkly\",\"awned\",\"awork\",\"axial\",\"axile\",\"axiom\",\"axled\",\"axman\",\"ayein\",\"ayond\",\"ayont\",\"ayrie\",\"azoic\",\"azole\",\"azote\",\"azoth\",\"aztec\",\"azure\",\"azurn\",\"azyme\",\"babel\",\"baboo\",\"babul\",\"backs\",\"bacon\",\"badge\",\"badly\",\"baffy\",\"bafta\",\"baggy\",\"bague\",\"bahai\",\"bahar\",\"bairn\",\"baize\",\"baken\",\"baker\",\"balky\",\"balmy\",\"balsa\",\"banal\",\"banat\",\"banco\",\"bandy\",\"banjo\",\"banns\",\"bantu\",\"barad\",\"barde\",\"barge\",\"baria\",\"baric\",\"barky\",\"barmy\",\"baron\",\"barry\",\"barse\",\"barth\",\"basal\",\"basan\",\"based\",\"basic\",\"basil\",\"basin\",\"basis\",\"bason\",\"bassa\",\"basso\",\"basta\",\"baste\",\"basto\",\"batch\",\"bated\",\"bathe\",\"baton\",\"batta\",\"batty\",\"baulk\",\"baume\",\"bavin\",\"bawdy\",\"bayad\",\"bayed\",\"bayou\",\"bayze\",\"bazar\",\"beach\",\"beady\",\"beamy\",\"beard\",\"bearn\",\"beast\",\"beath\",\"beaux\",\"bedel\",\"beden\",\"bedew\",\"bedim\",\"bedye\",\"beech\",\"beefy\",\"beeld\",\"beery\",\"beete\",\"beeve\",\"befit\",\"befog\",\"begem\",\"beget\",\"begin\",\"begod\",\"begot\",\"begum\",\"begun\",\"behen\",\"beige\",\"beild\",\"being\",\"bekah\",\"belam\",\"belay\",\"belch\",\"belee\",\"belie\",\"belle\",\"belly\",\"below\",\"bemad\",\"bemol\",\"bench\",\"bendy\",\"benet\",\"benim\",\"benne\",\"benty\",\"beray\",\"berbe\",\"bergh\",\"berme\",\"berob\",\"beroe\",\"berry\",\"berth\",\"beryl\",\"besee\",\"beset\",\"besit\",\"besom\",\"besot\",\"betel\",\"beton\",\"betso\",\"betty\",\"bevel\",\"bever\",\"bewet\",\"bewig\",\"bewit\",\"bezel\",\"bhang\",\"bibbe\",\"bibbs\",\"bible\",\"bicho\",\"biddy\",\"bidet\",\"bield\",\"bifid\",\"bigam\",\"bigha\",\"bight\",\"bigly\",\"bigot\",\"bijou\",\"bilbo\",\"bilge\",\"bilgy\",\"bilin\",\"billy\",\"binal\",\"binny\",\"biped\",\"birch\",\"birse\",\"birth\",\"bisie\",\"bison\",\"bitch\",\"biter\",\"bitts\",\"bizet\",\"black\",\"blade\",\"blady\",\"blain\",\"blame\",\"blanc\",\"bland\",\"blank\",\"blare\",\"blase\",\"blast\",\"blaze\",\"bleak\",\"blear\",\"bleat\",\"bleck\",\"bleed\",\"blend\",\"blenk\",\"blent\",\"bless\",\"blest\",\"blind\",\"blink\",\"blirt\",\"bliss\",\"blite\",\"blive\",\"bloat\",\"block\",\"blond\",\"blood\",\"bloom\",\"blore\",\"blote\",\"blown\",\"blowy\",\"bluey\",\"bluff\",\"blunt\",\"blurt\",\"blush\",\"board\",\"boast\",\"bobac\",\"bobby\",\"bocal\",\"bocca\",\"bodge\",\"bodle\",\"bogey\",\"boggy\",\"bogie\",\"bogle\",\"bogue\",\"bogus\",\"bohea\",\"boiar\",\"boist\",\"bolar\",\"bolas\",\"boldo\",\"boldu\",\"boley\",\"bolis\",\"bolsa\",\"bolty\",\"bolus\",\"bolye\",\"bonce\",\"boned\",\"bongo\",\"bonne\",\"bonny\",\"bonus\",\"bonze\",\"booby\",\"boodh\",\"booky\",\"booly\",\"boort\",\"boose\",\"boost\",\"booth\",\"boots\",\"booty\",\"booze\",\"boozy\",\"borax\",\"boree\",\"borel\",\"borer\",\"boric\",\"borne\",\"boron\",\"borwe\",\"bosky\",\"bosom\",\"boson\",\"bossy\",\"botch\",\"bothy\",\"botts\",\"bouch\",\"bouge\",\"bough\",\"boule\",\"boult\",\"bound\",\"bourd\",\"bouri\",\"bourn\",\"bouse\",\"bousy\",\"bovid\",\"bowel\",\"bower\",\"bowge\",\"bowls\",\"bowne\",\"bowse\",\"boxen\",\"boxer\",\"boyar\",\"boyau\",\"boyer\",\"brace\",\"brach\",\"brack\",\"bract\",\"braid\",\"brail\",\"brain\",\"brait\",\"brake\",\"braky\",\"brama\",\"brame\",\"brand\",\"brank\",\"brant\",\"brash\",\"brass\",\"brast\",\"brave\",\"bravo\",\"brawl\",\"brawn\",\"braxy\",\"braze\",\"bread\",\"break\",\"bream\",\"brede\",\"breed\",\"breme\",\"brent\",\"brere\",\"brest\",\"brett\",\"breve\",\"briar\",\"bribe\",\"brick\",\"bride\",\"brief\",\"brier\",\"brike\",\"brill\",\"brine\",\"bring\",\"brink\",\"briny\",\"brisk\",\"brite\",\"britt\",\"brize\",\"broad\",\"brock\",\"broid\",\"broil\",\"broke\",\"broma\",\"brome\",\"brond\",\"brood\",\"brook\",\"broom\",\"brose\",\"broth\",\"brown\",\"bruin\",\"bruit\",\"brume\",\"brunt\",\"brush\",\"brusk\",\"bruta\",\"brute\",\"bubby\",\"buchu\",\"budge\",\"budgy\",\"buffa\",\"buffo\",\"buffy\",\"buggy\",\"bugle\",\"build\",\"built\",\"bulau\",\"bulge\",\"bulgy\",\"bulky\",\"bulla\",\"bully\",\"bulse\",\"bulti\",\"bunch\",\"bungo\",\"bunko\",\"bunny\",\"burel\",\"burgh\",\"burin\",\"burke\",\"burly\",\"burnt\",\"burro\",\"burry\",\"bursa\",\"burse\",\"burst\",\"busby\",\"bushy\",\"busky\",\"busto\",\"butte\",\"butty\",\"butyl\",\"buxom\",\"buyer\",\"byard\",\"byway\",\"caaba\",\"caada\",\"cabal\",\"cabas\",\"caber\",\"cabin\",\"cable\",\"cabob\",\"cacao\",\"cache\",\"caddy\",\"cader\",\"cadet\",\"cadew\",\"cadge\",\"cadgy\",\"cadie\",\"cadis\",\"cadre\",\"caeca\",\"caged\",\"cagit\",\"cagot\",\"caird\",\"cairn\",\"cajun\",\"calid\",\"calif\",\"calin\",\"calix\",\"calla\",\"calle\",\"calmy\",\"calve\",\"calyx\",\"camel\",\"cameo\",\"camis\",\"camus\",\"canal\",\"candy\",\"caned\",\"canis\",\"canna\",\"canny\",\"canoe\",\"canon\",\"canto\",\"canty\",\"capel\",\"caper\",\"caple\",\"capoc\",\"capon\",\"capot\",\"capra\",\"capri\",\"caput\",\"carac\",\"carat\",\"cardo\",\"caret\",\"carex\",\"cargo\",\"carib\",\"carob\",\"carol\",\"carom\",\"carry\",\"carse\",\"carte\",\"carus\",\"carve\",\"casal\",\"caste\",\"casus\",\"catch\",\"catel\",\"cater\",\"cates\",\"catso\",\"catty\",\"caulk\",\"cauma\",\"cause\",\"cavil\",\"cavin\",\"cawky\",\"caxon\",\"cazic\",\"cease\",\"cedar\",\"cedry\",\"ceint\",\"cella\",\"cello\",\"cense\",\"cento\",\"ceorl\",\"ceres\",\"ceria\",\"cerin\",\"ceryl\",\"cetic\",\"cetin\",\"cetyl\",\"chace\",\"chafe\",\"chaff\",\"chain\",\"chair\",\"chaja\",\"chalk\",\"champ\",\"chank\",\"chant\",\"chaos\",\"chape\",\"chaps\",\"chara\",\"chard\",\"chare\",\"chark\",\"charm\",\"charr\",\"chart\",\"chary\",\"chase\",\"chasm\",\"chast\",\"chati\",\"chaun\",\"chaus\",\"cheap\",\"chear\",\"cheat\",\"check\",\"cheek\",\"cheep\",\"cheer\",\"chela\",\"chely\",\"cheng\",\"chert\",\"chese\",\"chess\",\"chest\",\"cheve\",\"chevy\",\"chian\",\"chica\",\"chich\",\"chick\",\"chico\",\"chide\",\"chief\",\"child\",\"chili\",\"chill\",\"chimb\",\"chime\",\"china\",\"chine\",\"chink\",\"chips\",\"chirk\",\"chirm\",\"chirp\",\"chive\",\"chivy\",\"choak\",\"chock\",\"chode\",\"choir\",\"choke\",\"choky\",\"chomp\",\"chops\",\"chord\",\"chore\",\"chose\",\"chout\",\"chuck\",\"chuet\",\"chufa\",\"chuff\",\"chump\",\"chunk\",\"churl\",\"churn\",\"churr\",\"chuse\",\"chute\",\"chyle\",\"chyme\",\"cibol\",\"cider\",\"cigar\",\"cilia\",\"cimar\",\"cimex\",\"cimia\",\"cinch\",\"cirri\",\"cisco\",\"cital\",\"citer\",\"civet\",\"civic\",\"civil\",\"cizar\",\"clack\",\"claik\",\"claim\",\"clake\",\"clamp\",\"clang\",\"clank\",\"clape\",\"claps\",\"clare\",\"clart\",\"clary\",\"clash\",\"clasp\",\"class\",\"clave\",\"clavy\",\"clean\",\"clear\",\"cleat\",\"cleek\",\"cleft\",\"clepe\",\"clerk\",\"click\",\"cliff\",\"clift\",\"climb\",\"clime\",\"cling\",\"clink\",\"cloak\",\"clock\",\"cloff\",\"cloke\",\"clomb\",\"clomp\",\"clong\",\"cloom\",\"cloop\",\"cloot\",\"close\",\"closh\",\"clote\",\"cloth\",\"cloud\",\"clout\",\"clove\",\"clown\",\"cluck\",\"clump\",\"clung\",\"cnida\",\"coach\",\"coact\",\"coaly\",\"coast\",\"coati\",\"cobby\",\"cobia\",\"coble\",\"cobra\",\"cocky\",\"cocoa\",\"codex\",\"codle\",\"cogon\",\"cogue\",\"coign\",\"cokes\",\"colet\",\"colic\",\"colin\",\"colly\",\"colon\",\"color\",\"colza\",\"combe\",\"comer\",\"comes\",\"comet\",\"comic\",\"comma\",\"compo\",\"compt\",\"conch\",\"coney\",\"conge\",\"congo\",\"conia\",\"conic\",\"conny\",\"conte\",\"conus\",\"cooee\",\"cooey\",\"cooky\",\"cooly\",\"coomb\",\"coopt\",\"copal\",\"coped\",\"copps\",\"copra\",\"copse\",\"copsy\",\"copts\",\"coque\",\"corah\",\"coral\",\"corbe\",\"corby\",\"cordy\",\"corer\",\"corky\",\"cornu\",\"corny\",\"corol\",\"corps\",\"corse\",\"corve\",\"cosen\",\"cosey\",\"costa\",\"cotta\",\"couch\",\"cough\",\"could\",\"count\",\"coupe\",\"courb\",\"court\",\"couth\",\"cover\",\"covet\",\"covey\",\"covin\",\"cowan\",\"cower\",\"cowry\",\"coyly\",\"coypu\",\"cozen\",\"crack\",\"craft\",\"craie\",\"crail\",\"crake\",\"cramp\",\"crane\",\"crang\",\"crank\",\"crape\",\"craps\",\"crapy\",\"crare\",\"crase\",\"crash\",\"crass\",\"crate\",\"crave\",\"crawl\",\"craze\",\"crazy\",\"creak\",\"cream\",\"creat\",\"credo\",\"creed\",\"creek\",\"creel\",\"creep\",\"crees\",\"creme\",\"crems\",\"crepe\",\"crept\",\"cress\",\"crest\",\"crete\",\"creux\",\"crick\",\"cried\",\"crier\",\"crime\",\"crimp\",\"crisp\",\"crith\",\"croak\",\"croat\",\"crock\",\"croft\",\"crois\",\"croma\",\"crone\",\"crony\",\"crook\",\"croon\",\"crore\",\"cross\",\"croud\",\"croup\",\"crout\",\"crowd\",\"crown\",\"crows\",\"croys\",\"croze\",\"crude\",\"crudy\",\"cruel\",\"cruet\",\"crull\",\"crumb\",\"crump\",\"crunk\",\"cruor\",\"crura\",\"cruse\",\"crush\",\"crust\",\"cruth\",\"crwth\",\"cryal\",\"cryer\",\"crypt\",\"cuban\",\"cubby\",\"cubeb\",\"cubic\",\"cubit\",\"cuddy\",\"cuffy\",\"cufic\",\"cuish\",\"culex\",\"culls\",\"cully\",\"culpa\",\"culpe\",\"cumic\",\"cumin\",\"cupel\",\"cupid\",\"cuppy\",\"curat\",\"curch\",\"curdy\",\"curer\",\"curia\",\"curio\",\"curly\",\"curry\",\"curse\",\"curst\",\"curve\",\"cutch\",\"cutin\",\"cutis\",\"cutty\",\"cycad\",\"cycas\",\"cycle\",\"cyder\",\"cymar\",\"cymry\",\"cynic\",\"czech\",\"daddy\",\"dagon\",\"daily\",\"daint\",\"daira\",\"dairy\",\"daisy\",\"daker\",\"dakir\",\"dally\",\"daman\",\"damar\",\"dampy\",\"dance\",\"dancy\",\"dandi\",\"dandy\",\"dansk\",\"darby\",\"darer\",\"daric\",\"darky\",\"daroo\",\"dashy\",\"daswe\",\"dater\",\"datum\",\"dauby\",\"daunt\",\"davit\",\"deads\",\"deare\",\"dearn\",\"deary\",\"death\",\"deave\",\"debar\",\"debel\",\"debit\",\"debut\",\"decad\",\"decay\",\"decil\",\"decoy\",\"decry\",\"decyl\",\"deedy\",\"deess\",\"defer\",\"defix\",\"defly\",\"degum\",\"deify\",\"deign\",\"deism\",\"deist\",\"deity\",\"dekle\",\"delay\",\"delft\",\"delit\",\"deloo\",\"delph\",\"delta\",\"delve\",\"demit\",\"demon\",\"demur\",\"denay\",\"denim\",\"dense\",\"depot\",\"depth\",\"deray\",\"derby\",\"derma\",\"derne\",\"derre\",\"derth\",\"deter\",\"dette\",\"detur\",\"deuce\",\"deuse\",\"devex\",\"devil\",\"devon\",\"devow\",\"dhole\",\"dhony\",\"diana\",\"diary\",\"dicer\",\"dicky\",\"dicta\",\"didal\",\"didst\",\"didym\",\"dight\",\"digit\",\"digne\",\"digue\",\"diker\",\"dildo\",\"dilly\",\"dimit\",\"dimly\",\"dimmy\",\"dimya\",\"dinar\",\"diner\",\"dingo\",\"dingy\",\"diota\",\"dipsy\",\"dirge\",\"dirty\",\"disme\",\"ditch\",\"ditto\",\"ditty\",\"divan\",\"divel\",\"diver\",\"dives\",\"divet\",\"divot\",\"dixie\",\"dizen\",\"dizzy\",\"doand\",\"dobby\",\"dodge\",\"dogal\",\"dogma\",\"doily\",\"doing\",\"dolce\",\"dolly\",\"dolor\",\"dolus\",\"domal\",\"domed\",\"donat\",\"donax\",\"donee\",\"donet\",\"donna\",\"donor\",\"donya\",\"doole\",\"dooly\",\"dopey\",\"doree\",\"doric\",\"doris\",\"dormy\",\"dorse\",\"dosel\",\"dotal\",\"doted\",\"doter\",\"dotty\",\"douar\",\"doubt\",\"douce\",\"dough\",\"doupe\",\"doura\",\"douse\",\"dowdy\",\"dowel\",\"dower\",\"dowle\",\"downy\",\"dowry\",\"dowse\",\"dowst\",\"dowve\",\"doyen\",\"doyly\",\"dozen\",\"dozer\",\"draco\",\"draff\",\"draft\",\"drail\",\"drain\",\"drake\",\"drama\",\"drank\",\"drape\",\"drave\",\"drawl\",\"drawn\",\"dread\",\"dream\",\"drear\",\"drein\",\"drent\",\"dress\",\"drest\",\"dreul\",\"dreye\",\"dried\",\"drier\",\"drift\",\"drill\",\"drily\",\"drink\",\"drith\",\"drive\",\"drock\",\"droil\",\"droit\",\"droll\",\"drome\",\"drone\",\"drony\",\"drool\",\"droop\",\"dropt\",\"dross\",\"drove\",\"drovy\",\"drown\",\"druid\",\"drunk\",\"drupe\",\"druse\",\"drusy\",\"druxy\",\"dryad\",\"dryas\",\"dryer\",\"dryly\",\"dryth\",\"ducal\",\"ducat\",\"duchy\",\"duelo\",\"duena\",\"dulce\",\"dulia\",\"dully\",\"dulse\",\"dumal\",\"dummy\",\"dumpy\",\"dunce\",\"dungy\",\"dunny\",\"duomo\",\"duper\",\"duple\",\"dural\",\"durga\",\"durio\",\"durra\",\"durst\",\"dusky\",\"dusty\",\"dutch\",\"dwale\",\"dwang\",\"dwarf\",\"dwaul\",\"dwell\",\"dwelt\",\"dwine\",\"dyaks\",\"dying\",\"dynam\",\"eager\",\"eagle\",\"eagre\",\"earal\",\"eared\",\"early\",\"earsh\",\"earst\",\"earth\",\"easel\",\"eater\",\"eaves\",\"eblis\",\"ebony\",\"eccle\",\"echon\",\"eclat\",\"ectad\",\"ectal\",\"edder\",\"eddic\",\"edema\",\"edict\",\"edify\",\"edile\",\"educe\",\"educt\",\"eerie\",\"effet\",\"egean\",\"egest\",\"eggar\",\"egger\",\"eghen\",\"egret\",\"eider\",\"eight\",\"eigne\",\"eikon\",\"eirie\",\"eisel\",\"eject\",\"eking\",\"elain\",\"eland\",\"elaps\",\"elate\",\"elayl\",\"elbow\",\"elder\",\"elect\",\"elegy\",\"elemi\",\"eleve\",\"elfin\",\"elide\",\"elite\",\"elles\",\"elmen\",\"eloge\",\"elogy\",\"eloin\",\"elong\",\"elope\",\"elops\",\"elsin\",\"elude\",\"elute\",\"elvan\",\"elver\",\"elves\",\"embar\",\"embay\",\"embed\",\"ember\",\"embow\",\"embox\",\"emeer\",\"emend\",\"emery\",\"emmet\",\"emmew\",\"emong\",\"emove\",\"empte\",\"empty\",\"emule\",\"enact\",\"enate\",\"ender\",\"endow\",\"endue\",\"eneid\",\"enema\",\"enemy\",\"engle\",\"engyn\",\"enjoy\",\"enlay\",\"enmew\",\"ennew\",\"ennui\",\"enode\",\"enorm\",\"ensky\",\"ensue\",\"entad\",\"ental\",\"enter\",\"entry\",\"enure\",\"envie\",\"envoy\",\"eolic\",\"eolis\",\"eosin\",\"epact\",\"ephah\",\"ephod\",\"ephor\",\"epoch\",\"epode\",\"epopt\",\"epure\",\"equal\",\"equip\",\"equus\",\"erase\",\"erato\",\"erect\",\"ergal\",\"ergat\",\"ergon\",\"ergot\",\"erica\",\"ermin\",\"ermit\",\"erode\",\"erose\",\"error\",\"eruca\",\"eruct\",\"erupt\",\"escot\",\"eskar\",\"esker\",\"essay\",\"ester\",\"estop\",\"estre\",\"etaac\",\"etape\",\"etern\",\"ethal\",\"ethel\",\"ether\",\"ethic\",\"ethos\",\"ethyl\",\"ettin\",\"ettle\",\"etude\",\"etwee\",\"eurus\",\"evade\",\"evene\",\"event\",\"evert\",\"every\",\"evict\",\"evite\",\"evoke\",\"ewery\",\"exact\",\"exalt\",\"excel\",\"excur\",\"exeat\",\"exect\",\"exert\",\"exile\",\"exist\",\"exode\",\"exody\",\"expel\",\"extol\",\"extra\",\"exude\",\"exult\",\"eyght\",\"eyren\",\"eyrie\",\"fable\",\"faced\",\"facer\",\"facet\",\"facia\",\"facto\",\"faded\",\"fader\",\"fadge\",\"fadme\",\"faery\",\"fagot\",\"faham\",\"faint\",\"fairy\",\"faith\",\"faker\",\"fakir\",\"false\",\"falwe\",\"fanal\",\"fancy\",\"fanon\",\"farad\",\"farce\",\"farcy\",\"faren\",\"farry\",\"farse\",\"fasti\",\"fatal\",\"fated\",\"fatly\",\"fatty\",\"faugh\",\"fauld\",\"faule\",\"fault\",\"fauna\",\"favas\",\"favel\",\"favor\",\"favus\",\"faxed\",\"feast\",\"feaze\",\"fecal\",\"feces\",\"fecks\",\"feere\",\"feese\",\"feeze\",\"feign\",\"feine\",\"feint\",\"feize\",\"felis\",\"felly\",\"felon\",\"femme\",\"femur\",\"fence\",\"fenks\",\"fenny\",\"feoff\",\"ferae\",\"feral\",\"ferde\",\"feria\",\"ferie\",\"ferly\",\"ferme\",\"ferny\",\"ferre\",\"ferry\",\"fesse\",\"feste\",\"fetal\",\"fetch\",\"fetid\",\"fetis\",\"fetor\",\"fette\",\"fetus\",\"feuar\",\"fever\",\"fewel\",\"feyne\",\"feyre\",\"fiber\",\"fibre\",\"fiche\",\"fichu\",\"ficus\",\"fides\",\"fidge\",\"fidia\",\"field\",\"fiend\",\"fiery\",\"fifer\",\"fifth\",\"fifty\",\"fight\",\"filar\",\"filch\",\"filer\",\"filly\",\"filmy\",\"filth\",\"final\",\"finch\",\"findy\",\"finer\",\"finew\",\"finis\",\"finns\",\"finny\",\"finos\",\"fiord\",\"firer\",\"firms\",\"firry\",\"first\",\"firth\",\"fishy\",\"fitch\",\"fitly\",\"fives\",\"fixed\",\"fjord\",\"flail\",\"flain\",\"flair\",\"flake\",\"flaky\",\"flame\",\"flamy\",\"flang\",\"flank\",\"flare\",\"flash\",\"flask\",\"flawn\",\"flawy\",\"flaxy\",\"fleak\",\"fleam\",\"flear\",\"fleck\",\"fleen\",\"fleer\",\"fleet\",\"fleme\",\"flesh\",\"flete\",\"flews\",\"flick\",\"flier\",\"fling\",\"flint\",\"flipe\",\"flirt\",\"flisk\",\"flite\",\"float\",\"flock\",\"flong\",\"flood\",\"flook\",\"floor\",\"flora\",\"flosh\",\"floss\",\"flota\",\"flote\",\"flour\",\"flout\",\"flowk\",\"flown\",\"fluey\",\"fluff\",\"fluid\",\"fluke\",\"fluky\",\"flume\",\"flung\",\"flunk\",\"fluor\",\"flurt\",\"flush\",\"flute\",\"fluty\",\"flyer\",\"flyte\",\"fnese\",\"foamy\",\"focal\",\"focus\",\"foehn\",\"fogey\",\"foggy\",\"fogie\",\"foist\",\"folio\",\"folks\",\"folly\",\"folwe\",\"fomes\",\"fonde\",\"fondu\",\"fonge\",\"fonly\",\"fonne\",\"foody\",\"foots\",\"footy\",\"foray\",\"forby\",\"force\",\"fordo\",\"forel\",\"forge\",\"forgo\",\"forky\",\"forme\",\"forte\",\"forth\",\"forty\",\"forum\",\"fossa\",\"fosse\",\"foule\",\"found\",\"fount\",\"fourb\",\"fouty\",\"fovea\",\"foxed\",\"foxes\",\"foxly\",\"foyer\",\"fract\",\"frail\",\"frame\",\"franc\",\"frank\",\"frape\",\"fraud\",\"freak\",\"freck\",\"freer\",\"fremd\",\"frere\",\"fresh\",\"frett\",\"freya\",\"friar\",\"fried\",\"frier\",\"frigg\",\"frill\",\"frisk\",\"frist\",\"frith\",\"frize\",\"frizz\",\"frock\",\"frond\",\"frons\",\"front\",\"frore\",\"frorn\",\"frory\",\"frost\",\"frote\",\"froth\",\"frown\",\"frowy\",\"froze\",\"fruit\",\"frump\",\"frush\",\"fuage\",\"fubby\",\"fubsy\",\"fuchs\",\"fucus\",\"fudge\",\"fuero\",\"fuffy\",\"fugle\",\"fugue\",\"fulbe\",\"fully\",\"fumer\",\"fumet\",\"fumid\",\"funge\",\"fungi\",\"funic\",\"funis\",\"funky\",\"funny\",\"furry\",\"furze\",\"furzy\",\"fusee\",\"fusel\",\"fusil\",\"fussy\",\"fusty\",\"fuzzy\",\"fytte\",\"gabel\",\"gable\",\"gadic\",\"gadre\",\"gager\",\"gaily\",\"galbe\",\"galea\",\"galei\",\"gally\",\"galop\",\"galpe\",\"gamba\",\"gamic\",\"gamin\",\"gamma\",\"gamut\",\"ganch\",\"gange\",\"ganil\",\"ganja\",\"gansa\",\"ganza\",\"gaper\",\"gapes\",\"garth\",\"garum\",\"gassy\",\"gatch\",\"gated\",\"gaudy\",\"gauge\",\"gault\",\"gaunt\",\"gaure\",\"gauss\",\"gauze\",\"gauzy\",\"gavel\",\"gavot\",\"gawby\",\"gawky\",\"gayal\",\"gayly\",\"gayne\",\"gazel\",\"gazer\",\"gazet\",\"gazon\",\"gecko\",\"geese\",\"geest\",\"gelid\",\"gelly\",\"gemel\",\"gemma\",\"gemmy\",\"gemul\",\"genet\",\"genie\",\"genio\",\"genip\",\"genre\",\"genty\",\"genus\",\"genys\",\"geode\",\"gerah\",\"gerbe\",\"gesse\",\"gesso\",\"geste\",\"geten\",\"ghast\",\"ghaut\",\"ghazi\",\"ghess\",\"ghole\",\"ghost\",\"ghoul\",\"ghyll\",\"giant\",\"gibel\",\"giber\",\"giddy\",\"giffy\",\"gigot\",\"gigue\",\"gilly\",\"gilse\",\"gipsy\",\"girth\",\"gisle\",\"giust\",\"given\",\"giver\",\"gives\",\"glace\",\"glade\",\"glair\",\"glama\",\"gland\",\"glans\",\"glare\",\"glary\",\"glass\",\"glaum\",\"glave\",\"glaze\",\"glazy\",\"glead\",\"gleam\",\"glean\",\"gleba\",\"glebe\",\"gleby\",\"glede\",\"gleed\",\"gleek\",\"gleen\",\"gleet\",\"glent\",\"glide\",\"gliff\",\"glike\",\"glint\",\"glist\",\"gloam\",\"gloar\",\"gloat\",\"globe\",\"globy\",\"glode\",\"glome\",\"gloom\",\"glore\",\"glory\",\"glose\",\"gloss\",\"glout\",\"glove\",\"gloze\",\"gluer\",\"gluey\",\"glume\",\"glump\",\"glyph\",\"gnarl\",\"gnash\",\"gnide\",\"gnome\",\"gobet\",\"godly\",\"goety\",\"going\",\"golde\",\"golet\",\"goman\",\"gombo\",\"gomer\",\"gonad\",\"gonys\",\"goods\",\"goody\",\"goose\",\"goost\",\"goral\",\"gorce\",\"gorge\",\"gorma\",\"gorse\",\"goter\",\"gouge\",\"goura\",\"gourd\",\"gouty\",\"gowan\",\"graal\",\"grace\",\"grade\",\"graff\",\"graft\",\"grail\",\"grain\",\"graip\",\"grame\",\"grand\",\"grane\",\"grant\",\"grape\",\"grapy\",\"grasp\",\"grass\",\"grate\",\"grave\",\"gravy\",\"graze\",\"great\",\"grebe\",\"greed\",\"greek\",\"green\",\"greet\",\"grege\",\"grego\",\"greit\",\"grene\",\"grete\",\"greve\",\"grice\",\"gride\",\"grief\",\"griff\",\"grill\",\"grime\",\"grimy\",\"grind\",\"grint\",\"gripe\",\"grise\",\"grist\",\"grith\",\"grize\",\"groan\",\"groat\",\"groin\",\"grond\",\"groom\",\"grope\",\"gross\",\"grote\",\"group\",\"grout\",\"grove\",\"grovy\",\"growl\",\"grown\",\"gruel\",\"gruff\",\"grume\",\"grunt\",\"gryde\",\"grype\",\"guaco\",\"guana\",\"guano\",\"guara\",\"guard\",\"guava\",\"guelf\",\"guess\",\"guest\",\"guevi\",\"guiac\",\"guide\",\"guige\",\"guild\",\"guile\",\"guilt\",\"guise\",\"gular\",\"gulch\",\"gules\",\"gulfy\",\"gully\",\"gulph\",\"gulty\",\"gumbo\",\"gumma\",\"gummy\",\"gunny\",\"gurge\",\"gurmy\",\"gurry\",\"gurts\",\"gusto\",\"gusty\",\"gutta\",\"gutty\",\"guyle\",\"gyall\",\"gynno\",\"gypse\",\"gypsy\",\"gyral\",\"gyron\",\"gyrus\",\"habit\",\"hable\",\"hades\",\"hadji\",\"haily\",\"hairy\",\"hakim\",\"halma\",\"halse\",\"halve\",\"halwe\",\"hamal\",\"hamel\",\"hanap\",\"hance\",\"hanch\",\"handy\",\"hansa\",\"hanse\",\"haply\",\"happy\",\"hards\",\"hardy\",\"harem\",\"harle\",\"harns\",\"harpa\",\"harpy\",\"harre\",\"harry\",\"harsh\",\"haste\",\"hasty\",\"hatch\",\"hatel\",\"hater\",\"hatte\",\"haugh\",\"haulm\",\"hauls\",\"hault\",\"haunt\",\"haven\",\"haver\",\"havoc\",\"hawse\",\"hazel\",\"hazle\",\"heady\",\"heald\",\"heapy\",\"heard\",\"heart\",\"heath\",\"heave\",\"heavy\",\"heben\",\"hedge\",\"heedy\",\"hefty\",\"hegge\",\"helix\",\"hello\",\"helly\",\"helot\",\"helve\",\"hemal\",\"hemin\",\"hempy\",\"hence\",\"hende\",\"hendy\",\"henen\",\"henna\",\"henry\",\"hepar\",\"hepta\",\"herby\",\"heren\",\"herie\",\"herma\",\"herne\",\"heron\",\"herse\",\"herte\",\"heugh\",\"heved\",\"hewer\",\"hexad\",\"hexyl\",\"heygh\",\"heyne\",\"hider\",\"hiems\",\"hight\",\"higre\",\"hijra\",\"hilal\",\"hilar\",\"hilly\",\"hilum\",\"hilus\",\"hindi\",\"hindu\",\"hinge\",\"hinny\",\"hippa\",\"hippe\",\"hipps\",\"hirer\",\"hires\",\"hitch\",\"hithe\",\"hiver\",\"hives\",\"hoard\",\"hoary\",\"hobby\",\"hobit\",\"hoboy\",\"hocco\",\"hocus\",\"hoddy\",\"hoful\",\"hoise\",\"hoist\",\"hoker\",\"holla\",\"hollo\",\"holly\",\"holwe\",\"homer\",\"honey\",\"honor\",\"hoody\",\"hooky\",\"hoove\",\"hoper\",\"hoppo\",\"horal\",\"horde\",\"horny\",\"horse\",\"horsy\",\"hosen\",\"hotel\",\"hoten\",\"hotly\",\"hough\",\"hoult\",\"hound\",\"houri\",\"hours\",\"house\",\"houss\",\"houve\",\"hovel\",\"hoven\",\"hover\",\"howdy\",\"howel\",\"howso\",\"howve\",\"hsien\",\"hubby\",\"hudge\",\"huffy\",\"hulan\",\"hulch\",\"hulky\",\"hullo\",\"hully\",\"human\",\"humic\",\"humid\",\"humin\",\"humor\",\"humph\",\"humpy\",\"humus\",\"hunch\",\"hunks\",\"hunky\",\"hunte\",\"hurds\",\"hurly\",\"hurra\",\"hurry\",\"hurst\",\"husky\",\"hussy\",\"hutch\",\"huzza\",\"hyads\",\"hydra\",\"hyena\",\"hylic\",\"hymar\",\"hymen\",\"hyoid\",\"hyrax\",\"hyrse\",\"hyrst\",\"hyson\",\"hythe\",\"ichor\",\"icily\",\"icing\",\"ickle\",\"ictic\",\"ictus\",\"ideal\",\"ideat\",\"idiom\",\"idiot\",\"idler\",\"ifere\",\"igloo\",\"ihram\",\"ileac\",\"ileum\",\"ileus\",\"iliac\",\"iliad\",\"ilial\",\"ilium\",\"ilkon\",\"image\",\"imago\",\"imaum\",\"imban\",\"imbar\",\"imbay\",\"imbed\",\"imbow\",\"imbox\",\"imbue\",\"imide\",\"imido\",\"immew\",\"immit\",\"immix\",\"impel\",\"impen\",\"imply\",\"inane\",\"inapt\",\"incan\",\"incle\",\"incog\",\"incur\",\"incus\",\"indew\",\"index\",\"india\",\"indin\",\"indol\",\"indow\",\"indri\",\"indue\",\"inept\",\"inerm\",\"inert\",\"ineye\",\"infer\",\"infix\",\"infra\",\"ingle\",\"ingot\",\"inial\",\"inion\",\"inker\",\"inkle\",\"inlaw\",\"inlay\",\"inlet\",\"inmew\",\"inner\",\"inset\",\"insue\",\"inter\",\"inure\",\"inurn\",\"inust\",\"inwit\",\"iodal\",\"iodic\",\"iodol\",\"ionic\",\"iowas\",\"irade\",\"irate\",\"irian\",\"irish\",\"irony\",\"irous\",\"isiac\",\"islam\",\"islet\",\"issue\",\"istle\",\"itala\",\"itchy\",\"iulus\",\"ivied\",\"ivory\",\"ixtil\",\"ixtle\",\"ixtli\",\"izard\",\"izedi\",\"jabot\",\"jacal\",\"jacky\",\"jacob\",\"jager\",\"jaggy\",\"jahve\",\"jaina\",\"jakes\",\"jakie\",\"jalap\",\"jantu\",\"janty\",\"janus\",\"japan\",\"japer\",\"jards\",\"jarvy\",\"jasey\",\"jaspe\",\"jaunt\",\"javel\",\"jawed\",\"jayet\",\"jazel\",\"jears\",\"jeers\",\"jehad\",\"jelly\",\"jemmy\",\"jenny\",\"jerid\",\"jerky\",\"jesse\",\"jesus\",\"jetty\",\"jewel\",\"jewry\",\"jiffy\",\"jihad\",\"jimmy\",\"jingo\",\"jippo\",\"joint\",\"joist\",\"joker\",\"jolif\",\"jolly\",\"jolty\",\"jonah\",\"joram\",\"jorum\",\"jossa\",\"jougs\",\"joule\",\"joust\",\"judas\",\"judge\",\"jugal\",\"juger\",\"juggs\",\"jugum\",\"juice\",\"juicy\",\"juise\",\"julep\",\"julus\",\"jumpy\",\"junco\",\"junta\",\"junto\",\"jupon\",\"jural\",\"jurat\",\"jurel\",\"juror\",\"jussi\",\"jutes\",\"jutty\",\"juvia\",\"kaama\",\"kabob\",\"kafal\",\"kafir\",\"kahau\",\"kalan\",\"kalif\",\"kalki\",\"kalpa\",\"kapia\",\"kapok\",\"karma\",\"karob\",\"kauri\",\"kayak\",\"kayko\",\"kazoo\",\"kecky\",\"kedge\",\"keech\",\"keels\",\"keesh\",\"keeve\",\"kefir\",\"kelpy\",\"kempe\",\"kemps\",\"kempt\",\"kerse\",\"kerve\",\"kesar\",\"ketch\",\"ketol\",\"kevel\",\"kever\",\"kevin\",\"keyed\",\"khaki\",\"khaya\",\"khond\",\"kiang\",\"kibed\",\"kidde\",\"kiddy\",\"kieve\",\"kimbo\",\"kimry\",\"kinic\",\"kinit\",\"kinky\",\"kiosk\",\"kithe\",\"kitte\",\"kitty\",\"kiver\",\"klick\",\"kloof\",\"knack\",\"knarl\",\"knave\",\"knead\",\"kneck\",\"kneed\",\"kneel\",\"knell\",\"knelt\",\"knife\",\"knits\",\"knock\",\"knoll\",\"knosp\",\"knout\",\"known\",\"knubs\",\"knuff\",\"knurl\",\"koala\",\"kodak\",\"konze\",\"koord\",\"kopje\",\"koran\",\"korin\",\"kotow\",\"kraal\",\"krait\",\"krang\",\"kreel\",\"krems\",\"kreng\",\"krone\",\"kudos\",\"kufic\",\"kulan\",\"kutch\",\"kyack\",\"kydde\",\"kyley\",\"kymry\",\"kyrie\",\"kythe\",\"label\",\"labia\",\"labor\",\"laced\",\"lache\",\"ladde\",\"laden\",\"ladin\",\"ladle\",\"lafte\",\"lagan\",\"lager\",\"lagly\",\"laird\",\"laism\",\"laity\",\"lakao\",\"laker\",\"lakin\",\"lakke\",\"lamel\",\"lames\",\"lamia\",\"lance\",\"lanch\",\"lanky\",\"lapel\",\"lapis\",\"lapps\",\"lapse\",\"larch\",\"lardy\",\"lares\",\"large\",\"largo\",\"larry\",\"larum\",\"larva\",\"larve\",\"lasse\",\"lasso\",\"laste\",\"latah\",\"latch\",\"lated\",\"later\",\"lates\",\"latex\",\"lathe\",\"lathy\",\"latin\",\"laton\",\"laugh\",\"laund\",\"laura\",\"laver\",\"lavic\",\"lawer\",\"lawnd\",\"lawny\",\"laxly\",\"layer\",\"lazar\",\"leach\",\"leady\",\"leafy\",\"leaky\",\"leany\",\"learn\",\"lease\",\"leash\",\"least\",\"leasy\",\"leave\",\"leavy\",\"leban\",\"leche\",\"leden\",\"ledge\",\"ledgy\",\"leech\",\"leede\",\"leeme\",\"leere\",\"leese\",\"leful\",\"legal\",\"leger\",\"legge\",\"leggy\",\"leman\",\"lemma\",\"lemon\",\"lemur\",\"lends\",\"lento\",\"lepal\",\"lepas\",\"leper\",\"lepid\",\"lepra\",\"lepre\",\"lepry\",\"lered\",\"lerot\",\"letch\",\"leten\",\"lethe\",\"lethy\",\"lette\",\"letts\",\"leuke\",\"levee\",\"level\",\"leven\",\"lever\",\"levet\",\"levin\",\"levir\",\"lewis\",\"liage\",\"liana\",\"liane\",\"liard\",\"libel\",\"liber\",\"libra\",\"lichi\",\"licit\",\"lidge\",\"liege\",\"lieve\",\"lifen\",\"ligan\",\"ligge\",\"light\",\"liken\",\"likin\",\"lilac\",\"liman\",\"limax\",\"limbo\",\"limer\",\"limit\",\"limsy\",\"linch\",\"linen\",\"liner\",\"linga\",\"lingo\",\"links\",\"linne\",\"linum\",\"lipic\",\"lipse\",\"lipyl\",\"lisle\",\"lisne\",\"liter\",\"lithe\",\"litho\",\"lithy\",\"litre\",\"lived\",\"liver\",\"lives\",\"livid\",\"livor\",\"livre\",\"llama\",\"llano\",\"loach\",\"loamy\",\"loath\",\"lobar\",\"lobby\",\"lobed\",\"local\",\"loche\",\"locky\",\"locus\",\"lodde\",\"lodge\",\"loess\",\"loffe\",\"lofty\",\"logan\",\"logge\",\"logic\",\"logos\",\"lokao\",\"longe\",\"looby\",\"looch\",\"loony\",\"loord\",\"loose\",\"loper\",\"loppy\",\"loral\",\"lorel\",\"loren\",\"loris\",\"lorry\",\"losel\",\"loser\",\"lotos\",\"lotto\",\"lotus\",\"lough\",\"loups\",\"louri\",\"louse\",\"lousy\",\"lovee\",\"lover\",\"lower\",\"lowgh\",\"lowly\",\"lowry\",\"loyal\",\"lucid\",\"lucky\",\"lucre\",\"luffa\",\"lumen\",\"lumpy\",\"lunar\",\"lunch\",\"lunet\",\"lunge\",\"lupus\",\"lurch\",\"lurid\",\"lurry\",\"lusty\",\"luter\",\"lycee\",\"lyche\",\"lyden\",\"lying\",\"lyken\",\"lymph\",\"lynch\",\"lynde\",\"lyric\",\"lyrid\",\"lyrie\",\"lysis\",\"lyssa\",\"lythe\",\"lytta\",\"mabby\",\"macao\",\"macaw\",\"macco\",\"macer\",\"macho\",\"macle\",\"madam\",\"madge\",\"madia\",\"madid\",\"madly\",\"madro\",\"mafia\",\"magic\",\"magma\",\"magot\",\"mahdi\",\"mahoe\",\"maian\",\"maine\",\"mains\",\"maize\",\"major\",\"maked\",\"maker\",\"malar\",\"malax\",\"malay\",\"maleo\",\"malet\",\"malic\",\"malma\",\"malty\",\"malum\",\"mamma\",\"mammy\",\"manca\",\"maned\",\"maneh\",\"manes\",\"mange\",\"mango\",\"mangy\",\"mania\",\"manic\",\"manid\",\"manie\",\"manis\",\"manks\",\"manly\",\"manna\",\"manor\",\"manse\",\"manta\",\"manto\",\"manul\",\"manus\",\"maori\",\"maple\",\"maqui\",\"marai\",\"march\",\"marge\",\"marie\",\"marly\",\"marry\",\"marsh\",\"maser\",\"mashy\",\"mason\",\"masse\",\"massy\",\"masty\",\"match\",\"mater\",\"matie\",\"matin\",\"matte\",\"maule\",\"maund\",\"mauve\",\"mavis\",\"mawks\",\"mawky\",\"maxim\",\"mayan\",\"maybe\",\"mayor\",\"mazer\",\"meach\",\"mealy\",\"meant\",\"mease\",\"meath\",\"meaty\",\"meawl\",\"medal\",\"media\",\"medic\",\"medle\",\"medly\",\"medoc\",\"meech\",\"meeth\",\"meine\",\"meiny\",\"melam\",\"melee\",\"melic\",\"melne\",\"meloe\",\"melon\",\"mends\",\"menge\",\"menow\",\"mense\",\"merce\",\"mercy\",\"merge\",\"merit\",\"merke\",\"merle\",\"meros\",\"merou\",\"merry\",\"merus\",\"mesad\",\"mesal\",\"mesel\",\"meshy\",\"mesne\",\"meson\",\"metal\",\"meter\",\"metic\",\"metif\",\"metis\",\"metol\",\"metre\",\"mette\",\"meute\",\"mexal\",\"meyne\",\"mezzo\",\"mhorr\",\"miasm\",\"miaul\",\"miche\",\"midas\",\"middy\",\"midge\",\"midst\",\"might\",\"milch\",\"milky\",\"mimic\",\"mince\",\"miner\",\"minge\",\"minim\",\"minny\",\"minor\",\"minos\",\"minow\",\"minum\",\"minus\",\"mirky\",\"mirth\",\"mirza\",\"misdo\",\"miser\",\"misgo\",\"misle\",\"misly\",\"missa\",\"missy\",\"misty\",\"miter\",\"mitre\",\"mitty\",\"mixed\",\"mixen\",\"mixer\",\"mizzy\",\"moate\",\"moble\",\"mocha\",\"moche\",\"modal\",\"model\",\"moder\",\"modus\",\"moeve\",\"mogul\",\"mohur\",\"moile\",\"moira\",\"moire\",\"moist\",\"molar\",\"moldy\",\"molle\",\"molly\",\"molto\",\"momot\",\"momus\",\"monad\",\"monal\",\"monas\",\"monde\",\"moner\",\"money\",\"monte\",\"month\",\"moody\",\"moong\",\"moony\",\"moory\",\"moose\",\"mopsy\",\"mopus\",\"moral\",\"moray\",\"morel\",\"mores\",\"moria\",\"moric\",\"moril\",\"morin\",\"mormo\",\"morne\",\"moron\",\"moros\",\"morro\",\"morse\",\"morus\",\"morwe\",\"mosel\",\"moses\",\"mosey\",\"mossy\",\"moste\",\"moted\",\"motet\",\"mothy\",\"motif\",\"moton\",\"motor\",\"motte\",\"motto\",\"motty\",\"mould\",\"moule\",\"moult\",\"mound\",\"mount\",\"mourn\",\"mouse\",\"mousy\",\"mouth\",\"mover\",\"movie\",\"mower\",\"moxie\",\"moyle\",\"mucic\",\"mucid\",\"mucin\",\"mucky\",\"mucor\",\"mucro\",\"mucus\",\"mudar\",\"muddy\",\"mudir\",\"mufti\",\"muggy\",\"mugil\",\"mulch\",\"mulct\",\"muley\",\"mulla\",\"mulse\",\"mummy\",\"mumps\",\"munch\",\"munga\",\"mungo\",\"mural\",\"murex\",\"murky\",\"murre\",\"murry\",\"murth\",\"murza\",\"musal\",\"musar\",\"musca\",\"musci\",\"muser\",\"muset\",\"mushy\",\"music\",\"musit\",\"musky\",\"mussy\",\"musty\",\"mutch\",\"mutic\",\"muzzy\",\"myoid\",\"myoma\",\"myope\",\"myops\",\"myopy\",\"myrrh\",\"mysis\",\"mythe\",\"nabit\",\"nabob\",\"nacre\",\"nadde\",\"nadir\",\"naeve\",\"naggy\",\"nagor\",\"naiad\",\"naive\",\"naked\",\"naker\",\"nakoo\",\"namer\",\"nandu\",\"nanny\",\"nappe\",\"nappy\",\"napus\",\"nares\",\"narre\",\"narwe\",\"nasal\",\"nassa\",\"nasty\",\"natal\",\"natch\",\"nates\",\"natka\",\"natty\",\"naval\",\"navel\",\"navew\",\"navvy\",\"nawab\",\"neddy\",\"needs\",\"needy\",\"neeld\",\"neele\",\"neese\",\"negro\",\"negus\",\"neife\",\"neigh\",\"nempt\",\"nenia\",\"nerka\",\"nerre\",\"nerve\",\"nervy\",\"netty\",\"neven\",\"never\",\"nevew\",\"newel\",\"newly\",\"newsy\",\"nexus\",\"ngina\",\"niche\",\"nidor\",\"nidus\",\"niece\",\"nifle\",\"night\",\"nigua\",\"nihil\",\"ninny\",\"ninth\",\"ninut\",\"niobe\",\"niopo\",\"nisan\",\"nisey\",\"niste\",\"nisus\",\"niter\",\"nitid\",\"nitre\",\"nitry\",\"nitty\",\"nival\",\"nixie\",\"nizam\",\"nobby\",\"noble\",\"nobly\",\"nodal\",\"noddy\",\"noght\",\"noier\",\"noils\",\"noint\",\"noise\",\"noisy\",\"nolde\",\"nomad\",\"nomen\",\"nomic\",\"nonce\",\"nonda\",\"nondo\",\"nones\",\"nonet\",\"nonne\",\"nonny\",\"nonyl\",\"noose\",\"nopal\",\"noria\",\"norie\",\"norma\",\"norna\",\"norse\",\"north\",\"nosed\",\"nosel\",\"nosle\",\"notal\",\"notch\",\"noted\",\"noter\",\"notum\",\"notus\",\"nouch\",\"nould\",\"noule\",\"novel\",\"novum\",\"noway\",\"nowch\",\"nowed\",\"nowel\",\"nowes\",\"noyau\",\"noyer\",\"noyls\",\"nozle\",\"nubia\",\"nucha\",\"nucin\",\"nudge\",\"nugae\",\"numps\",\"nurse\",\"nutty\",\"nymph\",\"nyula\",\"oaken\",\"oaker\",\"oakum\",\"oared\",\"oasis\",\"oaten\",\"obeah\",\"obese\",\"obole\",\"obolo\",\"obrok\",\"occur\",\"ocean\",\"ocher\",\"ochre\",\"ochry\",\"ocrea\",\"octad\",\"octet\",\"octic\",\"octyl\",\"oddly\",\"odeon\",\"odeum\",\"odist\",\"odium\",\"odize\",\"odmyl\",\"odyle\",\"oelet\",\"offal\",\"offer\",\"often\",\"ofter\",\"ogham\",\"ogive\",\"ogler\",\"oglio\",\"oiled\",\"oiler\",\"okapi\",\"olden\",\"oleic\",\"olein\",\"olent\",\"oliva\",\"olive\",\"ology\",\"omber\",\"ombre\",\"omega\",\"onely\",\"onion\",\"onset\",\"oones\",\"oopak\",\"oozoa\",\"opake\",\"opera\",\"opine\",\"opium\",\"optic\",\"orach\",\"orang\",\"orbed\",\"orbic\",\"orbit\",\"orcin\",\"ordal\",\"order\",\"oread\",\"orgal\",\"organ\",\"orgue\",\"oriel\",\"oriol\",\"orion\",\"orlop\",\"ormer\",\"orpin\",\"orris\",\"orval\",\"orvet\",\"oryal\",\"oryza\",\"oscan\",\"osier\",\"osmic\",\"ostic\",\"otary\",\"other\",\"ottar\",\"otter\",\"ought\",\"ounce\",\"oundy\",\"ouphe\",\"ousel\",\"outdo\",\"outer\",\"outgo\",\"outre\",\"ouzel\",\"ovant\",\"ovary\",\"ovate\",\"overt\",\"ovile\",\"ovine\",\"ovism\",\"ovist\",\"ovoid\",\"ovolo\",\"ovule\",\"owher\",\"owing\",\"owler\",\"owlet\",\"owner\",\"owser\",\"oxbow\",\"oxeye\",\"oxfly\",\"oxide\",\"oxime\",\"oxlip\",\"oxter\",\"oylet\",\"ozena\",\"ozone\",\"paage\",\"paard\",\"pacer\",\"pacos\",\"padar\",\"paddy\",\"padge\",\"padow\",\"padre\",\"paean\",\"paeon\",\"pagan\",\"pagod\",\"paien\",\"pains\",\"paint\",\"paise\",\"palea\",\"paled\",\"palet\",\"palla\",\"palmy\",\"palpi\",\"palsy\",\"palus\",\"pance\",\"panch\",\"pancy\",\"panda\",\"paned\",\"panel\",\"panic\",\"panim\",\"panne\",\"pansy\",\"panym\",\"paolo\",\"papal\",\"papaw\",\"paper\",\"pappy\",\"paque\",\"param\",\"parch\",\"parde\",\"pardo\",\"parer\",\"paris\",\"parka\",\"parle\",\"parol\",\"parry\",\"parse\",\"party\",\"pasan\",\"pasch\",\"pasha\",\"paspy\",\"passe\",\"paste\",\"pasty\",\"patas\",\"patch\",\"pated\",\"patee\",\"paten\",\"patin\",\"patio\",\"patly\",\"patte\",\"patty\",\"paugy\",\"paune\",\"pause\",\"pauxi\",\"pavan\",\"paven\",\"paver\",\"pavid\",\"pavin\",\"pavon\",\"pawky\",\"payee\",\"payen\",\"payer\",\"payor\",\"payse\",\"peace\",\"peach\",\"peage\",\"peaky\",\"pearl\",\"peart\",\"pease\",\"peaty\",\"peavy\",\"pecan\",\"pecco\",\"pecul\",\"pedal\",\"pedro\",\"peece\",\"peele\",\"peert\",\"peery\",\"peise\",\"pekan\",\"pekoe\",\"pelma\",\"pelta\",\"penal\",\"pence\",\"penis\",\"penna\",\"penny\",\"peony\",\"perca\",\"perce\",\"perch\",\"perdu\",\"perdy\",\"perel\",\"peril\",\"perky\",\"perry\",\"pesky\",\"petal\",\"petar\",\"peter\",\"petit\",\"petre\",\"petto\",\"petty\",\"pewee\",\"pewet\",\"pewit\",\"phane\",\"phare\",\"pharo\",\"phase\",\"phasm\",\"phebe\",\"pheer\",\"phene\",\"pheon\",\"phial\",\"phlox\",\"phoca\",\"phone\",\"phono\",\"photo\",\"phyle\",\"phyma\",\"physa\",\"piano\",\"picea\",\"picle\",\"picot\",\"picra\",\"picts\",\"picul\",\"picus\",\"piece\",\"piend\",\"pieno\",\"pieta\",\"piety\",\"pight\",\"pigmy\",\"piked\",\"pilau\",\"pilch\",\"piled\",\"piler\",\"piles\",\"pilon\",\"pilot\",\"pilwe\",\"pinax\",\"pinch\",\"piney\",\"pinic\",\"pinky\",\"pinna\",\"pinon\",\"pinto\",\"pinus\",\"piony\",\"pious\",\"piped\",\"piper\",\"pipit\",\"pipra\",\"pique\",\"pirai\",\"pirie\",\"pirry\",\"pisay\",\"pishu\",\"piste\",\"pitch\",\"pithy\",\"pitta\",\"pivot\",\"pixie\",\"place\",\"plack\",\"plaga\",\"plage\",\"plaid\",\"plain\",\"plait\",\"plane\",\"plank\",\"plant\",\"plash\",\"plasm\",\"plate\",\"platt\",\"platy\",\"plaud\",\"playa\",\"plaza\",\"plead\",\"pleat\",\"plebe\",\"plebs\",\"plein\",\"plene\",\"plesh\",\"plete\",\"pleyt\",\"plica\",\"plied\",\"plitt\",\"ploce\",\"pluck\",\"pluff\",\"pluma\",\"plumb\",\"plume\",\"plump\",\"plumy\",\"plunk\",\"plush\",\"pluto\",\"plyer\",\"poach\",\"poake\",\"pocan\",\"pocky\",\"podge\",\"podgy\",\"poesy\",\"poggy\",\"poind\",\"point\",\"poise\",\"poize\",\"pokal\",\"poker\",\"poket\",\"pokey\",\"polar\",\"poler\",\"poley\",\"polka\",\"polly\",\"polyp\",\"pomel\",\"pomey\",\"pomme\",\"pongo\",\"ponty\",\"popet\",\"poppy\",\"porch\",\"porer\",\"porgy\",\"porta\",\"porte\",\"posed\",\"poser\",\"posit\",\"posse\",\"potch\",\"potoo\",\"potto\",\"pouch\",\"poulp\",\"poult\",\"pound\",\"powan\",\"powen\",\"power\",\"poynd\",\"poyou\",\"praam\",\"prame\",\"prank\",\"prase\",\"prate\",\"prawn\",\"prede\",\"predy\",\"preef\",\"preen\",\"prees\",\"press\",\"prest\",\"preve\",\"prial\",\"prian\",\"price\",\"prick\",\"pride\",\"pried\",\"prief\",\"prier\",\"prill\",\"prime\",\"primo\",\"primp\",\"primy\",\"prink\",\"print\",\"prior\",\"prise\",\"prism\",\"privy\",\"prize\",\"probe\",\"prodd\",\"proem\",\"proin\",\"proke\",\"proll\",\"prone\",\"prong\",\"proof\",\"props\",\"prore\",\"prose\",\"prosy\",\"proud\",\"prove\",\"prowl\",\"proxy\",\"pruce\",\"prude\",\"prune\",\"pryan\",\"psalm\",\"pshaw\",\"psoas\",\"psora\",\"pubes\",\"pubic\",\"pubis\",\"pucel\",\"pucka\",\"pudgy\",\"pudic\",\"puffy\",\"pugil\",\"puker\",\"pukka\",\"pulas\",\"puler\",\"pulex\",\"pulpy\",\"pulse\",\"punch\",\"pungy\",\"punic\",\"punka\",\"punto\",\"punty\",\"pupal\",\"pupil\",\"puppy\",\"pured\",\"puree\",\"purge\",\"purim\",\"purre\",\"purse\",\"pursy\",\"pusil\",\"pussy\",\"putid\",\"putry\",\"putty\",\"pygal\",\"pygmy\",\"pykar\",\"pylon\",\"pyoid\",\"pyral\",\"pyrus\",\"pyxie\",\"pyxis\",\"quack\",\"quade\",\"quaff\",\"quail\",\"quair\",\"quake\",\"quaky\",\"qualm\",\"quant\",\"quarl\",\"quart\",\"quash\",\"quasi\",\"quass\",\"quata\",\"quave\",\"quayd\",\"quean\",\"quech\",\"queck\",\"queen\",\"queer\",\"quegh\",\"quell\",\"queme\",\"querl\",\"quern\",\"query\",\"quest\",\"queue\",\"quica\",\"quice\",\"quich\",\"quick\",\"quiet\",\"quill\",\"quilt\",\"quint\",\"quipo\",\"quipu\",\"quire\",\"quirk\",\"quirl\",\"quirt\",\"quish\",\"quite\",\"quits\",\"quoif\",\"quoil\",\"quoin\",\"quoit\",\"quoke\",\"quoll\",\"quook\",\"quota\",\"quote\",\"quoth\",\"quran\",\"raash\",\"rabat\",\"rabbi\",\"rabid\",\"rabot\",\"racer\",\"rache\",\"racle\",\"radde\",\"radii\",\"radix\",\"rafte\",\"rafty\",\"raggy\",\"raiae\",\"rainy\",\"raise\",\"rajah\",\"rakee\",\"rakel\",\"raker\",\"rally\",\"ralph\",\"ramal\",\"ramed\",\"ramee\",\"ramie\",\"rammy\",\"rampe\",\"ramus\",\"ranal\",\"rance\",\"ranch\",\"ranee\",\"range\",\"rangy\",\"ranny\",\"ranty\",\"raphe\",\"rapid\",\"raspy\",\"rasse\",\"ratan\",\"ratch\",\"ratel\",\"rater\",\"rathe\",\"ratio\",\"raton\",\"ravel\",\"raven\",\"raver\",\"ravin\",\"rawly\",\"rayah\",\"rayon\",\"razed\",\"razee\",\"razor\",\"reach\",\"react\",\"ready\",\"realm\",\"reame\",\"reata\",\"reave\",\"rebec\",\"rebel\",\"rebus\",\"rebut\",\"recto\",\"recur\",\"redan\",\"redde\",\"redia\",\"redif\",\"redly\",\"redub\",\"reedy\",\"reefy\",\"reeky\",\"reeve\",\"refar\",\"refel\",\"refer\",\"refit\",\"refix\",\"refut\",\"regal\",\"regel\",\"reget\",\"regie\",\"regle\",\"regma\",\"regne\",\"reign\",\"reins\",\"rekne\",\"relax\",\"relay\",\"relic\",\"relik\",\"remit\",\"remix\",\"remue\",\"renal\",\"renay\",\"renew\",\"renne\",\"rente\",\"repay\",\"repel\",\"reply\",\"resaw\",\"reset\",\"resin\",\"resow\",\"resty\",\"retch\",\"retex\",\"retry\",\"rette\",\"reule\",\"reume\",\"revel\",\"revet\",\"revie\",\"rewet\",\"rewin\",\"rewle\",\"rewme\",\"rewth\",\"reyse\",\"rheae\",\"rheic\",\"rhein\",\"rheum\",\"rhime\",\"rhine\",\"rhino\",\"rhomb\",\"rhumb\",\"rhyme\",\"riant\",\"riban\",\"ribes\",\"riden\",\"rider\",\"ridge\",\"ridgy\",\"rifle\",\"rigel\",\"right\",\"rigid\",\"rigol\",\"rigor\",\"rille\",\"rimer\",\"rimey\",\"rindy\",\"rined\",\"rinse\",\"ripen\",\"risen\",\"riser\",\"risky\",\"risse\",\"rival\",\"rivel\",\"riven\",\"river\",\"rivet\",\"roach\",\"roast\",\"robin\",\"roble\",\"roche\",\"rocky\",\"rocoa\",\"roddy\",\"rodeo\",\"rodge\",\"roger\",\"rogue\",\"roguy\",\"rohob\",\"roial\",\"roily\",\"roint\",\"roist\",\"rokee\",\"roman\",\"romic\",\"rompu\",\"ronco\",\"ronde\",\"rondo\",\"ronin\",\"ronne\",\"roody\",\"roofy\",\"rooky\",\"roomy\",\"roost\",\"rooty\",\"roper\",\"roque\",\"roral\",\"roric\",\"rorid\",\"rosen\",\"roser\",\"roset\",\"rosin\",\"rotal\",\"rotor\",\"rotta\",\"rouet\",\"rouge\",\"rough\",\"round\",\"rouse\",\"roust\",\"route\",\"rover\",\"rowan\",\"rowdy\",\"rowed\",\"rowel\",\"rowen\",\"rower\",\"royal\",\"royne\",\"rubin\",\"ruble\",\"rubus\",\"ruche\",\"ruddy\",\"ruffe\",\"rufol\",\"ruggy\",\"rugin\",\"ruler\",\"rumbo\",\"rumen\",\"rummy\",\"rumor\",\"runch\",\"runer\",\"runic\",\"runty\",\"rupee\",\"rupia\",\"rural\",\"rushy\",\"rusma\",\"rusty\",\"rutic\",\"rutin\",\"rutty\",\"ryder\",\"saadh\",\"sabal\",\"saber\",\"sable\",\"sabot\",\"sabre\",\"sacar\",\"sacre\",\"sadda\",\"sadly\",\"sagum\",\"sagus\",\"saheb\",\"sahib\",\"sahui\",\"saiga\",\"saily\",\"saint\",\"saith\",\"saiva\",\"sajou\",\"saker\",\"sakti\",\"salad\",\"salam\",\"saleb\",\"salep\",\"salic\",\"salix\",\"sally\",\"salmi\",\"salol\",\"salon\",\"salpa\",\"salse\",\"salty\",\"salue\",\"salve\",\"salvo\",\"samaj\",\"sambo\",\"sandy\",\"sanga\",\"sangu\",\"sanny\",\"sapid\",\"sapor\",\"sappy\",\"sarco\",\"saree\",\"sargo\",\"saros\",\"sarpo\",\"sarsa\",\"sarse\",\"sasin\",\"sasse\",\"satan\",\"satin\",\"satle\",\"satyr\",\"sauce\",\"saucy\",\"saugh\",\"sauks\",\"sault\",\"saury\",\"saute\",\"saver\",\"savin\",\"savor\",\"savoy\",\"savvy\",\"sawer\",\"saxon\",\"sayer\",\"saynd\",\"scala\",\"scald\",\"scale\",\"scall\",\"scalp\",\"scaly\",\"scamp\",\"scant\",\"scape\",\"scard\",\"scare\",\"scarf\",\"scarn\",\"scarp\",\"scary\",\"scate\",\"scath\",\"scatt\",\"scaup\",\"scaur\",\"scena\",\"scene\",\"scent\",\"scern\",\"schah\",\"scink\",\"scion\",\"sciot\",\"scise\",\"sclav\",\"scoat\",\"scobs\",\"scoff\",\"scoke\",\"scold\",\"scole\",\"scomm\",\"scone\",\"scoop\",\"scoot\",\"scope\",\"score\",\"scorn\",\"scoth\",\"scots\",\"scour\",\"scout\",\"scowl\",\"scrag\",\"scrap\",\"scrat\",\"scraw\",\"scray\",\"scree\",\"screw\",\"scrid\",\"scrim\",\"scrip\",\"scrit\",\"scrod\",\"scrog\",\"scrow\",\"scrub\",\"scudo\",\"scuff\",\"sculk\",\"scull\",\"sculp\",\"scurf\",\"scuta\",\"scute\",\"scyle\",\"sdain\",\"seamy\",\"seave\",\"seavy\",\"sebat\",\"sebic\",\"secco\",\"seche\",\"secle\",\"secre\",\"sedan\",\"sedge\",\"sedgy\",\"sedum\",\"seedy\",\"seely\",\"seepy\",\"seeth\",\"segar\",\"segge\",\"segno\",\"seigh\",\"seine\",\"seint\",\"seise\",\"seity\",\"seize\",\"sekes\",\"selah\",\"selch\",\"selve\",\"semen\",\"senge\",\"senna\",\"senor\",\"sense\",\"senza\",\"seora\",\"sepal\",\"sepia\",\"sepic\",\"sepon\",\"sepoy\",\"serac\",\"serai\",\"serge\",\"serie\",\"serin\",\"seron\",\"serow\",\"serry\",\"serum\",\"serve\",\"serye\",\"sessa\",\"setee\",\"seten\",\"setim\",\"seton\",\"seven\",\"sever\",\"sewel\",\"sewen\",\"sewer\",\"sewin\",\"sexed\",\"sexly\",\"sexto\",\"seyen\",\"seynd\",\"seynt\",\"shack\",\"shadd\",\"shade\",\"shady\",\"shaft\",\"shaik\",\"shail\",\"shake\",\"shako\",\"shaky\",\"shale\",\"shall\",\"shalm\",\"shalt\",\"shaly\",\"shama\",\"shame\",\"shank\",\"shape\",\"shaps\",\"shard\",\"share\",\"shark\",\"sharp\",\"shash\",\"shave\",\"shawl\",\"shawm\",\"sheaf\",\"sheal\",\"shear\",\"sheen\",\"sheep\",\"sheer\",\"sheet\",\"sheik\",\"sheil\",\"sheld\",\"shelf\",\"shell\",\"shend\",\"shent\",\"sheol\",\"sherd\",\"shern\",\"shete\",\"sheth\",\"shewn\",\"shiah\",\"shide\",\"shied\",\"shiel\",\"shift\",\"shilf\",\"shill\",\"shily\",\"shine\",\"shiny\",\"shire\",\"shirk\",\"shirl\",\"shirr\",\"shirt\",\"shist\",\"shive\",\"shoad\",\"shoal\",\"shoar\",\"shoat\",\"shock\",\"shode\",\"shoer\",\"shola\",\"shole\",\"shone\",\"shooi\",\"shook\",\"shoon\",\"shoop\",\"shoot\",\"shore\",\"shorl\",\"shorn\",\"short\",\"shory\",\"shote\",\"shots\",\"shout\",\"shove\",\"shown\",\"showy\",\"shrag\",\"shram\",\"shrap\",\"shred\",\"shrew\",\"shrow\",\"shrub\",\"shrug\",\"shuck\",\"shude\",\"shunt\",\"shute\",\"shyly\",\"siaga\",\"sibyl\",\"sicca\",\"sicer\",\"sicle\",\"sided\",\"sider\",\"sidle\",\"siege\",\"sieur\",\"sieva\",\"sieve\",\"sifac\",\"sight\",\"sigil\",\"sigla\",\"sigma\",\"siker\",\"sikhs\",\"silex\",\"silky\",\"silly\",\"silty\",\"silva\",\"simar\",\"simia\",\"since\",\"sinch\",\"sindi\",\"sinew\",\"singe\",\"sinic\",\"sinto\",\"sintu\",\"sinus\",\"sioux\",\"sipid\",\"siren\",\"siroc\",\"sirup\",\"sisel\",\"siser\",\"sited\",\"sithe\",\"situs\",\"sivan\",\"siver\",\"siwin\",\"sixth\",\"sixty\",\"sizar\",\"sized\",\"sizel\",\"sizer\",\"skain\",\"skald\",\"skall\",\"skare\",\"skart\",\"skate\",\"skean\",\"skeed\",\"skeel\",\"skeet\",\"skein\",\"skelp\",\"skene\",\"skied\",\"skiey\",\"skiff\",\"skill\",\"skimp\",\"skink\",\"skirl\",\"skirr\",\"skirt\",\"skive\",\"skout\",\"skulk\",\"skull\",\"skunk\",\"skute\",\"skyed\",\"skyey\",\"slack\",\"slade\",\"slaie\",\"slake\",\"slang\",\"slank\",\"slant\",\"slape\",\"slash\",\"slate\",\"slatt\",\"slaty\",\"slave\",\"slazy\",\"sleek\",\"sleep\",\"sleer\",\"sleet\",\"sleid\",\"slent\",\"slept\",\"slice\",\"slich\",\"slick\",\"slide\",\"slily\",\"slime\",\"slimy\",\"sling\",\"slink\",\"slish\",\"slive\",\"sloam\",\"sloat\",\"slock\",\"sloke\",\"sloom\",\"sloop\",\"slope\",\"slopy\",\"slosh\",\"sloth\",\"slowh\",\"slows\",\"sloyd\",\"sludy\",\"slugs\",\"slump\",\"slung\",\"slunk\",\"slush\",\"slyly\",\"slype\",\"smack\",\"small\",\"smalt\",\"smart\",\"smash\",\"smear\",\"smeir\",\"smell\",\"smelt\",\"smerk\",\"smift\",\"smile\",\"smilt\",\"smirk\",\"smite\",\"smith\",\"smitt\",\"smock\",\"smoke\",\"smoky\",\"smolt\",\"smoor\",\"smore\",\"smote\",\"snack\",\"snail\",\"snake\",\"snaky\",\"snape\",\"snare\",\"snarl\",\"snary\",\"snast\",\"snath\",\"snead\",\"sneak\",\"sneap\",\"sneck\",\"sneed\",\"sneer\",\"snell\",\"snick\",\"snide\",\"sniff\",\"snift\",\"snigg\",\"snipe\",\"snipy\",\"snite\",\"snoff\",\"snood\",\"snook\",\"snore\",\"snort\",\"snout\",\"snowl\",\"snowy\",\"snuff\",\"soaky\",\"soapy\",\"soave\",\"sober\",\"socky\",\"socle\",\"soddy\",\"soder\",\"sodic\",\"softa\",\"soger\",\"soggy\",\"soily\",\"sojer\",\"soken\",\"solar\",\"solas\",\"soldo\",\"solen\",\"soler\",\"solid\",\"solon\",\"solus\",\"solve\",\"somaj\",\"somal\",\"somne\",\"soncy\",\"sonde\",\"sonsy\",\"soord\",\"soote\",\"sooth\",\"sooty\",\"sophi\",\"sopor\",\"soppy\",\"sopra\",\"soree\",\"sorel\",\"sorex\",\"sorgo\",\"sorry\",\"sorus\",\"sorwe\",\"sotel\",\"sothe\",\"sotil\",\"souce\",\"sough\",\"souke\",\"sound\",\"soune\",\"soupy\",\"sours\",\"souse\",\"south\",\"sowar\",\"sowce\",\"sower\",\"sowle\",\"sowne\",\"sowse\",\"soyle\",\"spaad\",\"space\",\"spade\",\"spado\",\"spahi\",\"spaid\",\"spake\",\"spaky\",\"spale\",\"spall\",\"spalt\",\"spane\",\"spang\",\"spank\",\"spare\",\"spark\",\"spary\",\"spasm\",\"spate\",\"spawl\",\"spawn\",\"speak\",\"spear\",\"spece\",\"speck\",\"speed\",\"speer\",\"speet\",\"speir\",\"speke\",\"spelk\",\"spell\",\"spelt\",\"spend\",\"spent\",\"spere\",\"sperm\",\"spewy\",\"sphex\",\"spial\",\"spica\",\"spice\",\"spick\",\"spicy\",\"spied\",\"spike\",\"spiky\",\"spile\",\"spill\",\"spilt\",\"spine\",\"spink\",\"spiny\",\"spire\",\"spirt\",\"spiry\",\"spiss\",\"spite\",\"splay\",\"split\",\"spoil\",\"spoke\",\"spong\",\"sponk\",\"spook\",\"spool\",\"spoom\",\"spoon\",\"spoor\",\"spore\",\"sport\",\"spout\",\"sprad\",\"sprag\",\"sprat\",\"spray\",\"spree\",\"sprew\",\"sprig\",\"sprit\",\"sprod\",\"sprue\",\"sprug\",\"spuke\",\"spume\",\"spumy\",\"spunk\",\"spurn\",\"spurt\",\"spute\",\"spyne\",\"squab\",\"squad\",\"squam\",\"squat\",\"squaw\",\"squib\",\"squid\",\"squir\",\"stack\",\"stade\",\"staff\",\"stage\",\"stagy\",\"staid\",\"stail\",\"stain\",\"stair\",\"stake\",\"stale\",\"stalk\",\"stall\",\"stamp\",\"stand\",\"stane\",\"stang\",\"stank\",\"stant\",\"stare\",\"starf\",\"stark\",\"starn\",\"start\",\"state\",\"stave\",\"stead\",\"steak\",\"steal\",\"steam\",\"stean\",\"steed\",\"steek\",\"steel\",\"steem\",\"steen\",\"steep\",\"steer\",\"steik\",\"stein\",\"stela\",\"stele\",\"stell\",\"stent\",\"stere\",\"stern\",\"stert\",\"steve\",\"stian\",\"stich\",\"stick\",\"stiff\",\"stike\",\"stile\",\"still\",\"stilt\",\"stime\",\"stimy\",\"sting\",\"stink\",\"stint\",\"stipe\",\"stirk\",\"stirp\",\"stirt\",\"stith\",\"stive\",\"stoak\",\"stoat\",\"stock\",\"stogy\",\"stoic\",\"stoke\",\"stola\",\"stole\",\"stoma\",\"stomp\",\"stond\",\"stone\",\"stont\",\"stony\",\"stood\",\"stook\",\"stool\",\"stoom\",\"stoop\",\"stoor\",\"stope\",\"store\",\"stork\",\"storm\",\"story\",\"stote\",\"stoup\",\"stour\",\"stout\",\"stove\",\"stram\",\"strap\",\"straw\",\"stray\",\"stree\",\"strew\",\"stria\",\"strid\",\"strip\",\"strix\",\"strop\",\"strow\",\"stroy\",\"strum\",\"strut\",\"stuck\",\"study\",\"stufa\",\"stuff\",\"stuke\",\"stull\",\"stulm\",\"stulp\",\"stump\",\"stung\",\"stunk\",\"stunt\",\"stupa\",\"stupe\",\"sturb\",\"sturk\",\"sturt\",\"styan\",\"styca\",\"style\",\"suade\",\"suage\",\"suant\",\"suave\",\"subah\",\"sucre\",\"sudra\",\"suede\",\"suent\",\"suety\",\"sugar\",\"suine\",\"suing\",\"suint\",\"suist\",\"suite\",\"sulks\",\"sulky\",\"sully\",\"sumac\",\"sumph\",\"sunna\",\"sunny\",\"sunup\",\"super\",\"supra\",\"surah\",\"sural\",\"surfy\",\"surge\",\"surgy\",\"surly\",\"sutor\",\"sutra\",\"swage\",\"swain\",\"swaip\",\"swale\",\"swamp\",\"swang\",\"swape\",\"sward\",\"sware\",\"swarf\",\"swarm\",\"swart\",\"swash\",\"swate\",\"swath\",\"sweal\",\"swear\",\"sweat\",\"swede\",\"sweep\",\"sweet\",\"swell\",\"swelt\",\"swept\",\"swerd\",\"swich\",\"swift\",\"swill\",\"swine\",\"swing\",\"swink\",\"swipe\",\"swirl\",\"swish\",\"swiss\",\"swive\",\"swoln\",\"swoon\",\"swoop\",\"sword\",\"swore\",\"sworn\",\"swown\",\"swung\",\"sycee\",\"syker\",\"sylph\",\"sylva\",\"symar\",\"synod\",\"syren\",\"syrma\",\"syrup\",\"sythe\",\"taber\",\"tabes\",\"tabid\",\"table\",\"taboo\",\"tabor\",\"tacet\",\"tache\",\"tacit\",\"tacky\",\"taffy\",\"tafia\",\"tagal\",\"taint\",\"taira\",\"tairn\",\"taken\",\"taker\",\"taled\",\"tales\",\"tally\",\"talma\",\"talon\",\"talpa\",\"taluk\",\"talus\",\"tamer\",\"tamil\",\"tamis\",\"tammy\",\"tamul\",\"tango\",\"tanka\",\"tansy\",\"taper\",\"tapet\",\"tapir\",\"tapis\",\"tardo\",\"tardy\",\"tared\",\"targe\",\"tarin\",\"tarot\",\"tarre\",\"tarry\",\"tarse\",\"tarsi\",\"tasco\",\"tasse\",\"taste\",\"tasto\",\"tasty\",\"tatch\",\"tatou\",\"tatta\",\"tatty\",\"taunt\",\"tawer\",\"tawny\",\"taxel\",\"taxer\",\"taxis\",\"taxor\",\"tayra\",\"tazel\",\"tazza\",\"teach\",\"teade\",\"teary\",\"tease\",\"techy\",\"tecum\",\"tedge\",\"teend\",\"teens\",\"teeny\",\"teest\",\"teeth\",\"teind\",\"teine\",\"teint\",\"telic\",\"tempo\",\"temps\",\"tempt\",\"temse\",\"tench\",\"tenet\",\"tenia\",\"tenne\",\"tenno\",\"tennu\",\"tenon\",\"tenor\",\"tense\",\"tenth\",\"tepal\",\"tepee\",\"tepid\",\"tepor\",\"terce\",\"terek\",\"teret\",\"terin\",\"terma\",\"terra\",\"terry\",\"terse\",\"testa\",\"teste\",\"testy\",\"tetel\",\"tetty\",\"tewan\",\"tewed\",\"tewel\",\"texas\",\"teyne\",\"thack\",\"thana\",\"thane\",\"thank\",\"thave\",\"thawy\",\"theca\",\"theft\",\"thegn\",\"their\",\"theme\",\"there\",\"therf\",\"these\",\"theta\",\"thewy\",\"thick\",\"thief\",\"thigh\",\"thilk\",\"thill\",\"thine\",\"thing\",\"think\",\"third\",\"thirl\",\"thole\",\"thong\",\"thorn\",\"thoro\",\"thorp\",\"those\",\"thoth\",\"thowl\",\"thraw\",\"three\",\"threw\",\"thrid\",\"throb\",\"throe\",\"throp\",\"throw\",\"thrum\",\"thuja\",\"thule\",\"thumb\",\"thump\",\"thurl\",\"thuya\",\"thyme\",\"thymy\",\"tiara\",\"tibia\",\"tical\",\"tidal\",\"tidde\",\"tided\",\"tiger\",\"tight\",\"tikor\",\"tikur\",\"tikus\",\"tilde\",\"tiler\",\"tilia\",\"tilth\",\"timal\",\"timer\",\"timid\",\"tinct\",\"tinea\",\"tined\",\"tinet\",\"tinge\",\"tinny\",\"tinto\",\"tipsy\",\"tired\",\"tirma\",\"tisar\",\"tisic\",\"tisri\",\"titan\",\"tithe\",\"title\",\"titty\",\"tiver\",\"toady\",\"toast\",\"tobie\",\"tobit\",\"toddy\",\"toffy\",\"tofus\",\"toged\",\"toght\",\"togue\",\"tohew\",\"toise\",\"tokay\",\"token\",\"tokin\",\"tolyl\",\"toman\",\"tommy\",\"toned\",\"tonga\",\"tonge\",\"tongo\",\"tongs\",\"tonic\",\"tonne\",\"tonus\",\"tooth\",\"topau\",\"topaz\",\"topek\",\"toper\",\"topet\",\"topic\",\"toque\",\"torah\",\"toran\",\"torch\",\"toret\",\"torse\",\"torsk\",\"torso\",\"torta\",\"torus\",\"tossy\",\"tosto\",\"total\",\"totem\",\"toter\",\"totty\",\"touch\",\"tough\",\"tourn\",\"touse\",\"tousy\",\"touze\",\"towel\",\"tower\",\"toxic\",\"toxin\",\"toyer\",\"trabu\",\"trace\",\"track\",\"tract\",\"trade\",\"trail\",\"train\",\"trais\",\"trait\",\"trama\",\"tramp\",\"trant\",\"trape\",\"traps\",\"trash\",\"trass\",\"trave\",\"trawl\",\"trays\",\"tread\",\"treat\",\"treen\",\"trend\",\"tress\",\"trewe\",\"trews\",\"triad\",\"trial\",\"trias\",\"tribe\",\"trica\",\"trice\",\"trick\",\"tride\",\"tried\",\"trier\",\"trill\",\"trine\",\"trink\",\"trior\",\"tripe\",\"trist\",\"trite\",\"troad\",\"troat\",\"troco\",\"trode\",\"troic\",\"troll\",\"tromp\",\"trona\",\"trone\",\"troop\",\"trope\",\"troth\",\"troul\",\"trout\",\"trowl\",\"trubu\",\"truce\",\"truck\",\"trull\",\"truly\",\"trump\",\"trunk\",\"truss\",\"trust\",\"truth\",\"tryst\",\"tsebe\",\"tubal\",\"tubby\",\"tuber\",\"tucan\",\"tucet\",\"tucum\",\"tudor\",\"tufty\",\"tugan\",\"tulip\",\"tulle\",\"tumid\",\"tumor\",\"tuner\",\"tunic\",\"tunny\",\"tupai\",\"tuque\",\"turbo\",\"turfy\",\"turio\",\"turko\",\"tushe\",\"tusky\",\"tutor\",\"tutti\",\"tutty\",\"twain\",\"twang\",\"twank\",\"tweag\",\"tweak\",\"tweed\",\"tweel\",\"tweer\",\"twice\",\"twill\",\"twilt\",\"twine\",\"twink\",\"twire\",\"twirl\",\"twist\",\"twite\",\"tyger\",\"tying\",\"tyler\",\"typal\",\"typic\",\"tyran\",\"tythe\",\"udder\",\"uhlan\",\"ukase\",\"ulcer\",\"ulema\",\"ullet\",\"ulmic\",\"ulmin\",\"ulmus\",\"ulnar\",\"uloid\",\"ultra\",\"ulula\",\"umbel\",\"umber\",\"umbra\",\"umbre\",\"unapt\",\"unarm\",\"unbag\",\"unbar\",\"unbay\",\"unbed\",\"unbid\",\"unbit\",\"unbow\",\"unbox\",\"unboy\",\"uncap\",\"uncia\",\"uncle\",\"uncus\",\"uncut\",\"undam\",\"under\",\"undid\",\"undue\",\"uneth\",\"unfit\",\"unfix\",\"unget\",\"ungka\",\"ungod\",\"ungot\",\"unhap\",\"unhat\",\"uniat\",\"unify\",\"union\",\"unite\",\"unity\",\"unked\",\"unkle\",\"unlap\",\"unlaw\",\"unlay\",\"unman\",\"unmew\",\"unnun\",\"unoil\",\"unpay\",\"unpeg\",\"unpen\",\"unpin\",\"unrig\",\"unrip\",\"unsad\",\"unsay\",\"unset\",\"unsew\",\"unsex\",\"unsin\",\"untie\",\"until\",\"unwit\",\"upbar\",\"upend\",\"uphaf\",\"upher\",\"uplay\",\"upper\",\"uprun\",\"upset\",\"upsun\",\"uptie\",\"upupa\",\"upyat\",\"urali\",\"urare\",\"urari\",\"urate\",\"urban\",\"ureal\",\"uredo\",\"urger\",\"urine\",\"urite\",\"urith\",\"urnal\",\"ursal\",\"urson\",\"ursuk\",\"ursus\",\"urubu\",\"usage\",\"usant\",\"usher\",\"usnea\",\"usnic\",\"usual\",\"usure\",\"usurp\",\"usury\",\"utero\",\"utica\",\"utile\",\"utter\",\"uvate\",\"uvrou\",\"uvula\",\"uzema\",\"vagal\",\"vague\",\"vagus\",\"vairy\",\"valet\",\"valid\",\"valor\",\"value\",\"valve\",\"vapid\",\"vapor\",\"varan\",\"varec\",\"varix\",\"varus\",\"vasty\",\"vasum\",\"vault\",\"vaunt\",\"vauty\",\"vedro\",\"veery\",\"vegan\",\"vehme\",\"veiny\",\"velar\",\"veldt\",\"velum\",\"venal\",\"vends\",\"venew\",\"veney\",\"venge\",\"venin\",\"venom\",\"venue\",\"venus\",\"verge\",\"verse\",\"verso\",\"verst\",\"vertu\",\"verve\",\"vespa\",\"vesta\",\"vetch\",\"vexed\",\"vexer\",\"vexil\",\"viage\",\"viand\",\"viary\",\"vicar\",\"viced\",\"viewy\",\"vifda\",\"vigil\",\"vigor\",\"viled\",\"villa\",\"villi\",\"vimen\",\"vined\",\"viner\",\"vinic\",\"vinny\",\"vinum\",\"vinyl\",\"viola\",\"viole\",\"viper\",\"vireo\",\"virge\",\"virgo\",\"virid\",\"virtu\",\"virus\",\"visit\",\"visne\",\"vison\",\"visor\",\"vista\",\"visto\",\"vital\",\"vitis\",\"vitoe\",\"vitta\",\"vivda\",\"vives\",\"vivid\",\"vixen\",\"vizir\",\"vizor\",\"vocal\",\"vodka\",\"vogle\",\"vogue\",\"voice\",\"volar\",\"volge\",\"volow\",\"volta\",\"volti\",\"volva\",\"vomer\",\"vomit\",\"voter\",\"vouch\",\"vowel\",\"vower\",\"voyol\",\"vulva\",\"vying\",\"wacke\",\"wacky\",\"waddy\",\"wader\",\"wafer\",\"wagel\",\"wager\",\"wages\",\"wagon\",\"wahoo\",\"waift\",\"waist\",\"waive\",\"waken\",\"waker\",\"wakif\",\"waler\",\"walty\",\"waltz\",\"walwe\",\"wandy\",\"waney\",\"wango\",\"wanly\",\"wanty\",\"wanze\",\"waped\",\"wares\",\"warly\",\"warre\",\"warry\",\"warty\",\"warye\",\"washy\",\"waste\",\"watch\",\"water\",\"waved\",\"waver\",\"wavey\",\"waxen\",\"wayed\",\"weald\",\"weary\",\"weasy\",\"weave\",\"webby\",\"weber\",\"weder\",\"wedge\",\"wedgy\",\"weedy\",\"weely\",\"weigh\",\"weird\",\"weism\",\"weive\",\"wekau\",\"welch\",\"welew\",\"welsh\",\"welte\",\"wench\",\"wende\",\"wends\",\"wenny\",\"wepen\",\"werke\",\"werre\",\"werst\",\"wesil\",\"westy\",\"wevil\",\"weyle\",\"weyve\",\"whaap\",\"whack\",\"whala\",\"whale\",\"whall\",\"whame\",\"whang\",\"wharf\",\"wharl\",\"wharp\",\"whaul\",\"whaup\",\"wheal\",\"wheat\",\"wheel\",\"wheen\",\"wheft\",\"whelk\",\"whelm\",\"whelp\",\"where\",\"which\",\"whiff\",\"while\",\"whilk\",\"whine\",\"whipt\",\"whirl\",\"whisk\",\"whisp\",\"whist\",\"white\",\"whole\",\"whoop\",\"whoot\",\"whore\",\"whorl\",\"whort\",\"whose\",\"whoso\",\"whurt\",\"wicke\",\"widdy\",\"widen\",\"widow\",\"width\",\"widwe\",\"wield\",\"wiery\",\"wigan\",\"wight\",\"wikke\",\"willy\",\"wilne\",\"wilwe\",\"wince\",\"winch\",\"windy\",\"wingy\",\"winze\",\"wiper\",\"wisly\",\"wisse\",\"witan\",\"witch\",\"witen\",\"withe\",\"withy\",\"witts\",\"witty\",\"wiver\",\"wives\",\"wizen\",\"woald\",\"woden\",\"woful\",\"wolde\",\"wolle\",\"woman\",\"womby\",\"women\",\"woody\",\"wooer\",\"woofy\",\"woold\",\"woosy\",\"wootz\",\"wopen\",\"wordy\",\"world\",\"wormy\",\"worry\",\"worse\",\"worst\",\"worth\",\"would\",\"wound\",\"woven\",\"wowke\",\"woxen\",\"wrack\",\"wrath\",\"wrawl\",\"wreak\",\"wreck\",\"wreke\",\"wrest\",\"wring\",\"wrist\",\"write\",\"wrong\",\"wroot\",\"wrote\",\"wroth\",\"wrung\",\"wuste\",\"wyten\",\"wythe\",\"xebec\",\"xenon\",\"xenyl\",\"xeres\",\"xerif\",\"xylan\",\"xylem\",\"xylic\",\"xylol\",\"xylyl\",\"xyris\",\"yacca\",\"yacht\",\"yager\",\"yahoo\",\"yahwe\",\"yakin\",\"yakut\",\"yalah\",\"yamen\",\"yamma\",\"yapon\",\"yarke\",\"yaulp\",\"ydrad\",\"yeara\",\"yearn\",\"yeast\",\"yeman\",\"yerba\",\"yerne\",\"yerst\",\"yesty\",\"yeven\",\"yewen\",\"yezdi\",\"yfere\",\"yield\",\"ylike\",\"yodel\",\"yodle\",\"yojan\",\"yokel\",\"young\",\"yours\",\"youth\",\"youze\",\"yraft\",\"ysame\",\"yucca\",\"yufts\",\"yulan\",\"yuman\",\"yumas\",\"yunca\",\"yupon\",\"zacco\",\"zambo\",\"zamia\",\"zante\",\"zapas\",\"zayat\",\"zebec\",\"zebra\",\"zebub\",\"zemni\",\"zenik\",\"zerda\",\"zibet\",\"ziega\",\"zilla\",\"zinky\",\"zizel\",\"zocco\",\"zocle\",\"zohar\",\"zoide\",\"zoism\",\"zokor\",\"zonal\",\"zonar\",\"zoned\",\"zooen\",\"zooid\",\"zoril\",\"zuche\",\"zuian\",\"zulus\",\"zumic\",\"zunis\",\"zymic\"]");
-
-},{}],"fiDfi":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}],"ciiiV":[function(require,module,exports) {
-exports.interopDefault = function(a) {
-    return a && a.__esModule ? a : {
-        default: a
-    };
-};
-exports.defineInteropFlag = function(a) {
-    Object.defineProperty(a, '__esModule', {
-        value: true
-    });
-};
-exports.exportAll = function(source, dest) {
-    Object.keys(source).forEach(function(key) {
-        if (key === 'default' || key === '__esModule' || dest.hasOwnProperty(key)) return;
-        Object.defineProperty(dest, key, {
-            enumerable: true,
-            get: function() {
-                return source[key];
-            }
-        });
-    });
-    return dest;
-};
-exports.export = function(dest, destName, get) {
-    Object.defineProperty(dest, destName, {
-        enumerable: true,
-        get: get
-    });
-};
-
-},{}],"91sYF":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "randomWord", ()=>randomWord
-);
-var _dictionaryJson = require("./data/dictionary.json");
-var _dictionaryJsonDefault = parcelHelpers.interopDefault(_dictionaryJson);
-const randomWord = ()=>{
-    const randomDictionaryIndex = Math.floor(Math.random() * _dictionaryJsonDefault.default.length);
-    return Array.from(_dictionaryJsonDefault.default[randomDictionaryIndex]);
-};
-
-},{"./data/dictionary.json":"6SApC","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}],"kTng1":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"3jZUD","react":"4mchR","./AutoSolverSetup":"kTng1","./SupervisedSolverSetup":"a3h8w","./AutoSolver":"fOJBO","../domain":"aGkYV","../utility":"lXZc1","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"9pz13"}],"kTng1":[function(require,module,exports) {
 var $parcel$ReactRefreshHelpers$fbb0 = require("@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js");
 var prevRefreshReg = window.$RefreshReg$;
 var prevRefreshSig = window.$RefreshSig$;
@@ -23137,7 +23152,37 @@ exports.default = ()=>/*#__PURE__*/ _jsxDevRuntime.jsxDEV("h1", {
   window.$RefreshReg$ = prevRefreshReg;
   window.$RefreshSig$ = prevRefreshSig;
 }
-},{"react/jsx-dev-runtime":"3jZUD","react":"4mchR","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"9pz13"}],"9pz13":[function(require,module,exports) {
+},{"react/jsx-dev-runtime":"3jZUD","react":"4mchR","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"9pz13"}],"ciiiV":[function(require,module,exports) {
+exports.interopDefault = function(a) {
+    return a && a.__esModule ? a : {
+        default: a
+    };
+};
+exports.defineInteropFlag = function(a) {
+    Object.defineProperty(a, '__esModule', {
+        value: true
+    });
+};
+exports.exportAll = function(source, dest) {
+    Object.keys(source).forEach(function(key) {
+        if (key === 'default' || key === '__esModule' || dest.hasOwnProperty(key)) return;
+        Object.defineProperty(dest, key, {
+            enumerable: true,
+            get: function() {
+                return source[key];
+            }
+        });
+    });
+    return dest;
+};
+exports.export = function(dest, destName, get) {
+    Object.defineProperty(dest, destName, {
+        enumerable: true,
+        get: get
+    });
+};
+
+},{}],"9pz13":[function(require,module,exports) {
 "use strict";
 var Refresh = require('react-refresh/runtime');
 function debounce(func, delay) {
@@ -23339,12 +23384,13 @@ var _autoSolverHeaderDefault = parcelHelpers.interopDefault(_autoSolverHeader);
 var _guess = require("./Guess");
 var _guessDefault = parcelHelpers.interopDefault(_guess);
 var _useAutoSolverState = require("./useAutoSolverState");
-var _s = $RefreshSig$();
+var _useAutoSolverStateDefault = parcelHelpers.interopDefault(_useAutoSolverState);
+var _s = $RefreshSig$(), _s1 = $RefreshSig$();
 const GUESS_TIMEOUT = 100;
-function AutoSolver({ solution: solutionRaw  }) {
+function AutoSolver({ solution: solutionRaw , hadObservedFailedSolve , hadAssertedAfterWordFalsified , onObservedFailedSolve , onAssertedAfterExhaustion  }) {
     _s();
     const solution = solutionRaw.split('');
-    const [autoSolverStatePromise, setAutoSolverState] = _react.useState(_useAutoSolverState.useAutoSolverState(solution));
+    const [autoSolverStatePromise, setAutoSolverState] = _react.useState(_useAutoSolverStateDefault.default(solution));
     const [finalAutoSolverState, setFinalAutoSolverState] = _react.useState(null);
     const [guesses, setGuesses] = _react.useState([]);
     _react.useEffect(()=>{
@@ -23352,20 +23398,7 @@ function AutoSolver({ solution: solutionRaw  }) {
         autoSolverStatePromise.then((autoSolverState)=>{
             if (autoSolverState.kind === 'terminated') {
                 setFinalAutoSolverState(autoSolverState.status);
-                const fakeGuesses = [
-                    ...autoSolverState.attempts.slice(0, 5),
-                    [
-                        solution,
-                        [
-                            'c',
-                            'c',
-                            'c',
-                            'c',
-                            'c'
-                        ]
-                    ], 
-                ];
-                setGuesses(fakeGuesses);
+                setGuesses(autoSolverState.attempts);
             } else {
                 setGuesses(autoSolverState.attempts);
                 nextGuessTimeout = setTimeout(()=>{
@@ -23380,12 +23413,17 @@ function AutoSolver({ solution: solutionRaw  }) {
     }, [
         autoSolverStatePromise
     ]);
+    _react.useEffect(()=>{
+        if (finalAutoSolverState === 'exhausted') onObservedFailedSolve();
+    }, [
+        finalAutoSolverState
+    ]);
     return(/*#__PURE__*/ _jsxDevRuntime.jsxDEV("div", {
         children: [
             /*#__PURE__*/ _jsxDevRuntime.jsxDEV(_autoSolverHeaderDefault.default, {
             }, void 0, false, {
                 fileName: "src/components/AutoSolver.tsx",
-                lineNumber: 48,
+                lineNumber: 58,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ _jsxDevRuntime.jsxDEV("p", {
@@ -23394,57 +23432,133 @@ function AutoSolver({ solution: solutionRaw  }) {
                         children: "Solution: "
                     }, void 0, false, {
                         fileName: "src/components/AutoSolver.tsx",
-                        lineNumber: 50,
+                        lineNumber: 60,
                         columnNumber: 9
                     }, this),
                     solutionRaw
                 ]
             }, void 0, true, {
                 fileName: "src/components/AutoSolver.tsx",
-                lineNumber: 49,
+                lineNumber: 59,
                 columnNumber: 7
             }, this),
-            guesses.map((attempt, i)=>/*#__PURE__*/ _jsxDevRuntime.jsxDEV("div", {
-                    style: {
-                        marginTop: '1px'
-                    },
-                    children: /*#__PURE__*/ _jsxDevRuntime.jsxDEV(_guessDefault.default, {
-                        guess: attempt[0],
-                        check: attempt[1],
-                        readonly: true
-                    }, void 0, false, {
+            /*#__PURE__*/ _jsxDevRuntime.jsxDEV("p", {
+                children: guesses.map((attempt, i)=>/*#__PURE__*/ _jsxDevRuntime.jsxDEV("div", {
+                        style: {
+                            marginTop: '1px'
+                        },
+                        children: /*#__PURE__*/ _jsxDevRuntime.jsxDEV(_guessDefault.default, {
+                            guess: attempt[0],
+                            check: attempt[1],
+                            readonly: true
+                        }, void 0, false, {
+                            fileName: "src/components/AutoSolver.tsx",
+                            lineNumber: 66,
+                            columnNumber: 13
+                        }, this)
+                    }, i, false, {
                         fileName: "src/components/AutoSolver.tsx",
-                        lineNumber: 55,
+                        lineNumber: 65,
                         columnNumber: 11
                     }, this)
-                }, i, false, {
-                    fileName: "src/components/AutoSolver.tsx",
-                    lineNumber: 54,
-                    columnNumber: 9
-                }, this)
-            ),
-            finalAutoSolverState !== null && /*#__PURE__*/ _jsxDevRuntime.jsxDEV("p", {
-                children: [
-                    "Result: ",
-                    finalAutoSolverState
-                ]
-            }, void 0, true, {
+                )
+            }, void 0, false, {
                 fileName: "src/components/AutoSolver.tsx",
-                lineNumber: 58,
-                columnNumber: 41
+                lineNumber: 63,
+                columnNumber: 7
+            }, this),
+            finalAutoSolverState !== null && /*#__PURE__*/ _jsxDevRuntime.jsxDEV("p", {
+                children: /*#__PURE__*/ _jsxDevRuntime.jsxDEV(AutoSolverResult, {
+                    terminationStatus: finalAutoSolverState,
+                    hadObservedFailedSolve: hadObservedFailedSolve,
+                    hadAssertedAfterWordFalsified: hadAssertedAfterWordFalsified,
+                    onAssertedAfterExhaustion: onAssertedAfterExhaustion
+                }, void 0, false, {
+                    fileName: "src/components/AutoSolver.tsx",
+                    lineNumber: 72,
+                    columnNumber: 11
+                }, this)
+            }, void 0, false, {
+                fileName: "src/components/AutoSolver.tsx",
+                lineNumber: 71,
+                columnNumber: 9
             }, this)
         ]
     }, void 0, true, {
         fileName: "src/components/AutoSolver.tsx",
-        lineNumber: 47,
+        lineNumber: 57,
         columnNumber: 5
     }, this));
 }
 exports.default = AutoSolver;
-_s(AutoSolver, "hclgTc0AOQcQtSo94iElpxlxRlw=");
+_s(AutoSolver, "lkaUNI9UpBdEwH5ekFBEq1qssDY=");
 _c = AutoSolver;
-var _c;
+function AutoSolverResult({ terminationStatus , hadAssertedAfterWordFalsified , onAssertedAfterExhaustion  }) {
+    _s1();
+    const [wordAsserted, setWordAsserted] = _react.useState(false);
+    _react.useEffect(()=>{
+        if (wordAsserted) onAssertedAfterExhaustion();
+    }, [
+        wordAsserted
+    ]);
+    switch(terminationStatus){
+        case 'exhausted':
+            return(/*#__PURE__*/ _jsxDevRuntime.jsxDEV("p", {
+                children: "Wow! You beat it. You must be really smart - perhaps a robot?"
+            }, void 0, false, {
+                fileName: "src/components/AutoSolver.tsx",
+                lineNumber: 106,
+                columnNumber: 14
+            }, this));
+        case 'wordFalsified':
+            if (hadAssertedAfterWordFalsified) return(/*#__PURE__*/ _jsxDevRuntime.jsxDEV("p", {
+                children: "Another new word, sir?"
+            }, void 0, false, {
+                fileName: "src/components/AutoSolver.tsx",
+                lineNumber: 110,
+                columnNumber: 16
+            }, this));
+            else {
+                if (wordAsserted) return(/*#__PURE__*/ _jsxDevRuntime.jsxDEV("p", {
+                    children: "Ok, Shakespear"
+                }, void 0, false, {
+                    fileName: "src/components/AutoSolver.tsx",
+                    lineNumber: 113,
+                    columnNumber: 18
+                }, this));
+                else return(/*#__PURE__*/ _jsxDevRuntime.jsxDEV("p", {
+                    children: [
+                        "Are you sure that's a word? ",
+                        /*#__PURE__*/ _jsxDevRuntime.jsxDEV("button", {
+                            onClick: ()=>setWordAsserted(true)
+                            ,
+                            children: "It's a word!"
+                        }, void 0, false, {
+                            fileName: "src/components/AutoSolver.tsx",
+                            lineNumber: 117,
+                            columnNumber: 43
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "src/components/AutoSolver.tsx",
+                    lineNumber: 116,
+                    columnNumber: 13
+                }, this));
+            }
+        case 'wordGuessed':
+            return(/*#__PURE__*/ _jsxDevRuntime.jsxDEV("div", {
+            }, void 0, false, {
+                fileName: "src/components/AutoSolver.tsx",
+                lineNumber: 124,
+                columnNumber: 14
+            }, this));
+    }
+}
+_s1(AutoSolverResult, "Z9iqejmocQTpuZZBb2CEM1a74c8=");
+_c1 = AutoSolverResult;
+var _c, _c1;
 $RefreshReg$(_c, "AutoSolver");
+$RefreshReg$(_c1, "AutoSolverResult");
 
   $parcel$ReactRefreshHelpers$238c.postlude(module);
 } finally {
@@ -23526,83 +23640,119 @@ $RefreshReg$(_c1, "CharacterGuess");
 },{"react/jsx-dev-runtime":"3jZUD","react":"4mchR","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV","@parcel/transformer-react-refresh-wrap/lib/helpers/helpers.js":"9pz13"}],"36dL7":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "useAutoSolverState", ()=>useAutoSolverState
-);
-var _checkWord = require("../domain/checkWord");
-var _randomStatefulWordGuesser = require("../domain/RandomStatefulWordGuesser");
-const useAutoSolverState = async (solution)=>{
-    const guesser = new _randomStatefulWordGuesser.RandomStatefulWordGuesser(6);
+var _domain = require("../domain");
+const MAX_NUMBER_OF_GUESSES = 6;
+async function useAutoSolverState(solution) {
+    const guesser = new _domain.StatefulWordGuesserV1();
     await guesser.begin();
     const createState = ()=>({
             kind: 'nonTerminated',
             attempts: guesser.attempts,
             next: async ()=>{
-                const currentCheck = _checkWord.checkWord(solution, guesser.currentGuess);
+                const currentCheck = _domain.checkWord(solution, guesser.currentGuess);
                 await guesser.next(currentCheck);
                 switch(guesser.status){
                     case 'wordGuessed':
                     case 'wordFalsified':
-                    case 'exhausted':
-                        return Promise.resolve({
+                        return {
                             kind: 'terminated',
                             status: guesser.status,
                             attempts: guesser.attempts
-                        });
+                        };
                     default:
-                        return Promise.resolve(createState());
+                        if (guesser.attempts.length >= MAX_NUMBER_OF_GUESSES) return {
+                            kind: 'terminated',
+                            status: 'exhausted',
+                            attempts: guesser.attempts
+                        };
+                        else return createState();
                 }
             }
         })
     ;
     return Promise.resolve(createState());
-};
+}
+exports.default = useAutoSolverState;
 
-},{"../domain/checkWord":"77Rz4","../domain/RandomStatefulWordGuesser":"33iDl","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}],"77Rz4":[function(require,module,exports) {
+},{"../domain":"aGkYV","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}],"aGkYV":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "checkWord", ()=>checkWord
+parcelHelpers.export(exports, "RandomStatefulWordGuesser", ()=>_randomStatefulWordGuesser.RandomStatefulWordGuesser
 );
-const checkWord = (solution, guess)=>{
-    const characterConsumption = [
-        ...solution
+parcelHelpers.export(exports, "StatefulWordGuesserV1", ()=>_statefulWordGuesserV1.StatefulWordGuesserV1
+);
+parcelHelpers.export(exports, "checkWord", ()=>_checkWord.checkWord
+);
+parcelHelpers.export(exports, "WordCheck", ()=>_checkWord.WordCheck
+);
+parcelHelpers.export(exports, "CharacterCheck", ()=>_checkWord.CharacterCheck
+);
+parcelHelpers.export(exports, "buildWordList", ()=>_buildWordListDefault.default
+);
+parcelHelpers.export(exports, "filterWordList", ()=>_filterWordListDefault.default
+);
+var _statefulWordGuesser = require("./StatefulWordGuesser");
+parcelHelpers.exportAll(_statefulWordGuesser, exports);
+var _randomStatefulWordGuesser = require("./RandomStatefulWordGuesser");
+var _statefulWordGuesserV1 = require("./StatefulWordGuesserV1");
+var _checkWord = require("./checkWord");
+var _buildWordList = require("./buildWordList");
+var _buildWordListDefault = parcelHelpers.interopDefault(_buildWordList);
+var _filterWordList = require("./filterWordList");
+var _filterWordListDefault = parcelHelpers.interopDefault(_filterWordList);
+
+},{"./StatefulWordGuesser":"fiDfi","./RandomStatefulWordGuesser":"33iDl","./StatefulWordGuesserV1":"dn11M","./checkWord":"77Rz4","./buildWordList":"avONj","./filterWordList":"1XGxf","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}],"fiDfi":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Character", ()=>Character
+);
+let Character;
+(function(Character1) {
+    Character1.ALL_CHARACTERS = [
+        'a',
+        'b',
+        'c',
+        'd',
+        'e',
+        'f',
+        'g',
+        'h',
+        'i',
+        'j',
+        'k',
+        'l',
+        'm',
+        'n',
+        'o',
+        'p',
+        'q',
+        'r',
+        's',
+        't',
+        'u',
+        'v',
+        'w',
+        'x',
+        'y',
+        'z', 
     ];
-    const firstPass = guess.map((character, index)=>{
-        if (solution[index] === character) {
-            characterConsumption[index] = null;
-            return 'c';
-        }
-        return null;
-    });
-    const secondPass = guess.map((character, index)=>{
-        if (firstPass[index] === 'c') return 'c';
-        if (characterConsumption.includes(character)) {
-            characterConsumption[characterConsumption.indexOf(character)] = null;
-            return 'm';
-        }
-        return 'i';
-    });
-    return secondPass;
-};
+})(Character || (Character = {
+}));
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}],"33iDl":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "RandomStatefulWordGuesser", ()=>RandomStatefulWordGuesser
 );
-var _randomWord = require("./randomWord");
+var _buildWordList = require("./buildWordList");
+var _buildWordListDefault = parcelHelpers.interopDefault(_buildWordList);
+var _utility = require("../utility");
+const allWords = _buildWordListDefault.default();
 class RandomStatefulWordGuesser {
-    /**
-   *
-   */ constructor(maxNumberOfGuesses){
-        this.maxNumberOfGuesses = maxNumberOfGuesses;
-        this.status = 'waitingForStart';
-        this.attempts = [];
-        this.currentGuess = null;
-    }
     begin() {
         if (this.status !== 'waitingForStart') throw new Error('invalid status');
         this.status = 'inProgress';
-        this.currentGuess = _randomWord.randomWord();
+        this.makeGuess();
         return Promise.resolve();
     }
     next(currentCheck) {
@@ -23615,14 +23765,247 @@ class RandomStatefulWordGuesser {
                 currentCheck
             ]
         ];
-        if (this.attempts.length === this.maxNumberOfGuesses) {
+        if (currentCheck.every((x)=>x === 'c'
+        )) {
             this.status = 'wordGuessed';
             this.currentGuess = null;
-        } else this.currentGuess = _randomWord.randomWord();
+        } else this.makeGuess();
         return Promise.resolve();
+    }
+    makeGuess() {
+        this.currentGuess = _utility.randomElement(allWords);
+    }
+    constructor(){
+        this.status = 'waitingForStart';
+        this.attempts = [];
+        this.currentGuess = null;
     }
 }
 
-},{"./randomWord":"91sYF","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}]},["emU3S","imGyl","ipvmp"], "ipvmp", "parcelRequireea44")
+},{"./buildWordList":"avONj","../utility":"lXZc1","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}],"avONj":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _dictionaryJson = require("./data/dictionary.json");
+var _dictionaryJsonDefault = parcelHelpers.interopDefault(_dictionaryJson);
+function buildWordList() {
+    return _dictionaryJsonDefault.default.map(stringToWord);
+}
+exports.default = buildWordList;
+const stringToWord = (s)=>{
+    if (s.length !== 5) throw new Error('unexpected value');
+    const [a, b, c, d, e] = s;
+    return [
+        stringToCharacter(a),
+        stringToCharacter(b),
+        stringToCharacter(c),
+        stringToCharacter(d),
+        stringToCharacter(e)
+    ];
+};
+const stringToCharacter = (c)=>{
+    if (/[a-z]/.test(c)) return c;
+    throw new Error('unexpected value');
+};
+
+},{"./data/dictionary.json":"6SApC","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}],"6SApC":[function(require,module,exports) {
+module.exports = JSON.parse("[\"abaca\",\"aback\",\"abada\",\"abaft\",\"aband\",\"abase\",\"abash\",\"abate\",\"abbey\",\"abbot\",\"abdal\",\"abeam\",\"abear\",\"abele\",\"aberr\",\"abhal\",\"abhor\",\"abide\",\"abies\",\"abime\",\"ablen\",\"abler\",\"ablet\",\"abnet\",\"abode\",\"aboma\",\"aboon\",\"abord\",\"abort\",\"about\",\"above\",\"abray\",\"absis\",\"abuna\",\"abuse\",\"abuzz\",\"abyme\",\"abysm\",\"abyss\",\"accoy\",\"acerb\",\"acock\",\"acold\",\"acorn\",\"acred\",\"acrid\",\"acton\",\"actor\",\"acute\",\"adact\",\"adage\",\"adapt\",\"adays\",\"addax\",\"adder\",\"addle\",\"adeem\",\"adeps\",\"adept\",\"adieu\",\"adios\",\"admit\",\"admix\",\"adobe\",\"adoor\",\"adopt\",\"adore\",\"adorn\",\"adown\",\"adrad\",\"adrip\",\"adult\",\"adunc\",\"adure\",\"adust\",\"aegis\",\"aerie\",\"aesir\",\"affix\",\"afire\",\"aflat\",\"aflow\",\"afoam\",\"afoot\",\"afore\",\"afoul\",\"afric\",\"afrit\",\"after\",\"again\",\"agama\",\"agami\",\"agape\",\"agasp\",\"agast\",\"agate\",\"agaty\",\"agave\",\"agend\",\"agent\",\"agger\",\"aggri\",\"aggry\",\"agile\",\"agist\",\"aglet\",\"agley\",\"aglow\",\"agnus\",\"agone\",\"agony\",\"agood\",\"agora\",\"agree\",\"agrin\",\"agrom\",\"agush\",\"ahead\",\"aheap\",\"ahigh\",\"ahold\",\"ahull\",\"aider\",\"aigre\",\"aimer\",\"airer\",\"airol\",\"aisle\",\"aitch\",\"ajava\",\"akene\",\"aknee\",\"aknow\",\"alack\",\"aland\",\"alarm\",\"alary\",\"alate\",\"alban\",\"albee\",\"album\",\"albyn\",\"alday\",\"alder\",\"aldol\",\"aleak\",\"alert\",\"alfet\",\"algal\",\"algid\",\"algin\",\"algol\",\"algor\",\"algum\",\"alias\",\"alibi\",\"alien\",\"alife\",\"align\",\"alike\",\"aline\",\"alish\",\"alive\",\"allah\",\"allay\",\"aller\",\"alley\",\"allis\",\"allod\",\"alloo\",\"allot\",\"allow\",\"alloy\",\"allyl\",\"almah\",\"alman\",\"almeh\",\"almry\",\"almug\",\"aloft\",\"alogy\",\"aloin\",\"alone\",\"along\",\"aloof\",\"alose\",\"aloud\",\"alpen\",\"alpha\",\"alpia\",\"altar\",\"alter\",\"altho\",\"alula\",\"alure\",\"alway\",\"amain\",\"amass\",\"amate\",\"amaze\",\"amber\",\"ambit\",\"amble\",\"ambon\",\"ambry\",\"ameer\",\"amend\",\"ament\",\"amess\",\"amice\",\"amide\",\"amido\",\"amigo\",\"amine\",\"amish\",\"amiss\",\"amity\",\"amole\",\"among\",\"amort\",\"amour\",\"amove\",\"ample\",\"amply\",\"ampul\",\"ampyx\",\"amsel\",\"amuck\",\"amuse\",\"amvis\",\"amyss\",\"amzel\",\"anaks\",\"ancle\",\"ancon\",\"anear\",\"anele\",\"anent\",\"angel\",\"anger\",\"angle\",\"angor\",\"angry\",\"anigh\",\"anile\",\"anime\",\"anion\",\"anise\",\"anito\",\"anker\",\"ankle\",\"ankus\",\"annal\",\"annat\",\"annex\",\"annoy\",\"annul\",\"anode\",\"anoil\",\"anomy\",\"anona\",\"anorn\",\"antae\",\"antes\",\"antic\",\"antre\",\"anura\",\"anury\",\"anvil\",\"aorta\",\"apace\",\"apaid\",\"apair\",\"apara\",\"apart\",\"apeak\",\"apert\",\"apery\",\"aphid\",\"aphis\",\"apian\",\"apiol\",\"apish\",\"apnea\",\"apoda\",\"apode\",\"aport\",\"appay\",\"appel\",\"apple\",\"apply\",\"appui\",\"april\",\"apron\",\"apsis\",\"aptly\",\"araba\",\"araby\",\"arace\",\"arara\",\"arbor\",\"archy\",\"ardor\",\"aread\",\"areal\",\"arear\",\"areca\",\"areed\",\"areek\",\"arefy\",\"arena\",\"areng\",\"arere\",\"arest\",\"arete\",\"argal\",\"argas\",\"argil\",\"argol\",\"argon\",\"argot\",\"argue\",\"argus\",\"arian\",\"ariel\",\"aries\",\"arise\",\"arist\",\"arles\",\"armed\",\"armet\",\"armil\",\"armor\",\"arnee\",\"arnot\",\"arnut\",\"aroid\",\"aroma\",\"aroph\",\"arose\",\"arpen\",\"arras\",\"array\",\"arret\",\"arrha\",\"arris\",\"arrow\",\"arsis\",\"arson\",\"artly\",\"artow\",\"arval\",\"aryan\",\"ascii\",\"ascus\",\"ashen\",\"ashes\",\"asian\",\"aside\",\"asker\",\"askew\",\"aslug\",\"asoak\",\"aspen\",\"asper\",\"aspic\",\"assai\",\"assay\",\"asset\",\"assot\",\"astay\",\"astel\",\"aster\",\"astir\",\"aston\",\"astun\",\"asura\",\"atake\",\"ataxy\",\"atilt\",\"atimy\",\"atlas\",\"atman\",\"atole\",\"atoll\",\"atomy\",\"atone\",\"atony\",\"atrip\",\"attal\",\"attar\",\"atter\",\"attic\",\"attle\",\"attry\",\"aubin\",\"aucht\",\"audit\",\"auger\",\"auget\",\"aught\",\"augur\",\"aulic\",\"aunty\",\"aural\",\"auric\",\"aurin\",\"aurum\",\"avail\",\"avale\",\"avant\",\"avast\",\"avena\",\"avens\",\"avert\",\"avian\",\"avile\",\"avise\",\"aviso\",\"avoid\",\"avoke\",\"await\",\"awake\",\"award\",\"aware\",\"awarn\",\"awash\",\"awful\",\"awing\",\"awkly\",\"awned\",\"awork\",\"axial\",\"axile\",\"axiom\",\"axled\",\"axman\",\"ayein\",\"ayond\",\"ayont\",\"ayrie\",\"azoic\",\"azole\",\"azote\",\"azoth\",\"aztec\",\"azure\",\"azurn\",\"azyme\",\"babel\",\"baboo\",\"babul\",\"backs\",\"bacon\",\"badge\",\"badly\",\"baffy\",\"bafta\",\"baggy\",\"bague\",\"bahai\",\"bahar\",\"bairn\",\"baize\",\"baken\",\"baker\",\"balky\",\"balmy\",\"balsa\",\"banal\",\"banat\",\"banco\",\"bandy\",\"banjo\",\"banns\",\"bantu\",\"barad\",\"barde\",\"barge\",\"baria\",\"baric\",\"barky\",\"barmy\",\"baron\",\"barry\",\"barse\",\"barth\",\"basal\",\"basan\",\"based\",\"basic\",\"basil\",\"basin\",\"basis\",\"bason\",\"bassa\",\"basso\",\"basta\",\"baste\",\"basto\",\"batch\",\"bated\",\"bathe\",\"baton\",\"batta\",\"batty\",\"baulk\",\"baume\",\"bavin\",\"bawdy\",\"bayad\",\"bayed\",\"bayou\",\"bayze\",\"bazar\",\"beach\",\"beady\",\"beamy\",\"beard\",\"bearn\",\"beast\",\"beath\",\"beaux\",\"bedel\",\"beden\",\"bedew\",\"bedim\",\"bedye\",\"beech\",\"beefy\",\"beeld\",\"beery\",\"beete\",\"beeve\",\"befit\",\"befog\",\"begem\",\"beget\",\"begin\",\"begod\",\"begot\",\"begum\",\"begun\",\"behen\",\"beige\",\"beild\",\"being\",\"bekah\",\"belam\",\"belay\",\"belch\",\"belee\",\"belie\",\"belle\",\"belly\",\"below\",\"bemad\",\"bemol\",\"bench\",\"bendy\",\"benet\",\"benim\",\"benne\",\"benty\",\"beray\",\"berbe\",\"bergh\",\"berme\",\"berob\",\"beroe\",\"berry\",\"berth\",\"beryl\",\"besee\",\"beset\",\"besit\",\"besom\",\"besot\",\"betel\",\"beton\",\"betso\",\"betty\",\"bevel\",\"bever\",\"bewet\",\"bewig\",\"bewit\",\"bezel\",\"bhang\",\"bibbe\",\"bibbs\",\"bible\",\"bicho\",\"biddy\",\"bidet\",\"bield\",\"bifid\",\"bigam\",\"bigha\",\"bight\",\"bigly\",\"bigot\",\"bijou\",\"bilbo\",\"bilge\",\"bilgy\",\"bilin\",\"billy\",\"binal\",\"binny\",\"biped\",\"birch\",\"birse\",\"birth\",\"bisie\",\"bison\",\"bitch\",\"biter\",\"bitts\",\"bizet\",\"black\",\"blade\",\"blady\",\"blain\",\"blame\",\"blanc\",\"bland\",\"blank\",\"blare\",\"blase\",\"blast\",\"blaze\",\"bleak\",\"blear\",\"bleat\",\"bleck\",\"bleed\",\"blend\",\"blenk\",\"blent\",\"bless\",\"blest\",\"blind\",\"blink\",\"blirt\",\"bliss\",\"blite\",\"blive\",\"bloat\",\"block\",\"blond\",\"blood\",\"bloom\",\"blore\",\"blote\",\"blown\",\"blowy\",\"bluey\",\"bluff\",\"blunt\",\"blurt\",\"blush\",\"board\",\"boast\",\"bobac\",\"bobby\",\"bocal\",\"bocca\",\"bodge\",\"bodle\",\"bogey\",\"boggy\",\"bogie\",\"bogle\",\"bogue\",\"bogus\",\"bohea\",\"boiar\",\"boist\",\"bolar\",\"bolas\",\"boldo\",\"boldu\",\"boley\",\"bolis\",\"bolsa\",\"bolty\",\"bolus\",\"bolye\",\"bonce\",\"boned\",\"bongo\",\"bonne\",\"bonny\",\"bonus\",\"bonze\",\"booby\",\"boodh\",\"booky\",\"booly\",\"boort\",\"boose\",\"boost\",\"booth\",\"boots\",\"booty\",\"booze\",\"boozy\",\"borax\",\"boree\",\"borel\",\"borer\",\"boric\",\"borne\",\"boron\",\"borwe\",\"bosky\",\"bosom\",\"boson\",\"bossy\",\"botch\",\"bothy\",\"botts\",\"bouch\",\"bouge\",\"bough\",\"boule\",\"boult\",\"bound\",\"bourd\",\"bouri\",\"bourn\",\"bouse\",\"bousy\",\"bovid\",\"bowel\",\"bower\",\"bowge\",\"bowls\",\"bowne\",\"bowse\",\"boxen\",\"boxer\",\"boyar\",\"boyau\",\"boyer\",\"brace\",\"brach\",\"brack\",\"bract\",\"braid\",\"brail\",\"brain\",\"brait\",\"brake\",\"braky\",\"brama\",\"brame\",\"brand\",\"brank\",\"brant\",\"brash\",\"brass\",\"brast\",\"brave\",\"bravo\",\"brawl\",\"brawn\",\"braxy\",\"braze\",\"bread\",\"break\",\"bream\",\"brede\",\"breed\",\"breme\",\"brent\",\"brere\",\"brest\",\"brett\",\"breve\",\"briar\",\"bribe\",\"brick\",\"bride\",\"brief\",\"brier\",\"brike\",\"brill\",\"brine\",\"bring\",\"brink\",\"briny\",\"brisk\",\"brite\",\"britt\",\"brize\",\"broad\",\"brock\",\"broid\",\"broil\",\"broke\",\"broma\",\"brome\",\"brond\",\"brood\",\"brook\",\"broom\",\"brose\",\"broth\",\"brown\",\"bruin\",\"bruit\",\"brume\",\"brunt\",\"brush\",\"brusk\",\"bruta\",\"brute\",\"bubby\",\"buchu\",\"budge\",\"budgy\",\"buffa\",\"buffo\",\"buffy\",\"buggy\",\"bugle\",\"build\",\"built\",\"bulau\",\"bulge\",\"bulgy\",\"bulky\",\"bulla\",\"bully\",\"bulse\",\"bulti\",\"bunch\",\"bungo\",\"bunko\",\"bunny\",\"burel\",\"burgh\",\"burin\",\"burke\",\"burly\",\"burnt\",\"burro\",\"burry\",\"bursa\",\"burse\",\"burst\",\"busby\",\"bushy\",\"busky\",\"busto\",\"butte\",\"butty\",\"butyl\",\"buxom\",\"buyer\",\"byard\",\"byway\",\"caaba\",\"caada\",\"cabal\",\"cabas\",\"caber\",\"cabin\",\"cable\",\"cabob\",\"cacao\",\"cache\",\"caddy\",\"cader\",\"cadet\",\"cadew\",\"cadge\",\"cadgy\",\"cadie\",\"cadis\",\"cadre\",\"caeca\",\"caged\",\"cagit\",\"cagot\",\"caird\",\"cairn\",\"cajun\",\"calid\",\"calif\",\"calin\",\"calix\",\"calla\",\"calle\",\"calmy\",\"calve\",\"calyx\",\"camel\",\"cameo\",\"camis\",\"camus\",\"canal\",\"candy\",\"caned\",\"canis\",\"canna\",\"canny\",\"canoe\",\"canon\",\"canto\",\"canty\",\"capel\",\"caper\",\"caple\",\"capoc\",\"capon\",\"capot\",\"capra\",\"capri\",\"caput\",\"carac\",\"carat\",\"cardo\",\"caret\",\"carex\",\"cargo\",\"carib\",\"carob\",\"carol\",\"carom\",\"carry\",\"carse\",\"carte\",\"carus\",\"carve\",\"casal\",\"caste\",\"casus\",\"catch\",\"catel\",\"cater\",\"cates\",\"catso\",\"catty\",\"caulk\",\"cauma\",\"cause\",\"cavil\",\"cavin\",\"cawky\",\"caxon\",\"cazic\",\"cease\",\"cedar\",\"cedry\",\"ceint\",\"cella\",\"cello\",\"cense\",\"cento\",\"ceorl\",\"ceres\",\"ceria\",\"cerin\",\"ceryl\",\"cetic\",\"cetin\",\"cetyl\",\"chace\",\"chafe\",\"chaff\",\"chain\",\"chair\",\"chaja\",\"chalk\",\"champ\",\"chank\",\"chant\",\"chaos\",\"chape\",\"chaps\",\"chara\",\"chard\",\"chare\",\"chark\",\"charm\",\"charr\",\"chart\",\"chary\",\"chase\",\"chasm\",\"chast\",\"chati\",\"chaun\",\"chaus\",\"cheap\",\"chear\",\"cheat\",\"check\",\"cheek\",\"cheep\",\"cheer\",\"chela\",\"chely\",\"cheng\",\"chert\",\"chese\",\"chess\",\"chest\",\"cheve\",\"chevy\",\"chian\",\"chica\",\"chich\",\"chick\",\"chico\",\"chide\",\"chief\",\"child\",\"chili\",\"chill\",\"chimb\",\"chime\",\"china\",\"chine\",\"chink\",\"chips\",\"chirk\",\"chirm\",\"chirp\",\"chive\",\"chivy\",\"choak\",\"chock\",\"chode\",\"choir\",\"choke\",\"choky\",\"chomp\",\"chops\",\"chord\",\"chore\",\"chose\",\"chout\",\"chuck\",\"chuet\",\"chufa\",\"chuff\",\"chump\",\"chunk\",\"churl\",\"churn\",\"churr\",\"chuse\",\"chute\",\"chyle\",\"chyme\",\"cibol\",\"cider\",\"cigar\",\"cilia\",\"cimar\",\"cimex\",\"cimia\",\"cinch\",\"cirri\",\"cisco\",\"cital\",\"citer\",\"civet\",\"civic\",\"civil\",\"cizar\",\"clack\",\"claik\",\"claim\",\"clake\",\"clamp\",\"clang\",\"clank\",\"clape\",\"claps\",\"clare\",\"clart\",\"clary\",\"clash\",\"clasp\",\"class\",\"clave\",\"clavy\",\"clean\",\"clear\",\"cleat\",\"cleek\",\"cleft\",\"clepe\",\"clerk\",\"click\",\"cliff\",\"clift\",\"climb\",\"clime\",\"cling\",\"clink\",\"cloak\",\"clock\",\"cloff\",\"cloke\",\"clomb\",\"clomp\",\"clong\",\"cloom\",\"cloop\",\"cloot\",\"close\",\"closh\",\"clote\",\"cloth\",\"cloud\",\"clout\",\"clove\",\"clown\",\"cluck\",\"clump\",\"clung\",\"cnida\",\"coach\",\"coact\",\"coaly\",\"coast\",\"coati\",\"cobby\",\"cobia\",\"coble\",\"cobra\",\"cocky\",\"cocoa\",\"codex\",\"codle\",\"cogon\",\"cogue\",\"coign\",\"cokes\",\"colet\",\"colic\",\"colin\",\"colly\",\"colon\",\"color\",\"colza\",\"combe\",\"comer\",\"comes\",\"comet\",\"comic\",\"comma\",\"compo\",\"compt\",\"conch\",\"coney\",\"conge\",\"congo\",\"conia\",\"conic\",\"conny\",\"conte\",\"conus\",\"cooee\",\"cooey\",\"cooky\",\"cooly\",\"coomb\",\"coopt\",\"copal\",\"coped\",\"copps\",\"copra\",\"copse\",\"copsy\",\"copts\",\"coque\",\"corah\",\"coral\",\"corbe\",\"corby\",\"cordy\",\"corer\",\"corky\",\"cornu\",\"corny\",\"corol\",\"corps\",\"corse\",\"corve\",\"cosen\",\"cosey\",\"costa\",\"cotta\",\"couch\",\"cough\",\"could\",\"count\",\"coupe\",\"courb\",\"court\",\"couth\",\"cover\",\"covet\",\"covey\",\"covin\",\"cowan\",\"cower\",\"cowry\",\"coyly\",\"coypu\",\"cozen\",\"crack\",\"craft\",\"craie\",\"crail\",\"crake\",\"cramp\",\"crane\",\"crang\",\"crank\",\"crape\",\"craps\",\"crapy\",\"crare\",\"crase\",\"crash\",\"crass\",\"crate\",\"crave\",\"crawl\",\"craze\",\"crazy\",\"creak\",\"cream\",\"creat\",\"credo\",\"creed\",\"creek\",\"creel\",\"creep\",\"crees\",\"creme\",\"crems\",\"crepe\",\"crept\",\"cress\",\"crest\",\"crete\",\"creux\",\"crick\",\"cried\",\"crier\",\"crime\",\"crimp\",\"crisp\",\"crith\",\"croak\",\"croat\",\"crock\",\"croft\",\"crois\",\"croma\",\"crone\",\"crony\",\"crook\",\"croon\",\"crore\",\"cross\",\"croud\",\"croup\",\"crout\",\"crowd\",\"crown\",\"crows\",\"croys\",\"croze\",\"crude\",\"crudy\",\"cruel\",\"cruet\",\"crull\",\"crumb\",\"crump\",\"crunk\",\"cruor\",\"crura\",\"cruse\",\"crush\",\"crust\",\"cruth\",\"crwth\",\"cryal\",\"cryer\",\"crypt\",\"cuban\",\"cubby\",\"cubeb\",\"cubic\",\"cubit\",\"cuddy\",\"cuffy\",\"cufic\",\"cuish\",\"culex\",\"culls\",\"cully\",\"culpa\",\"culpe\",\"cumic\",\"cumin\",\"cupel\",\"cupid\",\"cuppy\",\"curat\",\"curch\",\"curdy\",\"curer\",\"curia\",\"curio\",\"curly\",\"curry\",\"curse\",\"curst\",\"curve\",\"cutch\",\"cutin\",\"cutis\",\"cutty\",\"cycad\",\"cycas\",\"cycle\",\"cyder\",\"cymar\",\"cymry\",\"cynic\",\"czech\",\"daddy\",\"dagon\",\"daily\",\"daint\",\"daira\",\"dairy\",\"daisy\",\"daker\",\"dakir\",\"dally\",\"daman\",\"damar\",\"dampy\",\"dance\",\"dancy\",\"dandi\",\"dandy\",\"dansk\",\"darby\",\"darer\",\"daric\",\"darky\",\"daroo\",\"dashy\",\"daswe\",\"dater\",\"datum\",\"dauby\",\"daunt\",\"davit\",\"deads\",\"deare\",\"dearn\",\"deary\",\"death\",\"deave\",\"debar\",\"debel\",\"debit\",\"debut\",\"decad\",\"decay\",\"decil\",\"decoy\",\"decry\",\"decyl\",\"deedy\",\"deess\",\"defer\",\"defix\",\"defly\",\"degum\",\"deify\",\"deign\",\"deism\",\"deist\",\"deity\",\"dekle\",\"delay\",\"delft\",\"delit\",\"deloo\",\"delph\",\"delta\",\"delve\",\"demit\",\"demon\",\"demur\",\"denay\",\"denim\",\"dense\",\"depot\",\"depth\",\"deray\",\"derby\",\"derma\",\"derne\",\"derre\",\"derth\",\"deter\",\"dette\",\"detur\",\"deuce\",\"deuse\",\"devex\",\"devil\",\"devon\",\"devow\",\"dhole\",\"dhony\",\"diana\",\"diary\",\"dicer\",\"dicky\",\"dicta\",\"didal\",\"didst\",\"didym\",\"dight\",\"digit\",\"digne\",\"digue\",\"diker\",\"dildo\",\"dilly\",\"dimit\",\"dimly\",\"dimmy\",\"dimya\",\"dinar\",\"diner\",\"dingo\",\"dingy\",\"diota\",\"dipsy\",\"dirge\",\"dirty\",\"disme\",\"ditch\",\"ditto\",\"ditty\",\"divan\",\"divel\",\"diver\",\"dives\",\"divet\",\"divot\",\"dixie\",\"dizen\",\"dizzy\",\"doand\",\"dobby\",\"dodge\",\"dogal\",\"dogma\",\"doily\",\"doing\",\"dolce\",\"dolly\",\"dolor\",\"dolus\",\"domal\",\"domed\",\"donat\",\"donax\",\"donee\",\"donet\",\"donna\",\"donor\",\"donya\",\"doole\",\"dooly\",\"dopey\",\"doree\",\"doric\",\"doris\",\"dormy\",\"dorse\",\"dosel\",\"dotal\",\"doted\",\"doter\",\"dotty\",\"douar\",\"doubt\",\"douce\",\"dough\",\"doupe\",\"doura\",\"douse\",\"dowdy\",\"dowel\",\"dower\",\"dowle\",\"downy\",\"dowry\",\"dowse\",\"dowst\",\"dowve\",\"doyen\",\"doyly\",\"dozen\",\"dozer\",\"draco\",\"draff\",\"draft\",\"drail\",\"drain\",\"drake\",\"drama\",\"drank\",\"drape\",\"drave\",\"drawl\",\"drawn\",\"dread\",\"dream\",\"drear\",\"drein\",\"drent\",\"dress\",\"drest\",\"dreul\",\"dreye\",\"dried\",\"drier\",\"drift\",\"drill\",\"drily\",\"drink\",\"drith\",\"drive\",\"drock\",\"droil\",\"droit\",\"droll\",\"drome\",\"drone\",\"drony\",\"drool\",\"droop\",\"dropt\",\"dross\",\"drove\",\"drovy\",\"drown\",\"druid\",\"drunk\",\"drupe\",\"druse\",\"drusy\",\"druxy\",\"dryad\",\"dryas\",\"dryer\",\"dryly\",\"dryth\",\"ducal\",\"ducat\",\"duchy\",\"duelo\",\"duena\",\"dulce\",\"dulia\",\"dully\",\"dulse\",\"dumal\",\"dummy\",\"dumpy\",\"dunce\",\"dungy\",\"dunny\",\"duomo\",\"duper\",\"duple\",\"dural\",\"durga\",\"durio\",\"durra\",\"durst\",\"dusky\",\"dusty\",\"dutch\",\"dwale\",\"dwang\",\"dwarf\",\"dwaul\",\"dwell\",\"dwelt\",\"dwine\",\"dyaks\",\"dying\",\"dynam\",\"eager\",\"eagle\",\"eagre\",\"earal\",\"eared\",\"early\",\"earsh\",\"earst\",\"earth\",\"easel\",\"eater\",\"eaves\",\"eblis\",\"ebony\",\"eccle\",\"echon\",\"eclat\",\"ectad\",\"ectal\",\"edder\",\"eddic\",\"edema\",\"edict\",\"edify\",\"edile\",\"educe\",\"educt\",\"eerie\",\"effet\",\"egean\",\"egest\",\"eggar\",\"egger\",\"eghen\",\"egret\",\"eider\",\"eight\",\"eigne\",\"eikon\",\"eirie\",\"eisel\",\"eject\",\"eking\",\"elain\",\"eland\",\"elaps\",\"elate\",\"elayl\",\"elbow\",\"elder\",\"elect\",\"elegy\",\"elemi\",\"eleve\",\"elfin\",\"elide\",\"elite\",\"elles\",\"elmen\",\"eloge\",\"elogy\",\"eloin\",\"elong\",\"elope\",\"elops\",\"elsin\",\"elude\",\"elute\",\"elvan\",\"elver\",\"elves\",\"embar\",\"embay\",\"embed\",\"ember\",\"embow\",\"embox\",\"emeer\",\"emend\",\"emery\",\"emmet\",\"emmew\",\"emong\",\"emove\",\"empte\",\"empty\",\"emule\",\"enact\",\"enate\",\"ender\",\"endow\",\"endue\",\"eneid\",\"enema\",\"enemy\",\"engle\",\"engyn\",\"enjoy\",\"enlay\",\"enmew\",\"ennew\",\"ennui\",\"enode\",\"enorm\",\"ensky\",\"ensue\",\"entad\",\"ental\",\"enter\",\"entry\",\"enure\",\"envie\",\"envoy\",\"eolic\",\"eolis\",\"eosin\",\"epact\",\"ephah\",\"ephod\",\"ephor\",\"epoch\",\"epode\",\"epopt\",\"epure\",\"equal\",\"equip\",\"equus\",\"erase\",\"erato\",\"erect\",\"ergal\",\"ergat\",\"ergon\",\"ergot\",\"erica\",\"ermin\",\"ermit\",\"erode\",\"erose\",\"error\",\"eruca\",\"eruct\",\"erupt\",\"escot\",\"eskar\",\"esker\",\"essay\",\"ester\",\"estop\",\"estre\",\"etaac\",\"etape\",\"etern\",\"ethal\",\"ethel\",\"ether\",\"ethic\",\"ethos\",\"ethyl\",\"ettin\",\"ettle\",\"etude\",\"etwee\",\"eurus\",\"evade\",\"evene\",\"event\",\"evert\",\"every\",\"evict\",\"evite\",\"evoke\",\"ewery\",\"exact\",\"exalt\",\"excel\",\"excur\",\"exeat\",\"exect\",\"exert\",\"exile\",\"exist\",\"exode\",\"exody\",\"expel\",\"extol\",\"extra\",\"exude\",\"exult\",\"eyght\",\"eyren\",\"eyrie\",\"fable\",\"faced\",\"facer\",\"facet\",\"facia\",\"facto\",\"faded\",\"fader\",\"fadge\",\"fadme\",\"faery\",\"fagot\",\"faham\",\"faint\",\"fairy\",\"faith\",\"faker\",\"fakir\",\"false\",\"falwe\",\"fanal\",\"fancy\",\"fanon\",\"farad\",\"farce\",\"farcy\",\"faren\",\"farry\",\"farse\",\"fasti\",\"fatal\",\"fated\",\"fatly\",\"fatty\",\"faugh\",\"fauld\",\"faule\",\"fault\",\"fauna\",\"favas\",\"favel\",\"favor\",\"favus\",\"faxed\",\"feast\",\"feaze\",\"fecal\",\"feces\",\"fecks\",\"feere\",\"feese\",\"feeze\",\"feign\",\"feine\",\"feint\",\"feize\",\"felis\",\"felly\",\"felon\",\"femme\",\"femur\",\"fence\",\"fenks\",\"fenny\",\"feoff\",\"ferae\",\"feral\",\"ferde\",\"feria\",\"ferie\",\"ferly\",\"ferme\",\"ferny\",\"ferre\",\"ferry\",\"fesse\",\"feste\",\"fetal\",\"fetch\",\"fetid\",\"fetis\",\"fetor\",\"fette\",\"fetus\",\"feuar\",\"fever\",\"fewel\",\"feyne\",\"feyre\",\"fiber\",\"fibre\",\"fiche\",\"fichu\",\"ficus\",\"fides\",\"fidge\",\"fidia\",\"field\",\"fiend\",\"fiery\",\"fifer\",\"fifth\",\"fifty\",\"fight\",\"filar\",\"filch\",\"filer\",\"filly\",\"filmy\",\"filth\",\"final\",\"finch\",\"findy\",\"finer\",\"finew\",\"finis\",\"finns\",\"finny\",\"finos\",\"fiord\",\"firer\",\"firms\",\"firry\",\"first\",\"firth\",\"fishy\",\"fitch\",\"fitly\",\"fives\",\"fixed\",\"fjord\",\"flail\",\"flain\",\"flair\",\"flake\",\"flaky\",\"flame\",\"flamy\",\"flang\",\"flank\",\"flare\",\"flash\",\"flask\",\"flawn\",\"flawy\",\"flaxy\",\"fleak\",\"fleam\",\"flear\",\"fleck\",\"fleen\",\"fleer\",\"fleet\",\"fleme\",\"flesh\",\"flete\",\"flews\",\"flick\",\"flier\",\"fling\",\"flint\",\"flipe\",\"flirt\",\"flisk\",\"flite\",\"float\",\"flock\",\"flong\",\"flood\",\"flook\",\"floor\",\"flora\",\"flosh\",\"floss\",\"flota\",\"flote\",\"flour\",\"flout\",\"flowk\",\"flown\",\"fluey\",\"fluff\",\"fluid\",\"fluke\",\"fluky\",\"flume\",\"flung\",\"flunk\",\"fluor\",\"flurt\",\"flush\",\"flute\",\"fluty\",\"flyer\",\"flyte\",\"fnese\",\"foamy\",\"focal\",\"focus\",\"foehn\",\"fogey\",\"foggy\",\"fogie\",\"foist\",\"folio\",\"folks\",\"folly\",\"folwe\",\"fomes\",\"fonde\",\"fondu\",\"fonge\",\"fonly\",\"fonne\",\"foody\",\"foots\",\"footy\",\"foray\",\"forby\",\"force\",\"fordo\",\"forel\",\"forge\",\"forgo\",\"forky\",\"forme\",\"forte\",\"forth\",\"forty\",\"forum\",\"fossa\",\"fosse\",\"foule\",\"found\",\"fount\",\"fourb\",\"fouty\",\"fovea\",\"foxed\",\"foxes\",\"foxly\",\"foyer\",\"fract\",\"frail\",\"frame\",\"franc\",\"frank\",\"frape\",\"fraud\",\"freak\",\"freck\",\"freer\",\"fremd\",\"frere\",\"fresh\",\"frett\",\"freya\",\"friar\",\"fried\",\"frier\",\"frigg\",\"frill\",\"frisk\",\"frist\",\"frith\",\"frize\",\"frizz\",\"frock\",\"frond\",\"frons\",\"front\",\"frore\",\"frorn\",\"frory\",\"frost\",\"frote\",\"froth\",\"frown\",\"frowy\",\"froze\",\"fruit\",\"frump\",\"frush\",\"fuage\",\"fubby\",\"fubsy\",\"fuchs\",\"fucus\",\"fudge\",\"fuero\",\"fuffy\",\"fugle\",\"fugue\",\"fulbe\",\"fully\",\"fumer\",\"fumet\",\"fumid\",\"funge\",\"fungi\",\"funic\",\"funis\",\"funky\",\"funny\",\"furry\",\"furze\",\"furzy\",\"fusee\",\"fusel\",\"fusil\",\"fussy\",\"fusty\",\"fuzzy\",\"fytte\",\"gabel\",\"gable\",\"gadic\",\"gadre\",\"gager\",\"gaily\",\"galbe\",\"galea\",\"galei\",\"gally\",\"galop\",\"galpe\",\"gamba\",\"gamic\",\"gamin\",\"gamma\",\"gamut\",\"ganch\",\"gange\",\"ganil\",\"ganja\",\"gansa\",\"ganza\",\"gaper\",\"gapes\",\"garth\",\"garum\",\"gassy\",\"gatch\",\"gated\",\"gaudy\",\"gauge\",\"gault\",\"gaunt\",\"gaure\",\"gauss\",\"gauze\",\"gauzy\",\"gavel\",\"gavot\",\"gawby\",\"gawky\",\"gayal\",\"gayly\",\"gayne\",\"gazel\",\"gazer\",\"gazet\",\"gazon\",\"gecko\",\"geese\",\"geest\",\"gelid\",\"gelly\",\"gemel\",\"gemma\",\"gemmy\",\"gemul\",\"genet\",\"genie\",\"genio\",\"genip\",\"genre\",\"genty\",\"genus\",\"genys\",\"geode\",\"gerah\",\"gerbe\",\"gesse\",\"gesso\",\"geste\",\"geten\",\"ghast\",\"ghaut\",\"ghazi\",\"ghess\",\"ghole\",\"ghost\",\"ghoul\",\"ghyll\",\"giant\",\"gibel\",\"giber\",\"giddy\",\"giffy\",\"gigot\",\"gigue\",\"gilly\",\"gilse\",\"gipsy\",\"girth\",\"gisle\",\"giust\",\"given\",\"giver\",\"gives\",\"glace\",\"glade\",\"glair\",\"glama\",\"gland\",\"glans\",\"glare\",\"glary\",\"glass\",\"glaum\",\"glave\",\"glaze\",\"glazy\",\"glead\",\"gleam\",\"glean\",\"gleba\",\"glebe\",\"gleby\",\"glede\",\"gleed\",\"gleek\",\"gleen\",\"gleet\",\"glent\",\"glide\",\"gliff\",\"glike\",\"glint\",\"glist\",\"gloam\",\"gloar\",\"gloat\",\"globe\",\"globy\",\"glode\",\"glome\",\"gloom\",\"glore\",\"glory\",\"glose\",\"gloss\",\"glout\",\"glove\",\"gloze\",\"gluer\",\"gluey\",\"glume\",\"glump\",\"glyph\",\"gnarl\",\"gnash\",\"gnide\",\"gnome\",\"gobet\",\"godly\",\"goety\",\"going\",\"golde\",\"golet\",\"goman\",\"gombo\",\"gomer\",\"gonad\",\"gonys\",\"goods\",\"goody\",\"goose\",\"goost\",\"goral\",\"gorce\",\"gorge\",\"gorma\",\"gorse\",\"goter\",\"gouge\",\"goura\",\"gourd\",\"gouty\",\"gowan\",\"graal\",\"grace\",\"grade\",\"graff\",\"graft\",\"grail\",\"grain\",\"graip\",\"grame\",\"grand\",\"grane\",\"grant\",\"grape\",\"grapy\",\"grasp\",\"grass\",\"grate\",\"grave\",\"gravy\",\"graze\",\"great\",\"grebe\",\"greed\",\"greek\",\"green\",\"greet\",\"grege\",\"grego\",\"greit\",\"grene\",\"grete\",\"greve\",\"grice\",\"gride\",\"grief\",\"griff\",\"grill\",\"grime\",\"grimy\",\"grind\",\"grint\",\"gripe\",\"grise\",\"grist\",\"grith\",\"grize\",\"groan\",\"groat\",\"groin\",\"grond\",\"groom\",\"grope\",\"gross\",\"grote\",\"group\",\"grout\",\"grove\",\"grovy\",\"growl\",\"grown\",\"gruel\",\"gruff\",\"grume\",\"grunt\",\"gryde\",\"grype\",\"guaco\",\"guana\",\"guano\",\"guara\",\"guard\",\"guava\",\"guelf\",\"guess\",\"guest\",\"guevi\",\"guiac\",\"guide\",\"guige\",\"guild\",\"guile\",\"guilt\",\"guise\",\"gular\",\"gulch\",\"gules\",\"gulfy\",\"gully\",\"gulph\",\"gulty\",\"gumbo\",\"gumma\",\"gummy\",\"gunny\",\"gurge\",\"gurmy\",\"gurry\",\"gurts\",\"gusto\",\"gusty\",\"gutta\",\"gutty\",\"guyle\",\"gyall\",\"gynno\",\"gypse\",\"gypsy\",\"gyral\",\"gyron\",\"gyrus\",\"habit\",\"hable\",\"hades\",\"hadji\",\"haily\",\"hairy\",\"hakim\",\"halma\",\"halse\",\"halve\",\"halwe\",\"hamal\",\"hamel\",\"hanap\",\"hance\",\"hanch\",\"handy\",\"hansa\",\"hanse\",\"haply\",\"happy\",\"hards\",\"hardy\",\"harem\",\"harle\",\"harns\",\"harpa\",\"harpy\",\"harre\",\"harry\",\"harsh\",\"haste\",\"hasty\",\"hatch\",\"hatel\",\"hater\",\"hatte\",\"haugh\",\"haulm\",\"hauls\",\"hault\",\"haunt\",\"haven\",\"haver\",\"havoc\",\"hawse\",\"hazel\",\"hazle\",\"heady\",\"heald\",\"heapy\",\"heard\",\"heart\",\"heath\",\"heave\",\"heavy\",\"heben\",\"hedge\",\"heedy\",\"hefty\",\"hegge\",\"helix\",\"hello\",\"helly\",\"helot\",\"helve\",\"hemal\",\"hemin\",\"hempy\",\"hence\",\"hende\",\"hendy\",\"henen\",\"henna\",\"henry\",\"hepar\",\"hepta\",\"herby\",\"heren\",\"herie\",\"herma\",\"herne\",\"heron\",\"herse\",\"herte\",\"heugh\",\"heved\",\"hewer\",\"hexad\",\"hexyl\",\"heygh\",\"heyne\",\"hider\",\"hiems\",\"hight\",\"higre\",\"hijra\",\"hilal\",\"hilar\",\"hilly\",\"hilum\",\"hilus\",\"hindi\",\"hindu\",\"hinge\",\"hinny\",\"hippa\",\"hippe\",\"hipps\",\"hirer\",\"hires\",\"hitch\",\"hithe\",\"hiver\",\"hives\",\"hoard\",\"hoary\",\"hobby\",\"hobit\",\"hoboy\",\"hocco\",\"hocus\",\"hoddy\",\"hoful\",\"hoise\",\"hoist\",\"hoker\",\"holla\",\"hollo\",\"holly\",\"holwe\",\"homer\",\"honey\",\"honor\",\"hoody\",\"hooky\",\"hoove\",\"hoper\",\"hoppo\",\"horal\",\"horde\",\"horny\",\"horse\",\"horsy\",\"hosen\",\"hotel\",\"hoten\",\"hotly\",\"hough\",\"hoult\",\"hound\",\"houri\",\"hours\",\"house\",\"houss\",\"houve\",\"hovel\",\"hoven\",\"hover\",\"howdy\",\"howel\",\"howso\",\"howve\",\"hsien\",\"hubby\",\"hudge\",\"huffy\",\"hulan\",\"hulch\",\"hulky\",\"hullo\",\"hully\",\"human\",\"humic\",\"humid\",\"humin\",\"humor\",\"humph\",\"humpy\",\"humus\",\"hunch\",\"hunks\",\"hunky\",\"hunte\",\"hurds\",\"hurly\",\"hurra\",\"hurry\",\"hurst\",\"husky\",\"hussy\",\"hutch\",\"huzza\",\"hyads\",\"hydra\",\"hyena\",\"hylic\",\"hymar\",\"hymen\",\"hyoid\",\"hyrax\",\"hyrse\",\"hyrst\",\"hyson\",\"hythe\",\"ichor\",\"icily\",\"icing\",\"ickle\",\"ictic\",\"ictus\",\"ideal\",\"ideat\",\"idiom\",\"idiot\",\"idler\",\"ifere\",\"igloo\",\"ihram\",\"ileac\",\"ileum\",\"ileus\",\"iliac\",\"iliad\",\"ilial\",\"ilium\",\"ilkon\",\"image\",\"imago\",\"imaum\",\"imban\",\"imbar\",\"imbay\",\"imbed\",\"imbow\",\"imbox\",\"imbue\",\"imide\",\"imido\",\"immew\",\"immit\",\"immix\",\"impel\",\"impen\",\"imply\",\"inane\",\"inapt\",\"incan\",\"incle\",\"incog\",\"incur\",\"incus\",\"indew\",\"index\",\"india\",\"indin\",\"indol\",\"indow\",\"indri\",\"indue\",\"inept\",\"inerm\",\"inert\",\"ineye\",\"infer\",\"infix\",\"infra\",\"ingle\",\"ingot\",\"inial\",\"inion\",\"inker\",\"inkle\",\"inlaw\",\"inlay\",\"inlet\",\"inmew\",\"inner\",\"inset\",\"insue\",\"inter\",\"inure\",\"inurn\",\"inust\",\"inwit\",\"iodal\",\"iodic\",\"iodol\",\"ionic\",\"iowas\",\"irade\",\"irate\",\"irian\",\"irish\",\"irony\",\"irous\",\"isiac\",\"islam\",\"islet\",\"issue\",\"istle\",\"itala\",\"itchy\",\"iulus\",\"ivied\",\"ivory\",\"ixtil\",\"ixtle\",\"ixtli\",\"izard\",\"izedi\",\"jabot\",\"jacal\",\"jacky\",\"jacob\",\"jager\",\"jaggy\",\"jahve\",\"jaina\",\"jakes\",\"jakie\",\"jalap\",\"jantu\",\"janty\",\"janus\",\"japan\",\"japer\",\"jards\",\"jarvy\",\"jasey\",\"jaspe\",\"jaunt\",\"javel\",\"jawed\",\"jayet\",\"jazel\",\"jears\",\"jeers\",\"jehad\",\"jelly\",\"jemmy\",\"jenny\",\"jerid\",\"jerky\",\"jesse\",\"jesus\",\"jetty\",\"jewel\",\"jewry\",\"jiffy\",\"jihad\",\"jimmy\",\"jingo\",\"jippo\",\"joint\",\"joist\",\"joker\",\"jolif\",\"jolly\",\"jolty\",\"jonah\",\"joram\",\"jorum\",\"jossa\",\"jougs\",\"joule\",\"joust\",\"judas\",\"judge\",\"jugal\",\"juger\",\"juggs\",\"jugum\",\"juice\",\"juicy\",\"juise\",\"julep\",\"julus\",\"jumpy\",\"junco\",\"junta\",\"junto\",\"jupon\",\"jural\",\"jurat\",\"jurel\",\"juror\",\"jussi\",\"jutes\",\"jutty\",\"juvia\",\"kaama\",\"kabob\",\"kafal\",\"kafir\",\"kahau\",\"kalan\",\"kalif\",\"kalki\",\"kalpa\",\"kapia\",\"kapok\",\"karma\",\"karob\",\"kauri\",\"kayak\",\"kayko\",\"kazoo\",\"kecky\",\"kedge\",\"keech\",\"keels\",\"keesh\",\"keeve\",\"kefir\",\"kelpy\",\"kempe\",\"kemps\",\"kempt\",\"kerse\",\"kerve\",\"kesar\",\"ketch\",\"ketol\",\"kevel\",\"kever\",\"kevin\",\"keyed\",\"khaki\",\"khaya\",\"khond\",\"kiang\",\"kibed\",\"kidde\",\"kiddy\",\"kieve\",\"kimbo\",\"kimry\",\"kinic\",\"kinit\",\"kinky\",\"kiosk\",\"kithe\",\"kitte\",\"kitty\",\"kiver\",\"klick\",\"kloof\",\"knack\",\"knarl\",\"knave\",\"knead\",\"kneck\",\"kneed\",\"kneel\",\"knell\",\"knelt\",\"knife\",\"knits\",\"knock\",\"knoll\",\"knosp\",\"knout\",\"known\",\"knubs\",\"knuff\",\"knurl\",\"koala\",\"kodak\",\"konze\",\"koord\",\"kopje\",\"koran\",\"korin\",\"kotow\",\"kraal\",\"krait\",\"krang\",\"kreel\",\"krems\",\"kreng\",\"krone\",\"kudos\",\"kufic\",\"kulan\",\"kutch\",\"kyack\",\"kydde\",\"kyley\",\"kymry\",\"kyrie\",\"kythe\",\"label\",\"labia\",\"labor\",\"laced\",\"lache\",\"ladde\",\"laden\",\"ladin\",\"ladle\",\"lafte\",\"lagan\",\"lager\",\"lagly\",\"laird\",\"laism\",\"laity\",\"lakao\",\"laker\",\"lakin\",\"lakke\",\"lamel\",\"lames\",\"lamia\",\"lance\",\"lanch\",\"lanky\",\"lapel\",\"lapis\",\"lapps\",\"lapse\",\"larch\",\"lardy\",\"lares\",\"large\",\"largo\",\"larry\",\"larum\",\"larva\",\"larve\",\"lasse\",\"lasso\",\"laste\",\"latah\",\"latch\",\"lated\",\"later\",\"lates\",\"latex\",\"lathe\",\"lathy\",\"latin\",\"laton\",\"laugh\",\"laund\",\"laura\",\"laver\",\"lavic\",\"lawer\",\"lawnd\",\"lawny\",\"laxly\",\"layer\",\"lazar\",\"leach\",\"leady\",\"leafy\",\"leaky\",\"leany\",\"learn\",\"lease\",\"leash\",\"least\",\"leasy\",\"leave\",\"leavy\",\"leban\",\"leche\",\"leden\",\"ledge\",\"ledgy\",\"leech\",\"leede\",\"leeme\",\"leere\",\"leese\",\"leful\",\"legal\",\"leger\",\"legge\",\"leggy\",\"leman\",\"lemma\",\"lemon\",\"lemur\",\"lends\",\"lento\",\"lepal\",\"lepas\",\"leper\",\"lepid\",\"lepra\",\"lepre\",\"lepry\",\"lered\",\"lerot\",\"letch\",\"leten\",\"lethe\",\"lethy\",\"lette\",\"letts\",\"leuke\",\"levee\",\"level\",\"leven\",\"lever\",\"levet\",\"levin\",\"levir\",\"lewis\",\"liage\",\"liana\",\"liane\",\"liard\",\"libel\",\"liber\",\"libra\",\"lichi\",\"licit\",\"lidge\",\"liege\",\"lieve\",\"lifen\",\"ligan\",\"ligge\",\"light\",\"liken\",\"likin\",\"lilac\",\"liman\",\"limax\",\"limbo\",\"limer\",\"limit\",\"limsy\",\"linch\",\"linen\",\"liner\",\"linga\",\"lingo\",\"links\",\"linne\",\"linum\",\"lipic\",\"lipse\",\"lipyl\",\"lisle\",\"lisne\",\"liter\",\"lithe\",\"litho\",\"lithy\",\"litre\",\"lived\",\"liver\",\"lives\",\"livid\",\"livor\",\"livre\",\"llama\",\"llano\",\"loach\",\"loamy\",\"loath\",\"lobar\",\"lobby\",\"lobed\",\"local\",\"loche\",\"locky\",\"locus\",\"lodde\",\"lodge\",\"loess\",\"loffe\",\"lofty\",\"logan\",\"logge\",\"logic\",\"logos\",\"lokao\",\"longe\",\"looby\",\"looch\",\"loony\",\"loord\",\"loose\",\"loper\",\"loppy\",\"loral\",\"lorel\",\"loren\",\"loris\",\"lorry\",\"losel\",\"loser\",\"lotos\",\"lotto\",\"lotus\",\"lough\",\"loups\",\"louri\",\"louse\",\"lousy\",\"lovee\",\"lover\",\"lower\",\"lowgh\",\"lowly\",\"lowry\",\"loyal\",\"lucid\",\"lucky\",\"lucre\",\"luffa\",\"lumen\",\"lumpy\",\"lunar\",\"lunch\",\"lunet\",\"lunge\",\"lupus\",\"lurch\",\"lurid\",\"lurry\",\"lusty\",\"luter\",\"lycee\",\"lyche\",\"lyden\",\"lying\",\"lyken\",\"lymph\",\"lynch\",\"lynde\",\"lyric\",\"lyrid\",\"lyrie\",\"lysis\",\"lyssa\",\"lythe\",\"lytta\",\"mabby\",\"macao\",\"macaw\",\"macco\",\"macer\",\"macho\",\"macle\",\"madam\",\"madge\",\"madia\",\"madid\",\"madly\",\"madro\",\"mafia\",\"magic\",\"magma\",\"magot\",\"mahdi\",\"mahoe\",\"maian\",\"maine\",\"mains\",\"maize\",\"major\",\"maked\",\"maker\",\"malar\",\"malax\",\"malay\",\"maleo\",\"malet\",\"malic\",\"malma\",\"malty\",\"malum\",\"mamma\",\"mammy\",\"manca\",\"maned\",\"maneh\",\"manes\",\"mange\",\"mango\",\"mangy\",\"mania\",\"manic\",\"manid\",\"manie\",\"manis\",\"manks\",\"manly\",\"manna\",\"manor\",\"manse\",\"manta\",\"manto\",\"manul\",\"manus\",\"maori\",\"maple\",\"maqui\",\"marai\",\"march\",\"marge\",\"marie\",\"marly\",\"marry\",\"marsh\",\"maser\",\"mashy\",\"mason\",\"masse\",\"massy\",\"masty\",\"match\",\"mater\",\"matie\",\"matin\",\"matte\",\"maule\",\"maund\",\"mauve\",\"mavis\",\"mawks\",\"mawky\",\"maxim\",\"mayan\",\"maybe\",\"mayor\",\"mazer\",\"meach\",\"mealy\",\"meant\",\"mease\",\"meath\",\"meaty\",\"meawl\",\"medal\",\"media\",\"medic\",\"medle\",\"medly\",\"medoc\",\"meech\",\"meeth\",\"meine\",\"meiny\",\"melam\",\"melee\",\"melic\",\"melne\",\"meloe\",\"melon\",\"mends\",\"menge\",\"menow\",\"mense\",\"merce\",\"mercy\",\"merge\",\"merit\",\"merke\",\"merle\",\"meros\",\"merou\",\"merry\",\"merus\",\"mesad\",\"mesal\",\"mesel\",\"meshy\",\"mesne\",\"meson\",\"metal\",\"meter\",\"metic\",\"metif\",\"metis\",\"metol\",\"metre\",\"mette\",\"meute\",\"mexal\",\"meyne\",\"mezzo\",\"mhorr\",\"miasm\",\"miaul\",\"miche\",\"midas\",\"middy\",\"midge\",\"midst\",\"might\",\"milch\",\"milky\",\"mimic\",\"mince\",\"miner\",\"minge\",\"minim\",\"minny\",\"minor\",\"minos\",\"minow\",\"minum\",\"minus\",\"mirky\",\"mirth\",\"mirza\",\"misdo\",\"miser\",\"misgo\",\"misle\",\"misly\",\"missa\",\"missy\",\"misty\",\"miter\",\"mitre\",\"mitty\",\"mixed\",\"mixen\",\"mixer\",\"mizzy\",\"moate\",\"moble\",\"mocha\",\"moche\",\"modal\",\"model\",\"moder\",\"modus\",\"moeve\",\"mogul\",\"mohur\",\"moile\",\"moira\",\"moire\",\"moist\",\"molar\",\"moldy\",\"molle\",\"molly\",\"molto\",\"momot\",\"momus\",\"monad\",\"monal\",\"monas\",\"monde\",\"moner\",\"money\",\"monte\",\"month\",\"moody\",\"moong\",\"moony\",\"moory\",\"moose\",\"mopsy\",\"mopus\",\"moral\",\"moray\",\"morel\",\"mores\",\"moria\",\"moric\",\"moril\",\"morin\",\"mormo\",\"morne\",\"moron\",\"moros\",\"morro\",\"morse\",\"morus\",\"morwe\",\"mosel\",\"moses\",\"mosey\",\"mossy\",\"moste\",\"moted\",\"motet\",\"mothy\",\"motif\",\"moton\",\"motor\",\"motte\",\"motto\",\"motty\",\"mould\",\"moule\",\"moult\",\"mound\",\"mount\",\"mourn\",\"mouse\",\"mousy\",\"mouth\",\"mover\",\"movie\",\"mower\",\"moxie\",\"moyle\",\"mucic\",\"mucid\",\"mucin\",\"mucky\",\"mucor\",\"mucro\",\"mucus\",\"mudar\",\"muddy\",\"mudir\",\"mufti\",\"muggy\",\"mugil\",\"mulch\",\"mulct\",\"muley\",\"mulla\",\"mulse\",\"mummy\",\"mumps\",\"munch\",\"munga\",\"mungo\",\"mural\",\"murex\",\"murky\",\"murre\",\"murry\",\"murth\",\"murza\",\"musal\",\"musar\",\"musca\",\"musci\",\"muser\",\"muset\",\"mushy\",\"music\",\"musit\",\"musky\",\"mussy\",\"musty\",\"mutch\",\"mutic\",\"muzzy\",\"myoid\",\"myoma\",\"myope\",\"myops\",\"myopy\",\"myrrh\",\"mysis\",\"mythe\",\"nabit\",\"nabob\",\"nacre\",\"nadde\",\"nadir\",\"naeve\",\"naggy\",\"nagor\",\"naiad\",\"naive\",\"naked\",\"naker\",\"nakoo\",\"namer\",\"nandu\",\"nanny\",\"nappe\",\"nappy\",\"napus\",\"nares\",\"narre\",\"narwe\",\"nasal\",\"nassa\",\"nasty\",\"natal\",\"natch\",\"nates\",\"natka\",\"natty\",\"naval\",\"navel\",\"navew\",\"navvy\",\"nawab\",\"neddy\",\"needs\",\"needy\",\"neeld\",\"neele\",\"neese\",\"negro\",\"negus\",\"neife\",\"neigh\",\"nempt\",\"nenia\",\"nerka\",\"nerre\",\"nerve\",\"nervy\",\"netty\",\"neven\",\"never\",\"nevew\",\"newel\",\"newly\",\"newsy\",\"nexus\",\"ngina\",\"niche\",\"nidor\",\"nidus\",\"niece\",\"nifle\",\"night\",\"nigua\",\"nihil\",\"ninny\",\"ninth\",\"ninut\",\"niobe\",\"niopo\",\"nisan\",\"nisey\",\"niste\",\"nisus\",\"niter\",\"nitid\",\"nitre\",\"nitry\",\"nitty\",\"nival\",\"nixie\",\"nizam\",\"nobby\",\"noble\",\"nobly\",\"nodal\",\"noddy\",\"noght\",\"noier\",\"noils\",\"noint\",\"noise\",\"noisy\",\"nolde\",\"nomad\",\"nomen\",\"nomic\",\"nonce\",\"nonda\",\"nondo\",\"nones\",\"nonet\",\"nonne\",\"nonny\",\"nonyl\",\"noose\",\"nopal\",\"noria\",\"norie\",\"norma\",\"norna\",\"norse\",\"north\",\"nosed\",\"nosel\",\"nosle\",\"notal\",\"notch\",\"noted\",\"noter\",\"notum\",\"notus\",\"nouch\",\"nould\",\"noule\",\"novel\",\"novum\",\"noway\",\"nowch\",\"nowed\",\"nowel\",\"nowes\",\"noyau\",\"noyer\",\"noyls\",\"nozle\",\"nubia\",\"nucha\",\"nucin\",\"nudge\",\"nugae\",\"numps\",\"nurse\",\"nutty\",\"nymph\",\"nyula\",\"oaken\",\"oaker\",\"oakum\",\"oared\",\"oasis\",\"oaten\",\"obeah\",\"obese\",\"obole\",\"obolo\",\"obrok\",\"occur\",\"ocean\",\"ocher\",\"ochre\",\"ochry\",\"ocrea\",\"octad\",\"octet\",\"octic\",\"octyl\",\"oddly\",\"odeon\",\"odeum\",\"odist\",\"odium\",\"odize\",\"odmyl\",\"odyle\",\"oelet\",\"offal\",\"offer\",\"often\",\"ofter\",\"ogham\",\"ogive\",\"ogler\",\"oglio\",\"oiled\",\"oiler\",\"okapi\",\"olden\",\"oleic\",\"olein\",\"olent\",\"oliva\",\"olive\",\"ology\",\"omber\",\"ombre\",\"omega\",\"onely\",\"onion\",\"onset\",\"oones\",\"oopak\",\"oozoa\",\"opake\",\"opera\",\"opine\",\"opium\",\"optic\",\"orach\",\"orang\",\"orbed\",\"orbic\",\"orbit\",\"orcin\",\"ordal\",\"order\",\"oread\",\"orgal\",\"organ\",\"orgue\",\"oriel\",\"oriol\",\"orion\",\"orlop\",\"ormer\",\"orpin\",\"orris\",\"orval\",\"orvet\",\"oryal\",\"oryza\",\"oscan\",\"osier\",\"osmic\",\"ostic\",\"otary\",\"other\",\"ottar\",\"otter\",\"ought\",\"ounce\",\"oundy\",\"ouphe\",\"ousel\",\"outdo\",\"outer\",\"outgo\",\"outre\",\"ouzel\",\"ovant\",\"ovary\",\"ovate\",\"overt\",\"ovile\",\"ovine\",\"ovism\",\"ovist\",\"ovoid\",\"ovolo\",\"ovule\",\"owher\",\"owing\",\"owler\",\"owlet\",\"owner\",\"owser\",\"oxbow\",\"oxeye\",\"oxfly\",\"oxide\",\"oxime\",\"oxlip\",\"oxter\",\"oylet\",\"ozena\",\"ozone\",\"paage\",\"paard\",\"pacer\",\"pacos\",\"padar\",\"paddy\",\"padge\",\"padow\",\"padre\",\"paean\",\"paeon\",\"pagan\",\"pagod\",\"paien\",\"pains\",\"paint\",\"paise\",\"palea\",\"paled\",\"palet\",\"palla\",\"palmy\",\"palpi\",\"palsy\",\"palus\",\"pance\",\"panch\",\"pancy\",\"panda\",\"paned\",\"panel\",\"panic\",\"panim\",\"panne\",\"pansy\",\"panym\",\"paolo\",\"papal\",\"papaw\",\"paper\",\"pappy\",\"paque\",\"param\",\"parch\",\"parde\",\"pardo\",\"parer\",\"paris\",\"parka\",\"parle\",\"parol\",\"parry\",\"parse\",\"party\",\"pasan\",\"pasch\",\"pasha\",\"paspy\",\"passe\",\"paste\",\"pasty\",\"patas\",\"patch\",\"pated\",\"patee\",\"paten\",\"patin\",\"patio\",\"patly\",\"patte\",\"patty\",\"paugy\",\"paune\",\"pause\",\"pauxi\",\"pavan\",\"paven\",\"paver\",\"pavid\",\"pavin\",\"pavon\",\"pawky\",\"payee\",\"payen\",\"payer\",\"payor\",\"payse\",\"peace\",\"peach\",\"peage\",\"peaky\",\"pearl\",\"peart\",\"pease\",\"peaty\",\"peavy\",\"pecan\",\"pecco\",\"pecul\",\"pedal\",\"pedro\",\"peece\",\"peele\",\"peert\",\"peery\",\"peise\",\"pekan\",\"pekoe\",\"pelma\",\"pelta\",\"penal\",\"pence\",\"penis\",\"penna\",\"penny\",\"peony\",\"perca\",\"perce\",\"perch\",\"perdu\",\"perdy\",\"perel\",\"peril\",\"perky\",\"perry\",\"pesky\",\"petal\",\"petar\",\"peter\",\"petit\",\"petre\",\"petto\",\"petty\",\"pewee\",\"pewet\",\"pewit\",\"phane\",\"phare\",\"pharo\",\"phase\",\"phasm\",\"phebe\",\"pheer\",\"phene\",\"pheon\",\"phial\",\"phlox\",\"phoca\",\"phone\",\"phono\",\"photo\",\"phyle\",\"phyma\",\"physa\",\"piano\",\"picea\",\"picle\",\"picot\",\"picra\",\"picts\",\"picul\",\"picus\",\"piece\",\"piend\",\"pieno\",\"pieta\",\"piety\",\"pight\",\"pigmy\",\"piked\",\"pilau\",\"pilch\",\"piled\",\"piler\",\"piles\",\"pilon\",\"pilot\",\"pilwe\",\"pinax\",\"pinch\",\"piney\",\"pinic\",\"pinky\",\"pinna\",\"pinon\",\"pinto\",\"pinus\",\"piony\",\"pious\",\"piped\",\"piper\",\"pipit\",\"pipra\",\"pique\",\"pirai\",\"pirie\",\"pirry\",\"pisay\",\"pishu\",\"piste\",\"pitch\",\"pithy\",\"pitta\",\"pivot\",\"pixie\",\"place\",\"plack\",\"plaga\",\"plage\",\"plaid\",\"plain\",\"plait\",\"plane\",\"plank\",\"plant\",\"plash\",\"plasm\",\"plate\",\"platt\",\"platy\",\"plaud\",\"playa\",\"plaza\",\"plead\",\"pleat\",\"plebe\",\"plebs\",\"plein\",\"plene\",\"plesh\",\"plete\",\"pleyt\",\"plica\",\"plied\",\"plitt\",\"ploce\",\"pluck\",\"pluff\",\"pluma\",\"plumb\",\"plume\",\"plump\",\"plumy\",\"plunk\",\"plush\",\"pluto\",\"plyer\",\"poach\",\"poake\",\"pocan\",\"pocky\",\"podge\",\"podgy\",\"poesy\",\"poggy\",\"poind\",\"point\",\"poise\",\"poize\",\"pokal\",\"poker\",\"poket\",\"pokey\",\"polar\",\"poler\",\"poley\",\"polka\",\"polly\",\"polyp\",\"pomel\",\"pomey\",\"pomme\",\"pongo\",\"ponty\",\"popet\",\"poppy\",\"porch\",\"porer\",\"porgy\",\"porta\",\"porte\",\"posed\",\"poser\",\"posit\",\"posse\",\"potch\",\"potoo\",\"potto\",\"pouch\",\"poulp\",\"poult\",\"pound\",\"powan\",\"powen\",\"power\",\"poynd\",\"poyou\",\"praam\",\"prame\",\"prank\",\"prase\",\"prate\",\"prawn\",\"prede\",\"predy\",\"preef\",\"preen\",\"prees\",\"press\",\"prest\",\"preve\",\"prial\",\"prian\",\"price\",\"prick\",\"pride\",\"pried\",\"prief\",\"prier\",\"prill\",\"prime\",\"primo\",\"primp\",\"primy\",\"prink\",\"print\",\"prior\",\"prise\",\"prism\",\"privy\",\"prize\",\"probe\",\"prodd\",\"proem\",\"proin\",\"proke\",\"proll\",\"prone\",\"prong\",\"proof\",\"props\",\"prore\",\"prose\",\"prosy\",\"proud\",\"prove\",\"prowl\",\"proxy\",\"pruce\",\"prude\",\"prune\",\"pryan\",\"psalm\",\"pshaw\",\"psoas\",\"psora\",\"pubes\",\"pubic\",\"pubis\",\"pucel\",\"pucka\",\"pudgy\",\"pudic\",\"puffy\",\"pugil\",\"puker\",\"pukka\",\"pulas\",\"puler\",\"pulex\",\"pulpy\",\"pulse\",\"punch\",\"pungy\",\"punic\",\"punka\",\"punto\",\"punty\",\"pupal\",\"pupil\",\"puppy\",\"pured\",\"puree\",\"purge\",\"purim\",\"purre\",\"purse\",\"pursy\",\"pusil\",\"pussy\",\"putid\",\"putry\",\"putty\",\"pygal\",\"pygmy\",\"pykar\",\"pylon\",\"pyoid\",\"pyral\",\"pyrus\",\"pyxie\",\"pyxis\",\"quack\",\"quade\",\"quaff\",\"quail\",\"quair\",\"quake\",\"quaky\",\"qualm\",\"quant\",\"quarl\",\"quart\",\"quash\",\"quasi\",\"quass\",\"quata\",\"quave\",\"quayd\",\"quean\",\"quech\",\"queck\",\"queen\",\"queer\",\"quegh\",\"quell\",\"queme\",\"querl\",\"quern\",\"query\",\"quest\",\"queue\",\"quica\",\"quice\",\"quich\",\"quick\",\"quiet\",\"quill\",\"quilt\",\"quint\",\"quipo\",\"quipu\",\"quire\",\"quirk\",\"quirl\",\"quirt\",\"quish\",\"quite\",\"quits\",\"quoif\",\"quoil\",\"quoin\",\"quoit\",\"quoke\",\"quoll\",\"quook\",\"quota\",\"quote\",\"quoth\",\"quran\",\"raash\",\"rabat\",\"rabbi\",\"rabid\",\"rabot\",\"racer\",\"rache\",\"racle\",\"radde\",\"radii\",\"radix\",\"rafte\",\"rafty\",\"raggy\",\"raiae\",\"rainy\",\"raise\",\"rajah\",\"rakee\",\"rakel\",\"raker\",\"rally\",\"ralph\",\"ramal\",\"ramed\",\"ramee\",\"ramie\",\"rammy\",\"rampe\",\"ramus\",\"ranal\",\"rance\",\"ranch\",\"ranee\",\"range\",\"rangy\",\"ranny\",\"ranty\",\"raphe\",\"rapid\",\"raspy\",\"rasse\",\"ratan\",\"ratch\",\"ratel\",\"rater\",\"rathe\",\"ratio\",\"raton\",\"ravel\",\"raven\",\"raver\",\"ravin\",\"rawly\",\"rayah\",\"rayon\",\"razed\",\"razee\",\"razor\",\"reach\",\"react\",\"ready\",\"realm\",\"reame\",\"reata\",\"reave\",\"rebec\",\"rebel\",\"rebus\",\"rebut\",\"recto\",\"recur\",\"redan\",\"redde\",\"redia\",\"redif\",\"redly\",\"redub\",\"reedy\",\"reefy\",\"reeky\",\"reeve\",\"refar\",\"refel\",\"refer\",\"refit\",\"refix\",\"refut\",\"regal\",\"regel\",\"reget\",\"regie\",\"regle\",\"regma\",\"regne\",\"reign\",\"reins\",\"rekne\",\"relax\",\"relay\",\"relic\",\"relik\",\"remit\",\"remix\",\"remue\",\"renal\",\"renay\",\"renew\",\"renne\",\"rente\",\"repay\",\"repel\",\"reply\",\"resaw\",\"reset\",\"resin\",\"resow\",\"resty\",\"retch\",\"retex\",\"retry\",\"rette\",\"reule\",\"reume\",\"revel\",\"revet\",\"revie\",\"rewet\",\"rewin\",\"rewle\",\"rewme\",\"rewth\",\"reyse\",\"rheae\",\"rheic\",\"rhein\",\"rheum\",\"rhime\",\"rhine\",\"rhino\",\"rhomb\",\"rhumb\",\"rhyme\",\"riant\",\"riban\",\"ribes\",\"riden\",\"rider\",\"ridge\",\"ridgy\",\"rifle\",\"rigel\",\"right\",\"rigid\",\"rigol\",\"rigor\",\"rille\",\"rimer\",\"rimey\",\"rindy\",\"rined\",\"rinse\",\"ripen\",\"risen\",\"riser\",\"risky\",\"risse\",\"rival\",\"rivel\",\"riven\",\"river\",\"rivet\",\"roach\",\"roast\",\"robin\",\"roble\",\"roche\",\"rocky\",\"rocoa\",\"roddy\",\"rodeo\",\"rodge\",\"roger\",\"rogue\",\"roguy\",\"rohob\",\"roial\",\"roily\",\"roint\",\"roist\",\"rokee\",\"roman\",\"romic\",\"rompu\",\"ronco\",\"ronde\",\"rondo\",\"ronin\",\"ronne\",\"roody\",\"roofy\",\"rooky\",\"roomy\",\"roost\",\"rooty\",\"roper\",\"roque\",\"roral\",\"roric\",\"rorid\",\"rosen\",\"roser\",\"roset\",\"rosin\",\"rotal\",\"rotor\",\"rotta\",\"rouet\",\"rouge\",\"rough\",\"round\",\"rouse\",\"roust\",\"route\",\"rover\",\"rowan\",\"rowdy\",\"rowed\",\"rowel\",\"rowen\",\"rower\",\"royal\",\"royne\",\"rubin\",\"ruble\",\"rubus\",\"ruche\",\"ruddy\",\"ruffe\",\"rufol\",\"ruggy\",\"rugin\",\"ruler\",\"rumbo\",\"rumen\",\"rummy\",\"rumor\",\"runch\",\"runer\",\"runic\",\"runty\",\"rupee\",\"rupia\",\"rural\",\"rushy\",\"rusma\",\"rusty\",\"rutic\",\"rutin\",\"rutty\",\"ryder\",\"saadh\",\"sabal\",\"saber\",\"sable\",\"sabot\",\"sabre\",\"sacar\",\"sacre\",\"sadda\",\"sadly\",\"sagum\",\"sagus\",\"saheb\",\"sahib\",\"sahui\",\"saiga\",\"saily\",\"saint\",\"saith\",\"saiva\",\"sajou\",\"saker\",\"sakti\",\"salad\",\"salam\",\"saleb\",\"salep\",\"salic\",\"salix\",\"sally\",\"salmi\",\"salol\",\"salon\",\"salpa\",\"salse\",\"salty\",\"salue\",\"salve\",\"salvo\",\"samaj\",\"sambo\",\"sandy\",\"sanga\",\"sangu\",\"sanny\",\"sapid\",\"sapor\",\"sappy\",\"sarco\",\"saree\",\"sargo\",\"saros\",\"sarpo\",\"sarsa\",\"sarse\",\"sasin\",\"sasse\",\"satan\",\"satin\",\"satle\",\"satyr\",\"sauce\",\"saucy\",\"saugh\",\"sauks\",\"sault\",\"saury\",\"saute\",\"saver\",\"savin\",\"savor\",\"savoy\",\"savvy\",\"sawer\",\"saxon\",\"sayer\",\"saynd\",\"scala\",\"scald\",\"scale\",\"scall\",\"scalp\",\"scaly\",\"scamp\",\"scant\",\"scape\",\"scard\",\"scare\",\"scarf\",\"scarn\",\"scarp\",\"scary\",\"scate\",\"scath\",\"scatt\",\"scaup\",\"scaur\",\"scena\",\"scene\",\"scent\",\"scern\",\"schah\",\"scink\",\"scion\",\"sciot\",\"scise\",\"sclav\",\"scoat\",\"scobs\",\"scoff\",\"scoke\",\"scold\",\"scole\",\"scomm\",\"scone\",\"scoop\",\"scoot\",\"scope\",\"score\",\"scorn\",\"scoth\",\"scots\",\"scour\",\"scout\",\"scowl\",\"scrag\",\"scrap\",\"scrat\",\"scraw\",\"scray\",\"scree\",\"screw\",\"scrid\",\"scrim\",\"scrip\",\"scrit\",\"scrod\",\"scrog\",\"scrow\",\"scrub\",\"scudo\",\"scuff\",\"sculk\",\"scull\",\"sculp\",\"scurf\",\"scuta\",\"scute\",\"scyle\",\"sdain\",\"seamy\",\"seave\",\"seavy\",\"sebat\",\"sebic\",\"secco\",\"seche\",\"secle\",\"secre\",\"sedan\",\"sedge\",\"sedgy\",\"sedum\",\"seedy\",\"seely\",\"seepy\",\"seeth\",\"segar\",\"segge\",\"segno\",\"seigh\",\"seine\",\"seint\",\"seise\",\"seity\",\"seize\",\"sekes\",\"selah\",\"selch\",\"selve\",\"semen\",\"senge\",\"senna\",\"senor\",\"sense\",\"senza\",\"seora\",\"sepal\",\"sepia\",\"sepic\",\"sepon\",\"sepoy\",\"serac\",\"serai\",\"serge\",\"serie\",\"serin\",\"seron\",\"serow\",\"serry\",\"serum\",\"serve\",\"serye\",\"sessa\",\"setee\",\"seten\",\"setim\",\"seton\",\"seven\",\"sever\",\"sewel\",\"sewen\",\"sewer\",\"sewin\",\"sexed\",\"sexly\",\"sexto\",\"seyen\",\"seynd\",\"seynt\",\"shack\",\"shadd\",\"shade\",\"shady\",\"shaft\",\"shaik\",\"shail\",\"shake\",\"shako\",\"shaky\",\"shale\",\"shall\",\"shalm\",\"shalt\",\"shaly\",\"shama\",\"shame\",\"shank\",\"shape\",\"shaps\",\"shard\",\"share\",\"shark\",\"sharp\",\"shash\",\"shave\",\"shawl\",\"shawm\",\"sheaf\",\"sheal\",\"shear\",\"sheen\",\"sheep\",\"sheer\",\"sheet\",\"sheik\",\"sheil\",\"sheld\",\"shelf\",\"shell\",\"shend\",\"shent\",\"sheol\",\"sherd\",\"shern\",\"shete\",\"sheth\",\"shewn\",\"shiah\",\"shide\",\"shied\",\"shiel\",\"shift\",\"shilf\",\"shill\",\"shily\",\"shine\",\"shiny\",\"shire\",\"shirk\",\"shirl\",\"shirr\",\"shirt\",\"shist\",\"shive\",\"shoad\",\"shoal\",\"shoar\",\"shoat\",\"shock\",\"shode\",\"shoer\",\"shola\",\"shole\",\"shone\",\"shooi\",\"shook\",\"shoon\",\"shoop\",\"shoot\",\"shore\",\"shorl\",\"shorn\",\"short\",\"shory\",\"shote\",\"shots\",\"shout\",\"shove\",\"shown\",\"showy\",\"shrag\",\"shram\",\"shrap\",\"shred\",\"shrew\",\"shrow\",\"shrub\",\"shrug\",\"shuck\",\"shude\",\"shunt\",\"shute\",\"shyly\",\"siaga\",\"sibyl\",\"sicca\",\"sicer\",\"sicle\",\"sided\",\"sider\",\"sidle\",\"siege\",\"sieur\",\"sieva\",\"sieve\",\"sifac\",\"sight\",\"sigil\",\"sigla\",\"sigma\",\"siker\",\"sikhs\",\"silex\",\"silky\",\"silly\",\"silty\",\"silva\",\"simar\",\"simia\",\"since\",\"sinch\",\"sindi\",\"sinew\",\"singe\",\"sinic\",\"sinto\",\"sintu\",\"sinus\",\"sioux\",\"sipid\",\"siren\",\"siroc\",\"sirup\",\"sisel\",\"siser\",\"sited\",\"sithe\",\"situs\",\"sivan\",\"siver\",\"siwin\",\"sixth\",\"sixty\",\"sizar\",\"sized\",\"sizel\",\"sizer\",\"skain\",\"skald\",\"skall\",\"skare\",\"skart\",\"skate\",\"skean\",\"skeed\",\"skeel\",\"skeet\",\"skein\",\"skelp\",\"skene\",\"skied\",\"skiey\",\"skiff\",\"skill\",\"skimp\",\"skink\",\"skirl\",\"skirr\",\"skirt\",\"skive\",\"skout\",\"skulk\",\"skull\",\"skunk\",\"skute\",\"skyed\",\"skyey\",\"slack\",\"slade\",\"slaie\",\"slake\",\"slang\",\"slank\",\"slant\",\"slape\",\"slash\",\"slate\",\"slatt\",\"slaty\",\"slave\",\"slazy\",\"sleek\",\"sleep\",\"sleer\",\"sleet\",\"sleid\",\"slent\",\"slept\",\"slice\",\"slich\",\"slick\",\"slide\",\"slily\",\"slime\",\"slimy\",\"sling\",\"slink\",\"slish\",\"slive\",\"sloam\",\"sloat\",\"slock\",\"sloke\",\"sloom\",\"sloop\",\"slope\",\"slopy\",\"slosh\",\"sloth\",\"slowh\",\"slows\",\"sloyd\",\"sludy\",\"slugs\",\"slump\",\"slung\",\"slunk\",\"slush\",\"slyly\",\"slype\",\"smack\",\"small\",\"smalt\",\"smart\",\"smash\",\"smear\",\"smeir\",\"smell\",\"smelt\",\"smerk\",\"smift\",\"smile\",\"smilt\",\"smirk\",\"smite\",\"smith\",\"smitt\",\"smock\",\"smoke\",\"smoky\",\"smolt\",\"smoor\",\"smore\",\"smote\",\"snack\",\"snail\",\"snake\",\"snaky\",\"snape\",\"snare\",\"snarl\",\"snary\",\"snast\",\"snath\",\"snead\",\"sneak\",\"sneap\",\"sneck\",\"sneed\",\"sneer\",\"snell\",\"snick\",\"snide\",\"sniff\",\"snift\",\"snigg\",\"snipe\",\"snipy\",\"snite\",\"snoff\",\"snood\",\"snook\",\"snore\",\"snort\",\"snout\",\"snowl\",\"snowy\",\"snuff\",\"soaky\",\"soapy\",\"soave\",\"sober\",\"socky\",\"socle\",\"soddy\",\"soder\",\"sodic\",\"softa\",\"soger\",\"soggy\",\"soily\",\"sojer\",\"soken\",\"solar\",\"solas\",\"soldo\",\"solen\",\"soler\",\"solid\",\"solon\",\"solus\",\"solve\",\"somaj\",\"somal\",\"somne\",\"soncy\",\"sonde\",\"sonsy\",\"soord\",\"soote\",\"sooth\",\"sooty\",\"sophi\",\"sopor\",\"soppy\",\"sopra\",\"soree\",\"sorel\",\"sorex\",\"sorgo\",\"sorry\",\"sorus\",\"sorwe\",\"sotel\",\"sothe\",\"sotil\",\"souce\",\"sough\",\"souke\",\"sound\",\"soune\",\"soupy\",\"sours\",\"souse\",\"south\",\"sowar\",\"sowce\",\"sower\",\"sowle\",\"sowne\",\"sowse\",\"soyle\",\"spaad\",\"space\",\"spade\",\"spado\",\"spahi\",\"spaid\",\"spake\",\"spaky\",\"spale\",\"spall\",\"spalt\",\"spane\",\"spang\",\"spank\",\"spare\",\"spark\",\"spary\",\"spasm\",\"spate\",\"spawl\",\"spawn\",\"speak\",\"spear\",\"spece\",\"speck\",\"speed\",\"speer\",\"speet\",\"speir\",\"speke\",\"spelk\",\"spell\",\"spelt\",\"spend\",\"spent\",\"spere\",\"sperm\",\"spewy\",\"sphex\",\"spial\",\"spica\",\"spice\",\"spick\",\"spicy\",\"spied\",\"spike\",\"spiky\",\"spile\",\"spill\",\"spilt\",\"spine\",\"spink\",\"spiny\",\"spire\",\"spirt\",\"spiry\",\"spiss\",\"spite\",\"splay\",\"split\",\"spoil\",\"spoke\",\"spong\",\"sponk\",\"spook\",\"spool\",\"spoom\",\"spoon\",\"spoor\",\"spore\",\"sport\",\"spout\",\"sprad\",\"sprag\",\"sprat\",\"spray\",\"spree\",\"sprew\",\"sprig\",\"sprit\",\"sprod\",\"sprue\",\"sprug\",\"spuke\",\"spume\",\"spumy\",\"spunk\",\"spurn\",\"spurt\",\"spute\",\"spyne\",\"squab\",\"squad\",\"squam\",\"squat\",\"squaw\",\"squib\",\"squid\",\"squir\",\"stack\",\"stade\",\"staff\",\"stage\",\"stagy\",\"staid\",\"stail\",\"stain\",\"stair\",\"stake\",\"stale\",\"stalk\",\"stall\",\"stamp\",\"stand\",\"stane\",\"stang\",\"stank\",\"stant\",\"stare\",\"starf\",\"stark\",\"starn\",\"start\",\"state\",\"stave\",\"stead\",\"steak\",\"steal\",\"steam\",\"stean\",\"steed\",\"steek\",\"steel\",\"steem\",\"steen\",\"steep\",\"steer\",\"steik\",\"stein\",\"stela\",\"stele\",\"stell\",\"stent\",\"stere\",\"stern\",\"stert\",\"steve\",\"stian\",\"stich\",\"stick\",\"stiff\",\"stike\",\"stile\",\"still\",\"stilt\",\"stime\",\"stimy\",\"sting\",\"stink\",\"stint\",\"stipe\",\"stirk\",\"stirp\",\"stirt\",\"stith\",\"stive\",\"stoak\",\"stoat\",\"stock\",\"stogy\",\"stoic\",\"stoke\",\"stola\",\"stole\",\"stoma\",\"stomp\",\"stond\",\"stone\",\"stont\",\"stony\",\"stood\",\"stook\",\"stool\",\"stoom\",\"stoop\",\"stoor\",\"stope\",\"store\",\"stork\",\"storm\",\"story\",\"stote\",\"stoup\",\"stour\",\"stout\",\"stove\",\"stram\",\"strap\",\"straw\",\"stray\",\"stree\",\"strew\",\"stria\",\"strid\",\"strip\",\"strix\",\"strop\",\"strow\",\"stroy\",\"strum\",\"strut\",\"stuck\",\"study\",\"stufa\",\"stuff\",\"stuke\",\"stull\",\"stulm\",\"stulp\",\"stump\",\"stung\",\"stunk\",\"stunt\",\"stupa\",\"stupe\",\"sturb\",\"sturk\",\"sturt\",\"styan\",\"styca\",\"style\",\"suade\",\"suage\",\"suant\",\"suave\",\"subah\",\"sucre\",\"sudra\",\"suede\",\"suent\",\"suety\",\"sugar\",\"suine\",\"suing\",\"suint\",\"suist\",\"suite\",\"sulks\",\"sulky\",\"sully\",\"sumac\",\"sumph\",\"sunna\",\"sunny\",\"sunup\",\"super\",\"supra\",\"surah\",\"sural\",\"surfy\",\"surge\",\"surgy\",\"surly\",\"sutor\",\"sutra\",\"swage\",\"swain\",\"swaip\",\"swale\",\"swamp\",\"swang\",\"swape\",\"sward\",\"sware\",\"swarf\",\"swarm\",\"swart\",\"swash\",\"swate\",\"swath\",\"sweal\",\"swear\",\"sweat\",\"swede\",\"sweep\",\"sweet\",\"swell\",\"swelt\",\"swept\",\"swerd\",\"swich\",\"swift\",\"swill\",\"swine\",\"swing\",\"swink\",\"swipe\",\"swirl\",\"swish\",\"swiss\",\"swive\",\"swoln\",\"swoon\",\"swoop\",\"sword\",\"swore\",\"sworn\",\"swown\",\"swung\",\"sycee\",\"syker\",\"sylph\",\"sylva\",\"symar\",\"synod\",\"syren\",\"syrma\",\"syrup\",\"sythe\",\"taber\",\"tabes\",\"tabid\",\"table\",\"taboo\",\"tabor\",\"tacet\",\"tache\",\"tacit\",\"tacky\",\"taffy\",\"tafia\",\"tagal\",\"taint\",\"taira\",\"tairn\",\"taken\",\"taker\",\"taled\",\"tales\",\"tally\",\"talma\",\"talon\",\"talpa\",\"taluk\",\"talus\",\"tamer\",\"tamil\",\"tamis\",\"tammy\",\"tamul\",\"tango\",\"tanka\",\"tansy\",\"taper\",\"tapet\",\"tapir\",\"tapis\",\"tardo\",\"tardy\",\"tared\",\"targe\",\"tarin\",\"tarot\",\"tarre\",\"tarry\",\"tarse\",\"tarsi\",\"tasco\",\"tasse\",\"taste\",\"tasto\",\"tasty\",\"tatch\",\"tatou\",\"tatta\",\"tatty\",\"taunt\",\"tawer\",\"tawny\",\"taxel\",\"taxer\",\"taxis\",\"taxor\",\"tayra\",\"tazel\",\"tazza\",\"teach\",\"teade\",\"teary\",\"tease\",\"techy\",\"tecum\",\"tedge\",\"teend\",\"teens\",\"teeny\",\"teest\",\"teeth\",\"teind\",\"teine\",\"teint\",\"telic\",\"tempo\",\"temps\",\"tempt\",\"temse\",\"tench\",\"tenet\",\"tenia\",\"tenne\",\"tenno\",\"tennu\",\"tenon\",\"tenor\",\"tense\",\"tenth\",\"tepal\",\"tepee\",\"tepid\",\"tepor\",\"terce\",\"terek\",\"teret\",\"terin\",\"terma\",\"terra\",\"terry\",\"terse\",\"testa\",\"teste\",\"testy\",\"tetel\",\"tetty\",\"tewan\",\"tewed\",\"tewel\",\"texas\",\"teyne\",\"thack\",\"thana\",\"thane\",\"thank\",\"thave\",\"thawy\",\"theca\",\"theft\",\"thegn\",\"their\",\"theme\",\"there\",\"therf\",\"these\",\"theta\",\"thewy\",\"thick\",\"thief\",\"thigh\",\"thilk\",\"thill\",\"thine\",\"thing\",\"think\",\"third\",\"thirl\",\"thole\",\"thong\",\"thorn\",\"thoro\",\"thorp\",\"those\",\"thoth\",\"thowl\",\"thraw\",\"three\",\"threw\",\"thrid\",\"throb\",\"throe\",\"throp\",\"throw\",\"thrum\",\"thuja\",\"thule\",\"thumb\",\"thump\",\"thurl\",\"thuya\",\"thyme\",\"thymy\",\"tiara\",\"tibia\",\"tical\",\"tidal\",\"tidde\",\"tided\",\"tiger\",\"tight\",\"tikor\",\"tikur\",\"tikus\",\"tilde\",\"tiler\",\"tilia\",\"tilth\",\"timal\",\"timer\",\"timid\",\"tinct\",\"tinea\",\"tined\",\"tinet\",\"tinge\",\"tinny\",\"tinto\",\"tipsy\",\"tired\",\"tirma\",\"tisar\",\"tisic\",\"tisri\",\"titan\",\"tithe\",\"title\",\"titty\",\"tiver\",\"toady\",\"toast\",\"tobie\",\"tobit\",\"toddy\",\"toffy\",\"tofus\",\"toged\",\"toght\",\"togue\",\"tohew\",\"toise\",\"tokay\",\"token\",\"tokin\",\"tolyl\",\"toman\",\"tommy\",\"toned\",\"tonga\",\"tonge\",\"tongo\",\"tongs\",\"tonic\",\"tonne\",\"tonus\",\"tooth\",\"topau\",\"topaz\",\"topek\",\"toper\",\"topet\",\"topic\",\"toque\",\"torah\",\"toran\",\"torch\",\"toret\",\"torse\",\"torsk\",\"torso\",\"torta\",\"torus\",\"tossy\",\"tosto\",\"total\",\"totem\",\"toter\",\"totty\",\"touch\",\"tough\",\"tourn\",\"touse\",\"tousy\",\"touze\",\"towel\",\"tower\",\"toxic\",\"toxin\",\"toyer\",\"trabu\",\"trace\",\"track\",\"tract\",\"trade\",\"trail\",\"train\",\"trais\",\"trait\",\"trama\",\"tramp\",\"trant\",\"trape\",\"traps\",\"trash\",\"trass\",\"trave\",\"trawl\",\"trays\",\"tread\",\"treat\",\"treen\",\"trend\",\"tress\",\"trewe\",\"trews\",\"triad\",\"trial\",\"trias\",\"tribe\",\"trica\",\"trice\",\"trick\",\"tride\",\"tried\",\"trier\",\"trill\",\"trine\",\"trink\",\"trior\",\"tripe\",\"trist\",\"trite\",\"troad\",\"troat\",\"troco\",\"trode\",\"troic\",\"troll\",\"tromp\",\"trona\",\"trone\",\"troop\",\"trope\",\"troth\",\"troul\",\"trout\",\"trowl\",\"trubu\",\"truce\",\"truck\",\"trull\",\"truly\",\"trump\",\"trunk\",\"truss\",\"trust\",\"truth\",\"tryst\",\"tsebe\",\"tubal\",\"tubby\",\"tuber\",\"tucan\",\"tucet\",\"tucum\",\"tudor\",\"tufty\",\"tugan\",\"tulip\",\"tulle\",\"tumid\",\"tumor\",\"tuner\",\"tunic\",\"tunny\",\"tupai\",\"tuque\",\"turbo\",\"turfy\",\"turio\",\"turko\",\"tushe\",\"tusky\",\"tutor\",\"tutti\",\"tutty\",\"twain\",\"twang\",\"twank\",\"tweag\",\"tweak\",\"tweed\",\"tweel\",\"tweer\",\"twice\",\"twill\",\"twilt\",\"twine\",\"twink\",\"twire\",\"twirl\",\"twist\",\"twite\",\"tyger\",\"tying\",\"tyler\",\"typal\",\"typic\",\"tyran\",\"tythe\",\"udder\",\"uhlan\",\"ukase\",\"ulcer\",\"ulema\",\"ullet\",\"ulmic\",\"ulmin\",\"ulmus\",\"ulnar\",\"uloid\",\"ultra\",\"ulula\",\"umbel\",\"umber\",\"umbra\",\"umbre\",\"unapt\",\"unarm\",\"unbag\",\"unbar\",\"unbay\",\"unbed\",\"unbid\",\"unbit\",\"unbow\",\"unbox\",\"unboy\",\"uncap\",\"uncia\",\"uncle\",\"uncus\",\"uncut\",\"undam\",\"under\",\"undid\",\"undue\",\"uneth\",\"unfit\",\"unfix\",\"unget\",\"ungka\",\"ungod\",\"ungot\",\"unhap\",\"unhat\",\"uniat\",\"unify\",\"union\",\"unite\",\"unity\",\"unked\",\"unkle\",\"unlap\",\"unlaw\",\"unlay\",\"unman\",\"unmew\",\"unnun\",\"unoil\",\"unpay\",\"unpeg\",\"unpen\",\"unpin\",\"unrig\",\"unrip\",\"unsad\",\"unsay\",\"unset\",\"unsew\",\"unsex\",\"unsin\",\"untie\",\"until\",\"unwit\",\"upbar\",\"upend\",\"uphaf\",\"upher\",\"uplay\",\"upper\",\"uprun\",\"upset\",\"upsun\",\"uptie\",\"upupa\",\"upyat\",\"urali\",\"urare\",\"urari\",\"urate\",\"urban\",\"ureal\",\"uredo\",\"urger\",\"urine\",\"urite\",\"urith\",\"urnal\",\"ursal\",\"urson\",\"ursuk\",\"ursus\",\"urubu\",\"usage\",\"usant\",\"usher\",\"usnea\",\"usnic\",\"usual\",\"usure\",\"usurp\",\"usury\",\"utero\",\"utica\",\"utile\",\"utter\",\"uvate\",\"uvrou\",\"uvula\",\"uzema\",\"vagal\",\"vague\",\"vagus\",\"vairy\",\"valet\",\"valid\",\"valor\",\"value\",\"valve\",\"vapid\",\"vapor\",\"varan\",\"varec\",\"varix\",\"varus\",\"vasty\",\"vasum\",\"vault\",\"vaunt\",\"vauty\",\"vedro\",\"veery\",\"vegan\",\"vehme\",\"veiny\",\"velar\",\"veldt\",\"velum\",\"venal\",\"vends\",\"venew\",\"veney\",\"venge\",\"venin\",\"venom\",\"venue\",\"venus\",\"verge\",\"verse\",\"verso\",\"verst\",\"vertu\",\"verve\",\"vespa\",\"vesta\",\"vetch\",\"vexed\",\"vexer\",\"vexil\",\"viage\",\"viand\",\"viary\",\"vicar\",\"viced\",\"viewy\",\"vifda\",\"vigil\",\"vigor\",\"viled\",\"villa\",\"villi\",\"vimen\",\"vined\",\"viner\",\"vinic\",\"vinny\",\"vinum\",\"vinyl\",\"viola\",\"viole\",\"viper\",\"vireo\",\"virge\",\"virgo\",\"virid\",\"virtu\",\"virus\",\"visit\",\"visne\",\"vison\",\"visor\",\"vista\",\"visto\",\"vital\",\"vitis\",\"vitoe\",\"vitta\",\"vivda\",\"vives\",\"vivid\",\"vixen\",\"vizir\",\"vizor\",\"vocal\",\"vodka\",\"vogle\",\"vogue\",\"voice\",\"volar\",\"volge\",\"volow\",\"volta\",\"volti\",\"volva\",\"vomer\",\"vomit\",\"voter\",\"vouch\",\"vowel\",\"vower\",\"voyol\",\"vulva\",\"vying\",\"wacke\",\"wacky\",\"waddy\",\"wader\",\"wafer\",\"wagel\",\"wager\",\"wages\",\"wagon\",\"wahoo\",\"waift\",\"waist\",\"waive\",\"waken\",\"waker\",\"wakif\",\"waler\",\"walty\",\"waltz\",\"walwe\",\"wandy\",\"waney\",\"wango\",\"wanly\",\"wanty\",\"wanze\",\"waped\",\"wares\",\"warly\",\"warre\",\"warry\",\"warty\",\"warye\",\"washy\",\"waste\",\"watch\",\"water\",\"waved\",\"waver\",\"wavey\",\"waxen\",\"wayed\",\"weald\",\"weary\",\"weasy\",\"weave\",\"webby\",\"weber\",\"weder\",\"wedge\",\"wedgy\",\"weedy\",\"weely\",\"weigh\",\"weird\",\"weism\",\"weive\",\"wekau\",\"welch\",\"welew\",\"welsh\",\"welte\",\"wench\",\"wende\",\"wends\",\"wenny\",\"wepen\",\"werke\",\"werre\",\"werst\",\"wesil\",\"westy\",\"wevil\",\"weyle\",\"weyve\",\"whaap\",\"whack\",\"whala\",\"whale\",\"whall\",\"whame\",\"whang\",\"wharf\",\"wharl\",\"wharp\",\"whaul\",\"whaup\",\"wheal\",\"wheat\",\"wheel\",\"wheen\",\"wheft\",\"whelk\",\"whelm\",\"whelp\",\"where\",\"which\",\"whiff\",\"while\",\"whilk\",\"whine\",\"whipt\",\"whirl\",\"whisk\",\"whisp\",\"whist\",\"white\",\"whole\",\"whoop\",\"whoot\",\"whore\",\"whorl\",\"whort\",\"whose\",\"whoso\",\"whurt\",\"wicke\",\"widdy\",\"widen\",\"widow\",\"width\",\"widwe\",\"wield\",\"wiery\",\"wigan\",\"wight\",\"wikke\",\"willy\",\"wilne\",\"wilwe\",\"wince\",\"winch\",\"windy\",\"wingy\",\"winze\",\"wiper\",\"wisly\",\"wisse\",\"witan\",\"witch\",\"witen\",\"withe\",\"withy\",\"witts\",\"witty\",\"wiver\",\"wives\",\"wizen\",\"woald\",\"woden\",\"woful\",\"wolde\",\"wolle\",\"woman\",\"womby\",\"women\",\"woody\",\"wooer\",\"woofy\",\"woold\",\"woosy\",\"wootz\",\"wopen\",\"wordy\",\"world\",\"wormy\",\"worry\",\"worse\",\"worst\",\"worth\",\"would\",\"wound\",\"woven\",\"wowke\",\"woxen\",\"wrack\",\"wrath\",\"wrawl\",\"wreak\",\"wreck\",\"wreke\",\"wrest\",\"wring\",\"wrist\",\"write\",\"wrong\",\"wroot\",\"wrote\",\"wroth\",\"wrung\",\"wuste\",\"wyten\",\"wythe\",\"xebec\",\"xenon\",\"xenyl\",\"xeres\",\"xerif\",\"xylan\",\"xylem\",\"xylic\",\"xylol\",\"xylyl\",\"xyris\",\"yacca\",\"yacht\",\"yager\",\"yahoo\",\"yahwe\",\"yakin\",\"yakut\",\"yalah\",\"yamen\",\"yamma\",\"yapon\",\"yarke\",\"yaulp\",\"ydrad\",\"yeara\",\"yearn\",\"yeast\",\"yeman\",\"yerba\",\"yerne\",\"yerst\",\"yesty\",\"yeven\",\"yewen\",\"yezdi\",\"yfere\",\"yield\",\"ylike\",\"yodel\",\"yodle\",\"yojan\",\"yokel\",\"young\",\"yours\",\"youth\",\"youze\",\"yraft\",\"ysame\",\"yucca\",\"yufts\",\"yulan\",\"yuman\",\"yumas\",\"yunca\",\"yupon\",\"zacco\",\"zambo\",\"zamia\",\"zante\",\"zapas\",\"zayat\",\"zebec\",\"zebra\",\"zebub\",\"zemni\",\"zenik\",\"zerda\",\"zibet\",\"ziega\",\"zilla\",\"zinky\",\"zizel\",\"zocco\",\"zocle\",\"zohar\",\"zoide\",\"zoism\",\"zokor\",\"zonal\",\"zonar\",\"zoned\",\"zooen\",\"zooid\",\"zoril\",\"zuche\",\"zuian\",\"zulus\",\"zumic\",\"zunis\",\"zymic\"]");
+
+},{}],"lXZc1":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "randomElement", ()=>randomElement
+);
+parcelHelpers.export(exports, "zipTuple5", ()=>zipTuple5
+);
+parcelHelpers.export(exports, "mapTuple5", ()=>mapTuple5
+);
+parcelHelpers.export(exports, "isNotNull", ()=>isNotNull
+);
+const randomElement = (arr)=>{
+    const randomIndex = Math.floor(Math.random() * arr.length);
+    return arr[randomIndex];
+};
+const zipTuple5 = (t0, t1, f)=>{
+    return [
+        f(t0[0], t1[0]),
+        f(t0[1], t1[1]),
+        f(t0[2], t1[2]),
+        f(t0[3], t1[3]),
+        f(t0[4], t1[4])
+    ];
+};
+const mapTuple5 = ([a, b, c, d, e], f)=>[
+        f(a, 0),
+        f(b, 1),
+        f(c, 2),
+        f(d, 3),
+        f(e, 4), 
+    ]
+;
+const isNotNull = (x)=>x !== null
+;
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}],"dn11M":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "StatefulWordGuesserV1", ()=>StatefulWordGuesserV1
+);
+var _ = require(".");
+var _utility = require("../utility");
+var _checkWord = require("./checkWord");
+var _filterWordList = require("./filterWordList");
+var _filterWordListDefault = parcelHelpers.interopDefault(_filterWordList);
+class StatefulWordGuesserV1 {
+    begin() {
+        if (this.status !== 'waitingForStart') throw new Error('invalid status');
+        this.status = 'inProgress';
+        this.makeGuess();
+        return Promise.resolve();
+    }
+    next(currentCheck) {
+        if (this.status !== 'inProgress') throw new Error('invalid status');
+        console.log(this.possibleWords);
+        const currentGuess = this.currentGuess;
+        this.attempts = [
+            ...this.attempts,
+            [
+                currentGuess,
+                currentCheck
+            ]
+        ];
+        if (_checkWord.WordCheck.isCorrect(currentCheck)) this.status = 'wordGuessed';
+        else {
+            this.possibleWords = _filterWordListDefault.default(this.possibleWords, currentGuess, currentCheck);
+            if (this.possibleWords.length > 0) this.makeGuess();
+            else this.status = 'wordFalsified';
+        }
+        return Promise.resolve();
+    }
+    makeGuess() {
+        this.currentGuess = _utility.randomElement(this.possibleWords);
+    }
+    constructor(){
+        this.status = 'waitingForStart';
+        this.attempts = [];
+        this.currentGuess = null;
+        this.possibleWords = _.buildWordList();
+    }
+}
+
+},{".":"aGkYV","../utility":"lXZc1","./checkWord":"77Rz4","./filterWordList":"1XGxf","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}],"77Rz4":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "WordCheck", ()=>WordCheck
+);
+parcelHelpers.export(exports, "checkWord", ()=>checkWord
+);
+var _utility = require("../utility");
+let WordCheck;
+(function(WordCheck1) {
+    WordCheck1.isCorrect = (check)=>check[0] === 'c' && check[1] === 'c' && check[2] === 'c' && check[3] === 'c' && check[4] === 'c'
+    ;
+})(WordCheck || (WordCheck = {
+}));
+const checkWord = (solution, guess)=>{
+    const characterConsumption = [
+        ...solution
+    ];
+    const firstPass = _utility.mapTuple5(guess, (character, index)=>{
+        if (solution[index] === character) {
+            characterConsumption[index] = null;
+            return 'c';
+        }
+        return null;
+    });
+    const secondPass = _utility.mapTuple5(guess, (character, index)=>{
+        if (firstPass[index] === 'c') return 'c';
+        if (characterConsumption.includes(character)) {
+            characterConsumption[characterConsumption.indexOf(character)] = null;
+            return 'm';
+        }
+        return 'i';
+    });
+    return secondPass;
+};
+
+},{"../utility":"lXZc1","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}],"1XGxf":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _utility = require("../utility");
+var _statefulWordGuesser = require("./StatefulWordGuesser");
+function filterWorldList(worldList, guess, check) {
+    const correctCharacters = _utility.zipTuple5(guess, check, (characterGuess, characterCheck)=>{
+        if (characterCheck === 'c') return characterGuess;
+        return null;
+    });
+    const misplacedCharacters = _utility.zipTuple5(guess, check, (characterGuess, characterCheck)=>{
+        if (characterCheck === 'm') return characterGuess;
+        return null;
+    }).filter(_utility.isNotNull);
+    const confirmedCharacters = new Set([
+        ...correctCharacters.filter(_utility.isNotNull),
+        ...misplacedCharacters
+    ]);
+    const eliminatedCharacters = new Set(_utility.zipTuple5(guess, check, (characterGuess, characterCheck)=>canEliminateCharacter(characterGuess, characterCheck, confirmedCharacters) ? characterGuess : null
+    ).filter(_utility.isNotNull));
+    const incorrectCharacters = new Set(_utility.zipTuple5(guess, check, (characterGuess, characterCheck)=>characterCheck === 'i' ? characterGuess : null
+    ).filter(_utility.isNotNull));
+    const numberOfCorrectCharacters = correctCharacters.filter(_utility.isNotNull).length;
+    const numberOfMisplacedCharacters = misplacedCharacters.length;
+    const maxCharacterCounts = _statefulWordGuesser.Character.ALL_CHARACTERS.reduce((counts, character)=>{
+        const correctCharacterCount = correctCharacters.filter((c)=>c === character
+        ).length;
+        const misplacedCharacterCount = misplacedCharacters.filter((c)=>c === character
+        ).length;
+        if (incorrectCharacters.has(character)) counts[character] = correctCharacterCount + misplacedCharacterCount;
+        else counts[character] = guess.length - numberOfCorrectCharacters - numberOfMisplacedCharacters + correctCharacterCount + misplacedCharacterCount;
+        return counts;
+    }, {
+    });
+    return worldList.filter((candidateWord)=>{
+        if (hasAnyEliminatedCharacters(candidateWord, eliminatedCharacters)) return false;
+        if (hasAllMisplacedCharacters(candidateWord, misplacedCharacters) === false) return false;
+        if (hasAllCorrectCharacters(candidateWord, correctCharacters) === false) return false;
+        if (exceedsAnyMaxCharacterCount(candidateWord, maxCharacterCounts)) return false;
+        return true;
+    });
+}
+exports.default = filterWorldList;
+const canEliminateCharacter = (guess, check, confirmedCharacters)=>{
+    if (check === 'i') {
+        const wasAlreadyConfirmed = confirmedCharacters.has(guess);
+        return !wasAlreadyConfirmed;
+    }
+    return false;
+};
+const hasAnyEliminatedCharacters = (candidateWord, eliminatedCharacters)=>candidateWord.some((c)=>eliminatedCharacters.has(c)
+    )
+;
+const hasAllCorrectCharacters = (candidateWord, confirmedCharacters)=>{
+    return _utility.zipTuple5(candidateWord, confirmedCharacters, (candidateCharacter, confirmedCharacter)=>{
+        if (confirmedCharacter === null) return true;
+        return candidateCharacter === confirmedCharacter;
+    }).every((x)=>x
+    );
+};
+const hasAllMisplacedCharacters = (candidateWord, misplacedCharacters)=>{
+    const characters = new Set(candidateWord);
+    return misplacedCharacters.every((c)=>characters.has(c)
+    );
+};
+const exceedsAnyMaxCharacterCount = (candidateWord, maxCharacterCounts)=>{
+    const candidateCharacterCounts = candidateWord.reduce((counts, currentCharacter)=>{
+        const currentCharacterCount = counts.get(currentCharacter) || 0;
+        counts.set(currentCharacter, currentCharacterCount + 1);
+        return counts;
+    }, new Map());
+    return Array.from(candidateCharacterCounts).some(([character, count])=>{
+        const maxCount = maxCharacterCounts[character];
+        if (maxCount === null) return false;
+        return count > maxCount;
+    });
+};
+
+},{"../utility":"lXZc1","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV","./StatefulWordGuesser":"fiDfi"}]},["emU3S","imGyl","ipvmp"], "ipvmp", "parcelRequireea44")
 
 //# sourceMappingURL=index.9978ec32.js.map
