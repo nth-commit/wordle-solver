@@ -10,10 +10,9 @@
     "lib/",
     "src/"
   ],
-  "name": "worlde-solver",
+  "name": "wordle-solver",
   "version": "1.0.0",
   "description": "TypeScript app with parcel bundler.",
-  "main": "lib/worlde-solver.js",
   "scripts": {
     "start": "parcel serve src/index.html",
     "build": "cross-env NODE_ENV=production parcel build src/index.html --public-url .",
@@ -25,12 +24,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/nth-commit/worlde-solver.git"
+    "url": "https://github.com/nth-commit/wordle-solver.git"
   },
   "bugs": {
-    "url": "https://github.com/nth-commit/worlde-solver/issues"
+    "url": "https://github.com/nth-commit/wordle-solver/issues"
   },
-  "homepage": "https://nth-commit.github.io/worlde-solver/",
+  "homepage": "https://nth-commit.github.io/wordle-solver/",
   "devDependencies": {
     "@types/jest": "^27.4.0",
     "@types/react": "^17.0.38",

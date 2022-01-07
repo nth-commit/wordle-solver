@@ -10,7 +10,7 @@ export type AutoSolverProps = {
   guesser: StatefulWordGuesser
 }
 
-const GUESS_TIMEOUT = 25
+const GUESS_TIMEOUT = 100
 
 export default function AutoSolver({ solution: solutionRaw }: AutoSolverProps) {
   const solution = solutionRaw.split('') as Word
