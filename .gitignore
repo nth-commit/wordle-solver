@@ -167,6 +167,5 @@ crashlytics.properties
 crashlytics-build.properties
 
 
-/lib
-/.cache/
+/.parcel-cache/
 /dist/
