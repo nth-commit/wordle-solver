@@ -60,13 +60,13 @@ export default function AutoSolver({
         <strong>Solution: </strong>
         {solutionRaw}
       </p>
-      <p>
+      <div>
         {guesses.map((attempt, i) => (
           <div key={i} style={{ marginTop: '1px' }}>
             <Guess guess={attempt[0]} check={attempt[1]} readonly={true} />
           </div>
         ))}
-      </p>
+      </div>
       {finalAutoSolverState !== null && (
         <p>
           <AutoSolverResult

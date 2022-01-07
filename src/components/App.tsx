@@ -33,8 +33,6 @@ export default function App() {
   const [hasAssertedAfterExhaustion, setHasAssertedAfterExhaustion] = useState<boolean>(false)
   const [appState, setAppState] = useState<AppState>(INITIAL_STATE)
 
-  console.log({ hadObservedFailedSolve, hasObservedFailedSolve })
-
   const onReset = useCallback(() => {
     setAppState(INITIAL_STATE)
     setHadObservedFailedSolve(hasObservedFailedSolve || hadObservedFailedSolve)

@@ -13,16 +13,15 @@ export default function filterWorldList(
     return null
   })
 
-  const misplacedCharacters: Array<Character> = zipTuple5(
-    guess,
-    check,
-    (characterGuess, characterCheck): Character | null => {
-      if (characterCheck === 'm') return characterGuess
-      return null
-    }
-  ).filter(isNotNull)
+  const misplacedCharacters = zipTuple5(guess, check, (characterGuess, characterCheck): Character | null => {
+    if (characterCheck === 'm') return characterGuess
+    return null
+  })
 
-  const confirmedCharacters = new Set([...correctCharacters.filter(isNotNull), ...misplacedCharacters])
+  const confirmedCharacters = new Set([
+    ...correctCharacters.filter(isNotNull),
+    ...misplacedCharacters.filter(isNotNull),
+  ])
   const eliminatedCharacters: Set<Character> = new Set(
     zipTuple5(guess, check, (characterGuess, characterCheck): Character | null =>
       canEliminateCharacter(characterGuess, characterCheck, confirmedCharacters) ? characterGuess : null
@@ -36,7 +35,7 @@ export default function filterWorldList(
   )
 
   const numberOfCorrectCharacters = correctCharacters.filter(isNotNull).length
-  const numberOfMisplacedCharacters = misplacedCharacters.length
+  const numberOfMisplacedCharacters = misplacedCharacters.filter(isNotNull).length
   const maxCharacterCounts: Record<Character, number> = Character.ALL_CHARACTERS.reduce((counts, character) => {
     const correctCharacterCount = correctCharacters.filter((c) => c === character).length
     const misplacedCharacterCount = misplacedCharacters.filter((c) => c === character).length
@@ -59,6 +58,8 @@ export default function filterWorldList(
     if (hasAnyEliminatedCharacters(candidateWord, eliminatedCharacters)) return false
 
     if (hasAllMisplacedCharacters(candidateWord, misplacedCharacters) === false) return false
+
+    if (hasAnyCharacterInMisplacedPosition(candidateWord, misplacedCharacters)) return false
 
     if (hasAllCorrectCharacters(candidateWord, correctCharacters) === false) return false
 
@@ -90,10 +91,20 @@ const hasAllCorrectCharacters = (candidateWord: Word, confirmedCharacters: Tuple
   }).every((x) => x)
 }
 
-const hasAllMisplacedCharacters = (candidateWord: Word, misplacedCharacters: Character[]): boolean => {
+const hasAllMisplacedCharacters = (candidateWord: Word, misplacedCharacters: Tuple5<Character | null>): boolean => {
   const characters = new Set(candidateWord)
-  return misplacedCharacters.every((c) => characters.has(c))
+  return misplacedCharacters.filter(isNotNull).every((c) => characters.has(c))
 }
+
+const hasAnyCharacterInMisplacedPosition = (
+  candidateWord: Word,
+  misplacedCharacters: Tuple5<Character | null>
+): boolean => {
+  return zipTuple5(candidateWord, misplacedCharacters, isCharacterMisplaced).some((x) => x)
+}
+
+const isCharacterMisplaced = (candidateCharacter: Character, misplacedCharacter: Character | null): boolean =>
+  misplacedCharacter !== null && candidateCharacter === misplacedCharacter
 
 const exceedsAnyMaxCharacterCount = (candidateWord: Word, maxCharacterCounts: Record<Character, number>): boolean => {
   const candidateCharacterCounts = candidateWord.reduce((counts, currentCharacter) => {

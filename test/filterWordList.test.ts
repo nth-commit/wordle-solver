@@ -2,7 +2,7 @@ import fc from 'fast-check'
 import { checkWord, filterWordList, Word } from '../src/domain'
 import { arbitrary } from './utility'
 
-test.skip('correct word is not filtered', () => {
+test('correct word is not filtered', () => {
   fc.assert(
     fc.property(arbitrary.word(), arbitrary.word(), (solution, guess) => {
       const wordList0 = [solution, guess]
@@ -18,6 +18,7 @@ test.skip('correct word is not filtered', () => {
 test.each`
   guessShorthand | solutionShorthand | eliminatedShorthand
   ${'curry'}     | ${'furzy'}        | ${'furry'}
+  ${'chare'}     | ${'manes'}        | ${'manse'}
 `(
   'guess: $guessShorthand, solution: $solutionShorthand => eliminated: $eliminatedShorthand',
   ({
