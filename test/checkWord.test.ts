@@ -1,5 +1,6 @@
 import fc from 'fast-check'
-import { checkWord, Word } from '../src/checkWord'
+import { checkWord } from '../src/domain/checkWord'
+import { Word } from '../src/domain/StatefulWordGuesser'
 
 test.skip('correct guess is correct', () => {
   const charArb = fc.constantFrom(

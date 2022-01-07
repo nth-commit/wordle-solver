@@ -1,4 +1,5 @@
 import {} from 'react'
+import AutoSolverHeader from './AutoSolverHeader'
 
 export type AutoSolverSetupProps = {
   draftWord: string
@@ -10,8 +11,8 @@ export type AutoSolverSetupProps = {
 export default function AutoSolverSetup({ draftWord, onDraftWordChange, onShuffle, onStart }: AutoSolverSetupProps) {
   return (
     <div>
-      <h1>Auto-Solver</h1>
-      <p>Input a word, and let the solver have a go at guessing it unassisted.</p>
+      <AutoSolverHeader />
+      <p>Input a 5-letter word, and let the solver have a go at guessing it unassisted.</p>
       <p>
         <input
           value={draftWord}
@@ -28,7 +29,9 @@ export default function AutoSolverSetup({ draftWord, onDraftWordChange, onShuffl
         </button>
       </p>
       <p>
-        <button onClick={onStart}>Go!</button>
+        <button disabled={draftWord.length !== 5} onClick={onStart}>
+          Go!
+        </button>
       </p>
     </div>
   )
