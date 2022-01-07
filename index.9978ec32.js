@@ -22801,10 +22801,6 @@ function App() {
     const [hadAssertedAfterExhaustion, setHadAssertedAfterExhaustion] = _react.useState(false);
     const [hasAssertedAfterExhaustion, setHasAssertedAfterExhaustion] = _react.useState(false);
     const [appState, setAppState] = _react.useState(INITIAL_STATE);
-    console.log({
-        hadObservedFailedSolve,
-        hasObservedFailedSolve
-    });
     const onReset = _react.useCallback(()=>{
         setAppState(INITIAL_STATE);
         setHadObservedFailedSolve(hasObservedFailedSolve || hadObservedFailedSolve);
@@ -22871,7 +22867,7 @@ function App() {
                 onAssertedAfterExhaustion: onAssertedAfterExhaustion
             }, void 0, false, {
                 fileName: "src/components/App.tsx",
-                lineNumber: 95,
+                lineNumber: 93,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ _jsxDevRuntime.jsxDEV("p", {
@@ -22879,12 +22875,12 @@ function App() {
                     onClick: onReset
                 }, void 0, false, {
                     fileName: "src/components/App.tsx",
-                    lineNumber: 106,
+                    lineNumber: 104,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "src/components/App.tsx",
-                lineNumber: 105,
+                lineNumber: 103,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ _jsxDevRuntime.jsxDEV("p", {
@@ -22899,23 +22895,23 @@ function App() {
                         hadAssertedAfterExhaustion: hadAssertedAfterExhaustion
                     }, void 0, false, {
                         fileName: "src/components/App.tsx",
-                        lineNumber: 110,
+                        lineNumber: 108,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "src/components/App.tsx",
-                    lineNumber: 109,
+                    lineNumber: 107,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "src/components/App.tsx",
-                lineNumber: 108,
+                lineNumber: 106,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "src/components/App.tsx",
-        lineNumber: 94,
+        lineNumber: 92,
         columnNumber: 5
     }, this));
 }
@@ -22928,7 +22924,7 @@ const ResetButton = ({ onClick  })=>{
         children: "Reset"
     }, void 0, false, {
         fileName: "src/components/App.tsx",
-        lineNumber: 125,
+        lineNumber: 123,
         columnNumber: 10
     }, undefined));
 };
@@ -22945,7 +22941,19 @@ const AppBody = ({ state , hadObservedFailedSolve , hasAssertedAfterExhaustion ,
                         onStart: onAutoSolverStart
                     }, void 0, false, {
                         fileName: "src/components/App.tsx",
-                        lineNumber: 153,
+                        lineNumber: 151,
+                        columnNumber: 11
+                    }, undefined),
+                    /*#__PURE__*/ _jsxDevRuntime.jsxDEV("hr", {
+                    }, void 0, false, {
+                        fileName: "src/components/App.tsx",
+                        lineNumber: 157,
+                        columnNumber: 11
+                    }, undefined),
+                    /*#__PURE__*/ _jsxDevRuntime.jsxDEV(_supervisedSolverSetupDefault.default, {
+                    }, void 0, false, {
+                        fileName: "src/components/App.tsx",
+                        lineNumber: 158,
                         columnNumber: 11
                     }, undefined),
                     /*#__PURE__*/ _jsxDevRuntime.jsxDEV("hr", {
@@ -22953,23 +22961,11 @@ const AppBody = ({ state , hadObservedFailedSolve , hasAssertedAfterExhaustion ,
                         fileName: "src/components/App.tsx",
                         lineNumber: 159,
                         columnNumber: 11
-                    }, undefined),
-                    /*#__PURE__*/ _jsxDevRuntime.jsxDEV(_supervisedSolverSetupDefault.default, {
-                    }, void 0, false, {
-                        fileName: "src/components/App.tsx",
-                        lineNumber: 160,
-                        columnNumber: 11
-                    }, undefined),
-                    /*#__PURE__*/ _jsxDevRuntime.jsxDEV("hr", {
-                    }, void 0, false, {
-                        fileName: "src/components/App.tsx",
-                        lineNumber: 161,
-                        columnNumber: 11
                     }, undefined)
                 ]
             }, void 0, true, {
                 fileName: "src/components/App.tsx",
-                lineNumber: 152,
+                lineNumber: 150,
                 columnNumber: 9
             }, undefined));
         case 'autoSolver':
@@ -22981,7 +22977,7 @@ const AppBody = ({ state , hadObservedFailedSolve , hasAssertedAfterExhaustion ,
                 onAssertedAfterExhaustion: onAssertedAfterExhaustion
             }, void 0, false, {
                 fileName: "src/components/App.tsx",
-                lineNumber: 166,
+                lineNumber: 164,
                 columnNumber: 9
             }, undefined));
         case 'supervisedSolver':
@@ -22989,7 +22985,7 @@ const AppBody = ({ state , hadObservedFailedSolve , hasAssertedAfterExhaustion ,
                 children: "supervisedSolver"
             }, void 0, false, {
                 fileName: "src/components/App.tsx",
-                lineNumber: 175,
+                lineNumber: 173,
                 columnNumber: 14
             }, undefined));
     }
@@ -23006,7 +23002,7 @@ const LoggedInStatus = (props)=>{
         children: name === null ? '(Not logged in)' : `Logged in as ${name}`
     }, void 0, false, {
         fileName: "src/components/App.tsx",
-        lineNumber: 187,
+        lineNumber: 185,
         columnNumber: 5
     }, undefined));
 };
@@ -23442,7 +23438,7 @@ function AutoSolver({ solution: solutionRaw , hadObservedFailedSolve , hadAssert
                 lineNumber: 59,
                 columnNumber: 7
             }, this),
-            /*#__PURE__*/ _jsxDevRuntime.jsxDEV("p", {
+            /*#__PURE__*/ _jsxDevRuntime.jsxDEV("div", {
                 children: guesses.map((attempt, i)=>/*#__PURE__*/ _jsxDevRuntime.jsxDEV("div", {
                         style: {
                             marginTop: '1px'
@@ -23941,17 +23937,17 @@ function filterWorldList(worldList, guess, check) {
     const misplacedCharacters = _utility.zipTuple5(guess, check, (characterGuess, characterCheck)=>{
         if (characterCheck === 'm') return characterGuess;
         return null;
-    }).filter(_utility.isNotNull);
+    });
     const confirmedCharacters = new Set([
         ...correctCharacters.filter(_utility.isNotNull),
-        ...misplacedCharacters
+        ...misplacedCharacters.filter(_utility.isNotNull), 
     ]);
     const eliminatedCharacters = new Set(_utility.zipTuple5(guess, check, (characterGuess, characterCheck)=>canEliminateCharacter(characterGuess, characterCheck, confirmedCharacters) ? characterGuess : null
     ).filter(_utility.isNotNull));
     const incorrectCharacters = new Set(_utility.zipTuple5(guess, check, (characterGuess, characterCheck)=>characterCheck === 'i' ? characterGuess : null
     ).filter(_utility.isNotNull));
     const numberOfCorrectCharacters = correctCharacters.filter(_utility.isNotNull).length;
-    const numberOfMisplacedCharacters = misplacedCharacters.length;
+    const numberOfMisplacedCharacters = misplacedCharacters.filter(_utility.isNotNull).length;
     const maxCharacterCounts = _statefulWordGuesser.Character.ALL_CHARACTERS.reduce((counts, character)=>{
         const correctCharacterCount = correctCharacters.filter((c)=>c === character
         ).length;
@@ -23965,6 +23961,7 @@ function filterWorldList(worldList, guess, check) {
     return worldList.filter((candidateWord)=>{
         if (hasAnyEliminatedCharacters(candidateWord, eliminatedCharacters)) return false;
         if (hasAllMisplacedCharacters(candidateWord, misplacedCharacters) === false) return false;
+        if (hasAnyCharacterInMisplacedPosition(candidateWord, misplacedCharacters)) return false;
         if (hasAllCorrectCharacters(candidateWord, correctCharacters) === false) return false;
         if (exceedsAnyMaxCharacterCount(candidateWord, maxCharacterCounts)) return false;
         return true;
@@ -23990,9 +23987,15 @@ const hasAllCorrectCharacters = (candidateWord, confirmedCharacters)=>{
 };
 const hasAllMisplacedCharacters = (candidateWord, misplacedCharacters)=>{
     const characters = new Set(candidateWord);
-    return misplacedCharacters.every((c)=>characters.has(c)
+    return misplacedCharacters.filter(_utility.isNotNull).every((c)=>characters.has(c)
     );
 };
+const hasAnyCharacterInMisplacedPosition = (candidateWord, misplacedCharacters)=>{
+    return _utility.zipTuple5(candidateWord, misplacedCharacters, isCharacterMisplaced).some((x)=>x
+    );
+};
+const isCharacterMisplaced = (candidateCharacter, misplacedCharacter)=>misplacedCharacter !== null && candidateCharacter === misplacedCharacter
+;
 const exceedsAnyMaxCharacterCount = (candidateWord, maxCharacterCounts)=>{
     const candidateCharacterCounts = candidateWord.reduce((counts, currentCharacter)=>{
         const currentCharacterCount = counts.get(currentCharacter) || 0;
@@ -24006,6 +24009,6 @@ const exceedsAnyMaxCharacterCount = (candidateWord, maxCharacterCounts)=>{
     });
 };
 
-},{"../utility":"lXZc1","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV","./StatefulWordGuesser":"fiDfi"}]},["emU3S","imGyl","ipvmp"], "ipvmp", "parcelRequireea44")
+},{"../utility":"lXZc1","./StatefulWordGuesser":"fiDfi","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}]},["emU3S","imGyl","ipvmp"], "ipvmp", "parcelRequireea44")
 
 //# sourceMappingURL=index.9978ec32.js.map
