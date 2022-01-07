@@ -22,11 +22,15 @@ export default function AutoSolver({ solution: solutionRaw }: AutoSolverProps) {
     let nextGuessTimeout: NodeJS.Timeout | null = null
 
     autoSolverStatePromise.then((autoSolverState) => {
-      setGuesses(autoSolverState.attempts)
-
       if (autoSolverState.kind === 'terminated') {
         setFinalAutoSolverState(autoSolverState.status)
+        const fakeGuesses: ReadonlyArray<[Word, WordCheck]> = [
+          ...autoSolverState.attempts.slice(0, 5),
+          [solution, ['c', 'c', 'c', 'c', 'c'] as const],
+        ] as const as any
+        setGuesses(fakeGuesses)
       } else {
+        setGuesses(autoSolverState.attempts)
         nextGuessTimeout = setTimeout(() => {
           nextGuessTimeout = null
           setAutoSolverState(autoSolverState.next())
