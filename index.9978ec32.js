@@ -23026,27 +23026,29 @@ var _jsxDevRuntime = require("react/jsx-dev-runtime");
 var _react = require("react");
 var _autoSolverHeader = require("./AutoSolverHeader");
 var _autoSolverHeaderDefault = parcelHelpers.interopDefault(_autoSolverHeader);
+const alphaChars = new Set('abcdefghijklmnopqrstuvwxyz'.split(''));
 function AutoSolverSetup({ draftWord , onDraftWordChange , onShuffle , onStart  }) {
     return(/*#__PURE__*/ _jsxDevRuntime.jsxDEV("div", {
         children: [
             /*#__PURE__*/ _jsxDevRuntime.jsxDEV(_autoSolverHeaderDefault.default, {
             }, void 0, false, {
                 fileName: "src/components/AutoSolverSetup.tsx",
-                lineNumber: 14,
+                lineNumber: 16,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ _jsxDevRuntime.jsxDEV("p", {
                 children: "Input a 5-letter word, and let the solver have a go at guessing it unassisted."
             }, void 0, false, {
                 fileName: "src/components/AutoSolverSetup.tsx",
-                lineNumber: 15,
+                lineNumber: 17,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ _jsxDevRuntime.jsxDEV("p", {
                 children: [
                     /*#__PURE__*/ _jsxDevRuntime.jsxDEV("input", {
                         value: draftWord,
-                        onChange: (ev)=>onDraftWordChange(ev.target.value.toLowerCase())
+                        onChange: (ev)=>onDraftWordChange(Array.from(ev.target.value.toLowerCase()).filter((c)=>alphaChars.has(c)
+                            ).join(''))
                         ,
                         type: "text",
                         minLength: 5,
@@ -23056,7 +23058,7 @@ function AutoSolverSetup({ draftWord , onDraftWordChange , onShuffle , onStart  
                         title: "5 lowercase letters"
                     }, void 0, false, {
                         fileName: "src/components/AutoSolverSetup.tsx",
-                        lineNumber: 17,
+                        lineNumber: 19,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ _jsxDevRuntime.jsxDEV("button", {
@@ -23067,13 +23069,13 @@ function AutoSolverSetup({ draftWord , onDraftWordChange , onShuffle , onStart  
                         children: "Shuffle"
                     }, void 0, false, {
                         fileName: "src/components/AutoSolverSetup.tsx",
-                        lineNumber: 27,
+                        lineNumber: 35,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "src/components/AutoSolverSetup.tsx",
-                lineNumber: 16,
+                lineNumber: 18,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ _jsxDevRuntime.jsxDEV("p", {
@@ -23083,18 +23085,18 @@ function AutoSolverSetup({ draftWord , onDraftWordChange , onShuffle , onStart  
                     children: "Go!"
                 }, void 0, false, {
                     fileName: "src/components/AutoSolverSetup.tsx",
-                    lineNumber: 32,
+                    lineNumber: 40,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "src/components/AutoSolverSetup.tsx",
-                lineNumber: 31,
+                lineNumber: 39,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "src/components/AutoSolverSetup.tsx",
-        lineNumber: 13,
+        lineNumber: 15,
         columnNumber: 5
     }, this));
 }
