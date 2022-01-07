@@ -16,7 +16,7 @@ export default function AutoSolverSetup({ draftWord, onDraftWordChange, onShuffl
       <p>
         <input
           value={draftWord}
-          onChange={(ev) => onDraftWordChange(ev.target.value)}
+          onChange={(ev) => onDraftWordChange(ev.target.value.toLowerCase())}
           type="text"
           minLength={5}
           maxLength={5}
