@@ -7,11 +7,6 @@ export class RandomStatefulWordGuesser implements StatefulWordGuesser {
   attempts: Array<[Word, WordCheck]> = []
   currentGuess: Word | null = null
 
-  /**
-   *
-   */
-  constructor(private readonly maxNumberOfGuesses: number) {}
-
   begin(): Promise<void> {
     if (this.status !== 'waitingForStart') throw new Error('invalid status')
 
@@ -28,7 +23,7 @@ export class RandomStatefulWordGuesser implements StatefulWordGuesser {
 
     this.attempts = [...this.attempts, [currentGuess, currentCheck]]
 
-    if (this.attempts.length === this.maxNumberOfGuesses) {
+    if (currentCheck.every((x) => x === 'c')) {
       this.status = 'wordGuessed'
       this.currentGuess = null
     } else {

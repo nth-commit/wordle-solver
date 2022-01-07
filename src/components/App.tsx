@@ -3,8 +3,6 @@ import { randomWord } from '../domain'
 import AutoSolverSetup from './AutoSolverSetup'
 import SupervisedSolverSetup from './SupervisedSolverSetup'
 import AutoSolver from './AutoSolver'
-import { RandomStatefulWordGuesser } from '../domain/RandomStatefulWordGuesser'
-import { StatefulWordGuesser } from '../domain/StatefulWordGuesser'
 
 type AppState =
   | {
@@ -25,8 +23,6 @@ const INITIAL_STATE: AppState = {
 }
 
 export default function App() {
-  const statefulWordGuesser = new RandomStatefulWordGuesser(6)
-
   const [shuffleInProgress, setShuffleInProgress] = useState<boolean>(false)
   const [appState, setAppState] = useState<AppState>(INITIAL_STATE)
 
@@ -70,7 +66,6 @@ export default function App() {
     <div>
       <AppBody
         state={appState}
-        statefulWordGuesser={statefulWordGuesser}
         onAutoSolverDraftWordChange={onDraftWordChange}
         onAutoSolverDraftWordShuffle={onDraftWordShuffle}
         onAutoSolverStart={onAutoSolverStart}
@@ -92,7 +87,6 @@ const ResetButton = ({ onClick }: ResetButtonProps) => {
 
 type AppBodyProps = {
   state: AppState
-  statefulWordGuesser: StatefulWordGuesser
   onAutoSolverDraftWordChange(value: string): void
   onAutoSolverDraftWordShuffle(): void
   onAutoSolverStart(): void
@@ -100,7 +94,6 @@ type AppBodyProps = {
 
 const AppBody = ({
   state,
-  statefulWordGuesser,
   onAutoSolverDraftWordChange,
   onAutoSolverDraftWordShuffle,
   onAutoSolverStart,
@@ -121,7 +114,7 @@ const AppBody = ({
         </div>
       )
     case 'autoSolver':
-      return <AutoSolver solution={state.solutionWord} guesser={statefulWordGuesser}></AutoSolver>
+      return <AutoSolver solution={state.solutionWord}></AutoSolver>
     case 'supervisedSolver':
       return <div>supervisedSolver</div>
   }

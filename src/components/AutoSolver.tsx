@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react'
-import { WordCheck } from '../domain/checkWord'
-import { StatefulWordGuesser, Word } from '../domain/StatefulWordGuesser'
+import { Word, WordCheck } from '../domain'
 import AutoSolverHeader from './AutoSolverHeader'
 import Guess from './Guess'
-import { TerminationStatus, useAutoSolverState } from './useAutoSolverState'
+import useAutoSolverState, { TerminationStatus } from './useAutoSolverState'
 
 export type AutoSolverProps = {
   solution: string
-  guesser: StatefulWordGuesser
 }
 
 const GUESS_TIMEOUT = 100

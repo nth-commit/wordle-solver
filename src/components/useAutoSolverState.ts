@@ -1,6 +1,4 @@
-import { Word } from '../domain'
-import { checkWord, WordCheck } from '../domain/checkWord'
-import { RandomStatefulWordGuesser } from '../domain/RandomStatefulWordGuesser'
+import { checkWord, Word, WordCheck, RandomStatefulWordGuesser } from '../domain'
 
 export type TerminationStatus = 'wordGuessed' | 'wordFalsified' | 'exhausted'
 
@@ -18,8 +16,10 @@ export type NonTerminatedAutoSolverState = Readonly<{
 
 export type AutoSolverState = TerminatedAutoSolverState | NonTerminatedAutoSolverState
 
-export const useAutoSolverState = async (solution: Word): Promise<AutoSolverState> => {
-  const guesser = new RandomStatefulWordGuesser(6)
+const MAX_NUMBER_OF_GUESSES = 6
+
+export default async function useAutoSolverState(solution: Word): Promise<AutoSolverState> {
+  const guesser = new RandomStatefulWordGuesser()
 
   await guesser.begin()
 
@@ -33,14 +33,22 @@ export const useAutoSolverState = async (solution: Word): Promise<AutoSolverStat
       switch (guesser.status) {
         case 'wordGuessed':
         case 'wordFalsified':
-        case 'exhausted':
-          return Promise.resolve<TerminatedAutoSolverState>({
+          return {
             kind: 'terminated',
             status: guesser.status,
             attempts: guesser.attempts,
-          })
-        default:
-          return Promise.resolve<NonTerminatedAutoSolverState>(createState())
+          }
+        default: {
+          if (guesser.attempts.length >= MAX_NUMBER_OF_GUESSES) {
+            return {
+              kind: 'terminated',
+              status: 'exhausted',
+              attempts: guesser.attempts,
+            }
+          } else {
+            return createState()
+          }
+        }
       }
     },
   })

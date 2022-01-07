@@ -1,7 +1,7 @@
 import { WordCheck } from './checkWord'
 
 export type StatefulWordGuesser = {
-  readonly status: 'waitingForStart' | 'inProgress' | 'wordGuessed' | 'wordFalsified' | 'exhausted'
+  readonly status: 'waitingForStart' | 'inProgress' | 'wordGuessed' | 'wordFalsified'
   readonly attempts: ReadonlyArray<[Word, WordCheck]>
   readonly currentGuess: Word | null
 

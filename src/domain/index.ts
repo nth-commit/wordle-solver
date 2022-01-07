@@ -1,3 +1,5 @@
 export { default as DICTIONARY } from './data/dictionary.json'
 export * from './StatefulWordGuesser'
 export { randomWord } from './randomWord'
+export { RandomStatefulWordGuesser } from './RandomStatefulWordGuesser'
+export { checkWord, WordCheck, CharacterCheck } from './checkWord'
