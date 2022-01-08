@@ -19,6 +19,7 @@ test.each`
   guessShorthand | solutionShorthand | eliminatedShorthand
   ${'curry'}     | ${'furzy'}        | ${'furry'}
   ${'chare'}     | ${'manes'}        | ${'manse'}
+  ${'daman'}     | ${'ajava'}        | ${'feaze'}
 `(
   'guess: $guessShorthand, solution: $solutionShorthand => eliminated: $eliminatedShorthand',
   ({

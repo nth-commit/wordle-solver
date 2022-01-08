@@ -1,4 +1,3 @@
-import { CharacterCheck } from '.'
 import { isNotNull, Tuple5, zipTuple5 } from '../utility'
 import { WordCheck } from './checkWord'
 import { Character, Word } from './StatefulWordGuesser'
@@ -17,16 +16,6 @@ export default function filterWorldList(
     if (characterCheck === 'm') return characterGuess
     return null
   })
-
-  const confirmedCharacters = new Set([
-    ...correctCharacters.filter(isNotNull),
-    ...misplacedCharacters.filter(isNotNull),
-  ])
-  const eliminatedCharacters: Set<Character> = new Set(
-    zipTuple5(guess, check, (characterGuess, characterCheck): Character | null =>
-      canEliminateCharacter(characterGuess, characterCheck, confirmedCharacters) ? characterGuess : null
-    ).filter(isNotNull)
-  )
 
   const incorrectCharacters = new Set(
     zipTuple5(guess, check, (characterGuess, characterCheck): Character | null =>
@@ -54,46 +43,31 @@ export default function filterWorldList(
     return counts
   }, {} as Record<Character, number>)
 
+  const minCharacterCounts: Record<Character, number> = Character.ALL_CHARACTERS.reduce((counts, character) => {
+    const correctCharacterCount = correctCharacters.filter((c) => c === character).length
+    const misplacedCharacterCount = misplacedCharacters.filter((c) => c === character).length
+
+    counts[character] = correctCharacterCount + misplacedCharacterCount
+
+    return counts
+  }, {} as Record<Character, number>)
+
   return worldList.filter((candidateWord) => {
-    if (hasAnyEliminatedCharacters(candidateWord, eliminatedCharacters)) return false
-
-    if (hasAllMisplacedCharacters(candidateWord, misplacedCharacters) === false) return false
-
     if (hasAnyCharacterInMisplacedPosition(candidateWord, misplacedCharacters)) return false
 
     if (hasAllCorrectCharacters(candidateWord, correctCharacters) === false) return false
 
-    if (exceedsAnyMaxCharacterCount(candidateWord, maxCharacterCounts)) return false
+    if (satisfiesCharacterCounts(candidateWord, minCharacterCounts, maxCharacterCounts) === false) return false
 
     return true
   })
 }
-
-const canEliminateCharacter = (
-  guess: Character,
-  check: CharacterCheck,
-  confirmedCharacters: Set<Character>
-): boolean => {
-  if (check === 'i') {
-    const wasAlreadyConfirmed = confirmedCharacters.has(guess)
-    return !wasAlreadyConfirmed
-  }
-  return false
-}
-
-const hasAnyEliminatedCharacters = (candidateWord: Word, eliminatedCharacters: Set<Character>): boolean =>
-  candidateWord.some((c) => eliminatedCharacters.has(c))
 
 const hasAllCorrectCharacters = (candidateWord: Word, confirmedCharacters: Tuple5<Character | null>): boolean => {
   return zipTuple5(candidateWord, confirmedCharacters, (candidateCharacter, confirmedCharacter): boolean => {
     if (confirmedCharacter === null) return true
     return candidateCharacter === confirmedCharacter
   }).every((x) => x)
-}
-
-const hasAllMisplacedCharacters = (candidateWord: Word, misplacedCharacters: Tuple5<Character | null>): boolean => {
-  const characters = new Set(candidateWord)
-  return misplacedCharacters.filter(isNotNull).every((c) => characters.has(c))
 }
 
 const hasAnyCharacterInMisplacedPosition = (
@@ -106,16 +80,20 @@ const hasAnyCharacterInMisplacedPosition = (
 const isCharacterMisplaced = (candidateCharacter: Character, misplacedCharacter: Character | null): boolean =>
   misplacedCharacter !== null && candidateCharacter === misplacedCharacter
 
-const exceedsAnyMaxCharacterCount = (candidateWord: Word, maxCharacterCounts: Record<Character, number>): boolean => {
+const satisfiesCharacterCounts = (
+  candidateWord: Word,
+  minCharacterCounts: Record<Character, number>,
+  maxCharacterCounts: Record<Character, number>
+): boolean => {
   const candidateCharacterCounts = candidateWord.reduce((counts, currentCharacter) => {
     const currentCharacterCount = counts.get(currentCharacter) || 0
     counts.set(currentCharacter, currentCharacterCount + 1)
     return counts
   }, new Map<Character, number>())
 
-  return Array.from(candidateCharacterCounts).some(([character, count]) => {
+  return Array.from(candidateCharacterCounts).every(([character, count]) => {
+    const minCount = minCharacterCounts[character]
     const maxCount = maxCharacterCounts[character]
-    if (maxCount === null) return false
-    return count > maxCount
+    return minCount <= count && count <= maxCount
   })
 }
