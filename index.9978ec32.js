@@ -23852,6 +23852,13 @@ var _checkWord = require("./checkWord");
 var _filterWordList = require("./filterWordList");
 var _filterWordListDefault = parcelHelpers.interopDefault(_filterWordList);
 class StatefulWordGuesserV1 {
+    constructor(logPossibleWords = true){
+        this.logPossibleWords = logPossibleWords;
+        this.status = 'waitingForStart';
+        this.attempts = [];
+        this.currentGuess = null;
+        this.possibleWords = _.buildWordList();
+    }
     begin() {
         if (this.status !== 'waitingForStart') throw new Error('invalid status');
         this.status = 'inProgress';
@@ -23860,7 +23867,7 @@ class StatefulWordGuesserV1 {
     }
     next(currentCheck) {
         if (this.status !== 'inProgress') throw new Error('invalid status');
-        console.log(this.possibleWords);
+        if (this.logPossibleWords) console.log(this.possibleWords);
         const currentGuess = this.currentGuess;
         this.attempts = [
             ...this.attempts,
@@ -23879,12 +23886,6 @@ class StatefulWordGuesserV1 {
     }
     makeGuess() {
         this.currentGuess = _utility.randomElement(this.possibleWords);
-    }
-    constructor(){
-        this.status = 'waitingForStart';
-        this.attempts = [];
-        this.currentGuess = null;
-        this.possibleWords = _.buildWordList();
     }
 }
 
@@ -23958,12 +23959,20 @@ function filterWorldList(worldList, guess, check) {
         return counts;
     }, {
     });
+    const minCharacterCounts = _statefulWordGuesser.Character.ALL_CHARACTERS.reduce((counts, character)=>{
+        const correctCharacterCount = correctCharacters.filter((c)=>c === character
+        ).length;
+        const misplacedCharacterCount = misplacedCharacters.filter((c)=>c === character
+        ).length;
+        counts[character] = correctCharacterCount + misplacedCharacterCount;
+        return counts;
+    }, {
+    });
     return worldList.filter((candidateWord)=>{
         if (hasAnyEliminatedCharacters(candidateWord, eliminatedCharacters)) return false;
-        if (hasAllMisplacedCharacters(candidateWord, misplacedCharacters) === false) return false;
         if (hasAnyCharacterInMisplacedPosition(candidateWord, misplacedCharacters)) return false;
         if (hasAllCorrectCharacters(candidateWord, correctCharacters) === false) return false;
-        if (exceedsAnyMaxCharacterCount(candidateWord, maxCharacterCounts)) return false;
+        if (satisfiesCharacterCounts(candidateWord, minCharacterCounts, maxCharacterCounts) === false) return false;
         return true;
     });
 }
@@ -23985,27 +23994,22 @@ const hasAllCorrectCharacters = (candidateWord, confirmedCharacters)=>{
     }).every((x)=>x
     );
 };
-const hasAllMisplacedCharacters = (candidateWord, misplacedCharacters)=>{
-    const characters = new Set(candidateWord);
-    return misplacedCharacters.filter(_utility.isNotNull).every((c)=>characters.has(c)
-    );
-};
 const hasAnyCharacterInMisplacedPosition = (candidateWord, misplacedCharacters)=>{
     return _utility.zipTuple5(candidateWord, misplacedCharacters, isCharacterMisplaced).some((x)=>x
     );
 };
 const isCharacterMisplaced = (candidateCharacter, misplacedCharacter)=>misplacedCharacter !== null && candidateCharacter === misplacedCharacter
 ;
-const exceedsAnyMaxCharacterCount = (candidateWord, maxCharacterCounts)=>{
+const satisfiesCharacterCounts = (candidateWord, minCharacterCounts, maxCharacterCounts)=>{
     const candidateCharacterCounts = candidateWord.reduce((counts, currentCharacter)=>{
         const currentCharacterCount = counts.get(currentCharacter) || 0;
         counts.set(currentCharacter, currentCharacterCount + 1);
         return counts;
     }, new Map());
-    return Array.from(candidateCharacterCounts).some(([character, count])=>{
+    return Array.from(candidateCharacterCounts).every(([character, count])=>{
+        const minCount = minCharacterCounts[character];
         const maxCount = maxCharacterCounts[character];
-        if (maxCount === null) return false;
-        return count > maxCount;
+        return minCount <= count && count <= maxCount;
     });
 };
 
