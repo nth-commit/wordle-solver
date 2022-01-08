@@ -192,8 +192,8 @@ const deriveLoggedInName = ({
   hadAssertedAfterExhaustion,
   hadObservedFailedSolve,
 }: LoggedInStatusProps): string | null => {
-  if (hadAssertedAfterExhaustion && hadObservedFailedSolve) return 'Robo-Shakespear 5000'
-  if (hadAssertedAfterExhaustion) return 'Shakespear'
+  if (hadAssertedAfterExhaustion && hadObservedFailedSolve) return 'Robo-Shakespeare 5000'
+  if (hadAssertedAfterExhaustion) return 'William Shakespeare'
   if (hadObservedFailedSolve) return 'bot'
   return null
 }

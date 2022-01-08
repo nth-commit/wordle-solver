@@ -28,7 +28,7 @@ const runTests = async () => {
   await runTest()
 
   const results: number[] = []
-  for (let i = 0; i < 10_000; i++) {
+  for (let i = 0; i < 1_000; i++) {
     results.push(await runTest())
   }
 

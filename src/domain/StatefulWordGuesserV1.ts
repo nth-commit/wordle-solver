@@ -1,15 +1,33 @@
-import { buildWordList } from '.'
+import buildWordList from './buildWordList'
 import { randomElement } from '../utility'
 import { WordCheck } from './checkWord'
 import filterWorldList from './filterWordList'
 import { StatefulWordGuesser, Word } from './StatefulWordGuesser'
+
+const calculateDiversities = (words: ReadonlyArray<Word>): Map<number, Word[]> => {
+  const diversityByWord: Map<Word, number> = new Map(allWords.map((word) => [word, new Set(word).size]))
+
+  const wordsByDiversity = new Map<number, Word[]>()
+  for (const word of words) {
+    const diversity = diversityByWord.get(word)!
+    const wordsForDiversity = wordsByDiversity.get(diversity) || []
+    wordsForDiversity.push(word)
+    wordsByDiversity.set(diversity, wordsForDiversity)
+  }
+
+  return wordsByDiversity
+}
+
+const allWords = buildWordList()
+
+const allWordsByDiversity = calculateDiversities(allWords)
 
 export class StatefulWordGuesserV1 implements StatefulWordGuesser {
   status: StatefulWordGuesser['status'] = 'waitingForStart'
   attempts: readonly [Word, WordCheck][] = []
   currentGuess: Word | null = null
 
-  private possibleWords = buildWordList()
+  private possibleWords: ReadonlyArray<Word> = allWords
 
   constructor(private readonly logPossibleWords = true) {}
 
@@ -17,7 +35,7 @@ export class StatefulWordGuesserV1 implements StatefulWordGuesser {
     if (this.status !== 'waitingForStart') throw new Error('invalid status')
 
     this.status = 'inProgress'
-    this.makeGuess()
+    this.makeGuess(allWordsByDiversity)
 
     return Promise.resolve()
   }
@@ -36,7 +54,8 @@ export class StatefulWordGuesserV1 implements StatefulWordGuesser {
       this.possibleWords = filterWorldList(this.possibleWords, currentGuess, currentCheck)
 
       if (this.possibleWords.length > 0) {
-        this.makeGuess()
+        const wordsByDiversity = calculateDiversities(this.possibleWords)
+        this.makeGuess(wordsByDiversity)
       } else {
         this.status = 'wordFalsified'
       }
@@ -45,7 +64,10 @@ export class StatefulWordGuesserV1 implements StatefulWordGuesser {
     return Promise.resolve()
   }
 
-  private makeGuess() {
-    this.currentGuess = randomElement(this.possibleWords)
+  private makeGuess(wordsByDiversity: Map<number, Word[]>) {
+    const highestPossibleDiversity = Array.from(wordsByDiversity.keys()).reduce((acc, curr) => Math.max(acc, curr), 0)
+    const mostDiversePossibleWords = wordsByDiversity.get(highestPossibleDiversity)!
+
+    this.currentGuess = randomElement(mostDiversePossibleWords)
   }
 }

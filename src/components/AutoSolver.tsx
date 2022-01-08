@@ -68,14 +68,12 @@ export default function AutoSolver({
         ))}
       </div>
       {finalAutoSolverState !== null && (
-        <p>
-          <AutoSolverResult
-            terminationStatus={finalAutoSolverState}
-            hadObservedFailedSolve={hadObservedFailedSolve}
-            hadAssertedAfterWordFalsified={hadAssertedAfterWordFalsified}
-            onAssertedAfterExhaustion={onAssertedAfterExhaustion}
-          />
-        </p>
+        <AutoSolverResult
+          terminationStatus={finalAutoSolverState}
+          hadObservedFailedSolve={hadObservedFailedSolve}
+          hadAssertedAfterWordFalsified={hadAssertedAfterWordFalsified}
+          onAssertedAfterExhaustion={onAssertedAfterExhaustion}
+        />
       )}
     </div>
   )
@@ -110,7 +108,7 @@ function AutoSolverResult({
         return <p>Another new word, sir?</p>
       } else {
         if (wordAsserted) {
-          return <p>Ok, Shakespear</p>
+          return <p>Ok, Shakespeare</p>
         } else {
           return (
             <p>
@@ -121,6 +119,6 @@ function AutoSolverResult({
       }
     }
     case 'wordGuessed':
-      return <div></div>
+      return <p></p>
   }
 }

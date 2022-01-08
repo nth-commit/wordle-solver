@@ -1,6 +1,6 @@
 import { buildWordList, checkWord, StatefulWordGuesserV1, Word } from '../src/domain'
 
-let sample: boolean = false
+let sample: boolean = true
 
 const worldList = buildWordList()
 
