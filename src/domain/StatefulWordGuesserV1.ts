@@ -11,6 +11,8 @@ export class StatefulWordGuesserV1 implements StatefulWordGuesser {
 
   private possibleWords = buildWordList()
 
+  constructor(private readonly logPossibleWords = true) {}
+
   begin(): Promise<void> {
     if (this.status !== 'waitingForStart') throw new Error('invalid status')
 
@@ -23,7 +25,7 @@ export class StatefulWordGuesserV1 implements StatefulWordGuesser {
   next(currentCheck: WordCheck): Promise<void> {
     if (this.status !== 'inProgress') throw new Error('invalid status')
 
-    console.log(this.possibleWords)
+    if (this.logPossibleWords) console.log(this.possibleWords)
 
     const currentGuess = this.currentGuess!
     this.attempts = [...this.attempts, [currentGuess, currentCheck]]
