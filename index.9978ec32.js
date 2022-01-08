@@ -23008,8 +23008,8 @@ const LoggedInStatus = (props)=>{
 };
 _c3 = LoggedInStatus;
 const deriveLoggedInName = ({ hadAssertedAfterExhaustion , hadObservedFailedSolve  })=>{
-    if (hadAssertedAfterExhaustion && hadObservedFailedSolve) return 'Robo-Shakespear 5000';
-    if (hadAssertedAfterExhaustion) return 'Shakespear';
+    if (hadAssertedAfterExhaustion && hadObservedFailedSolve) return 'Robo-Shakespeare 5000';
+    if (hadAssertedAfterExhaustion) return 'William Shakespeare';
     if (hadObservedFailedSolve) return 'bot';
     return null;
 };
@@ -23463,17 +23463,11 @@ function AutoSolver({ solution: solutionRaw , hadObservedFailedSolve , hadAssert
                 lineNumber: 63,
                 columnNumber: 7
             }, this),
-            finalAutoSolverState !== null && /*#__PURE__*/ _jsxDevRuntime.jsxDEV("p", {
-                children: /*#__PURE__*/ _jsxDevRuntime.jsxDEV(AutoSolverResult, {
-                    terminationStatus: finalAutoSolverState,
-                    hadObservedFailedSolve: hadObservedFailedSolve,
-                    hadAssertedAfterWordFalsified: hadAssertedAfterWordFalsified,
-                    onAssertedAfterExhaustion: onAssertedAfterExhaustion
-                }, void 0, false, {
-                    fileName: "src/components/AutoSolver.tsx",
-                    lineNumber: 72,
-                    columnNumber: 11
-                }, this)
+            finalAutoSolverState !== null && /*#__PURE__*/ _jsxDevRuntime.jsxDEV(AutoSolverResult, {
+                terminationStatus: finalAutoSolverState,
+                hadObservedFailedSolve: hadObservedFailedSolve,
+                hadAssertedAfterWordFalsified: hadAssertedAfterWordFalsified,
+                onAssertedAfterExhaustion: onAssertedAfterExhaustion
             }, void 0, false, {
                 fileName: "src/components/AutoSolver.tsx",
                 lineNumber: 71,
@@ -23503,7 +23497,7 @@ function AutoSolverResult({ terminationStatus , hadAssertedAfterWordFalsified , 
                 children: "Wow! You beat it. You must be really smart - perhaps a robot?"
             }, void 0, false, {
                 fileName: "src/components/AutoSolver.tsx",
-                lineNumber: 106,
+                lineNumber: 104,
                 columnNumber: 14
             }, this));
         case 'wordFalsified':
@@ -23511,15 +23505,15 @@ function AutoSolverResult({ terminationStatus , hadAssertedAfterWordFalsified , 
                 children: "Another new word, sir?"
             }, void 0, false, {
                 fileName: "src/components/AutoSolver.tsx",
-                lineNumber: 110,
+                lineNumber: 108,
                 columnNumber: 16
             }, this));
             else {
                 if (wordAsserted) return(/*#__PURE__*/ _jsxDevRuntime.jsxDEV("p", {
-                    children: "Ok, Shakespear"
+                    children: "Ok, Shakespeare"
                 }, void 0, false, {
                     fileName: "src/components/AutoSolver.tsx",
-                    lineNumber: 113,
+                    lineNumber: 111,
                     columnNumber: 18
                 }, this));
                 else return(/*#__PURE__*/ _jsxDevRuntime.jsxDEV("p", {
@@ -23531,21 +23525,21 @@ function AutoSolverResult({ terminationStatus , hadAssertedAfterWordFalsified , 
                             children: "It's a word!"
                         }, void 0, false, {
                             fileName: "src/components/AutoSolver.tsx",
-                            lineNumber: 117,
+                            lineNumber: 115,
                             columnNumber: 43
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "src/components/AutoSolver.tsx",
-                    lineNumber: 116,
+                    lineNumber: 114,
                     columnNumber: 13
                 }, this));
             }
         case 'wordGuessed':
-            return(/*#__PURE__*/ _jsxDevRuntime.jsxDEV("div", {
+            return(/*#__PURE__*/ _jsxDevRuntime.jsxDEV("p", {
             }, void 0, false, {
                 fileName: "src/components/AutoSolver.tsx",
-                lineNumber: 124,
+                lineNumber: 122,
                 columnNumber: 14
             }, this));
     }
@@ -23846,18 +23840,20 @@ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "StatefulWordGuesserV1", ()=>StatefulWordGuesserV1
 );
-var _ = require(".");
+var _buildWordList = require("./buildWordList");
+var _buildWordListDefault = parcelHelpers.interopDefault(_buildWordList);
 var _utility = require("../utility");
 var _checkWord = require("./checkWord");
 var _filterWordList = require("./filterWordList");
 var _filterWordListDefault = parcelHelpers.interopDefault(_filterWordList);
+const allWords = _buildWordListDefault.default();
 class StatefulWordGuesserV1 {
     constructor(logPossibleWords = true){
         this.logPossibleWords = logPossibleWords;
         this.status = 'waitingForStart';
         this.attempts = [];
         this.currentGuess = null;
-        this.possibleWords = _.buildWordList();
+        this.possibleWords = allWords;
     }
     begin() {
         if (this.status !== 'waitingForStart') throw new Error('invalid status');
@@ -23867,7 +23863,7 @@ class StatefulWordGuesserV1 {
     }
     next(currentCheck) {
         if (this.status !== 'inProgress') throw new Error('invalid status');
-        if (this.logPossibleWords) console.log(this.possibleWords);
+        // if (this.logPossibleWords) console.log(this.possibleWords)
         const currentGuess = this.currentGuess;
         this.attempts = [
             ...this.attempts,
@@ -23885,11 +23881,36 @@ class StatefulWordGuesserV1 {
         return Promise.resolve();
     }
     makeGuess() {
-        this.currentGuess = _utility.randomElement(this.possibleWords);
+        const wordsByDiversity = calculateDiversities(this.possibleWords);
+        const highestPossibleDiversity = Array.from(wordsByDiversity.keys()).reduce((acc, curr)=>Math.max(acc, curr)
+        , 0);
+        const mostDiversePossibleWords = wordsByDiversity.get(highestPossibleDiversity);
+        this.currentGuess = _utility.randomElement(mostDiversePossibleWords);
     }
 }
+const setDifference = (a, b)=>{
+    return new Set([
+        ...a
+    ].filter((x)=>!b.has(x)
+    ));
+};
+const calculateDiversities = (words)=>{
+    const diversityByWord = new Map(allWords.map((word)=>[
+            word,
+            new Set(word).size
+        ]
+    ));
+    const wordsByDiversity = new Map();
+    for (const word1 of words){
+        const diversity = diversityByWord.get(word1);
+        const wordsForDiversity = wordsByDiversity.get(diversity) || [];
+        wordsForDiversity.push(word1);
+        wordsByDiversity.set(diversity, wordsForDiversity);
+    }
+    return wordsByDiversity;
+};
 
-},{".":"aGkYV","../utility":"lXZc1","./checkWord":"77Rz4","./filterWordList":"1XGxf","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}],"77Rz4":[function(require,module,exports) {
+},{"../utility":"lXZc1","./checkWord":"77Rz4","./filterWordList":"1XGxf","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV","./buildWordList":"avONj"}],"77Rz4":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "WordCheck", ()=>WordCheck
@@ -23939,54 +23960,19 @@ function filterWorldList(worldList, guess, check) {
         if (characterCheck === 'm') return characterGuess;
         return null;
     });
-    const confirmedCharacters = new Set([
-        ...correctCharacters.filter(_utility.isNotNull),
-        ...misplacedCharacters.filter(_utility.isNotNull), 
-    ]);
-    const eliminatedCharacters = new Set(_utility.zipTuple5(guess, check, (characterGuess, characterCheck)=>canEliminateCharacter(characterGuess, characterCheck, confirmedCharacters) ? characterGuess : null
-    ).filter(_utility.isNotNull));
     const incorrectCharacters = new Set(_utility.zipTuple5(guess, check, (characterGuess, characterCheck)=>characterCheck === 'i' ? characterGuess : null
     ).filter(_utility.isNotNull));
-    const numberOfCorrectCharacters = correctCharacters.filter(_utility.isNotNull).length;
-    const numberOfMisplacedCharacters = misplacedCharacters.filter(_utility.isNotNull).length;
-    const maxCharacterCounts = _statefulWordGuesser.Character.ALL_CHARACTERS.reduce((counts, character)=>{
-        const correctCharacterCount = correctCharacters.filter((c)=>c === character
-        ).length;
-        const misplacedCharacterCount = misplacedCharacters.filter((c)=>c === character
-        ).length;
-        if (incorrectCharacters.has(character)) counts[character] = correctCharacterCount + misplacedCharacterCount;
-        else counts[character] = guess.length - numberOfCorrectCharacters - numberOfMisplacedCharacters + correctCharacterCount + misplacedCharacterCount;
-        return counts;
-    }, {
-    });
-    const minCharacterCounts = _statefulWordGuesser.Character.ALL_CHARACTERS.reduce((counts, character)=>{
-        const correctCharacterCount = correctCharacters.filter((c)=>c === character
-        ).length;
-        const misplacedCharacterCount = misplacedCharacters.filter((c)=>c === character
-        ).length;
-        counts[character] = correctCharacterCount + misplacedCharacterCount;
-        return counts;
-    }, {
-    });
+    const minCharacterCounts = calculateMinCharacterCounts(correctCharacters, misplacedCharacters);
+    const maxCharacterCounts = calculateMaxCharacterCounts(correctCharacters, misplacedCharacters, incorrectCharacters, guess);
     return worldList.filter((candidateWord)=>{
-        if (hasAnyEliminatedCharacters(candidateWord, eliminatedCharacters)) return false;
         if (hasAnyCharacterInMisplacedPosition(candidateWord, misplacedCharacters)) return false;
         if (hasAllCorrectCharacters(candidateWord, correctCharacters) === false) return false;
-        if (satisfiesCharacterCounts(candidateWord, minCharacterCounts, maxCharacterCounts) === false) return false;
+        if (satisfiesMinCharacterCount(candidateWord, minCharacterCounts) === false) return false;
+        if (satisfiesMaxCharacterCount(candidateWord, maxCharacterCounts) === false) return false;
         return true;
     });
 }
 exports.default = filterWorldList;
-const canEliminateCharacter = (guess, check, confirmedCharacters)=>{
-    if (check === 'i') {
-        const wasAlreadyConfirmed = confirmedCharacters.has(guess);
-        return !wasAlreadyConfirmed;
-    }
-    return false;
-};
-const hasAnyEliminatedCharacters = (candidateWord, eliminatedCharacters)=>candidateWord.some((c)=>eliminatedCharacters.has(c)
-    )
-;
 const hasAllCorrectCharacters = (candidateWord, confirmedCharacters)=>{
     return _utility.zipTuple5(candidateWord, confirmedCharacters, (candidateCharacter, confirmedCharacter)=>{
         if (confirmedCharacter === null) return true;
@@ -24000,17 +23986,52 @@ const hasAnyCharacterInMisplacedPosition = (candidateWord, misplacedCharacters)=
 };
 const isCharacterMisplaced = (candidateCharacter, misplacedCharacter)=>misplacedCharacter !== null && candidateCharacter === misplacedCharacter
 ;
-const satisfiesCharacterCounts = (candidateWord, minCharacterCounts, maxCharacterCounts)=>{
+const satisfiesMinCharacterCount = (candidateWord, minCharacterCounts)=>{
+    const candidateCharacterCounts = candidateWord.reduce((counts, currentCharacter)=>{
+        const currentCharacterCount = counts.get(currentCharacter) || 0;
+        counts.set(currentCharacter, currentCharacterCount + 1);
+        return counts;
+    }, new Map());
+    return Array.from(Object.entries(minCharacterCounts)).every(([character, minCount])=>{
+        const count = candidateCharacterCounts.get(character) || 0;
+        return minCount <= count;
+    });
+};
+const satisfiesMaxCharacterCount = (candidateWord, maxCharacterCounts)=>{
     const candidateCharacterCounts = candidateWord.reduce((counts, currentCharacter)=>{
         const currentCharacterCount = counts.get(currentCharacter) || 0;
         counts.set(currentCharacter, currentCharacterCount + 1);
         return counts;
     }, new Map());
     return Array.from(candidateCharacterCounts).every(([character, count])=>{
-        const minCount = minCharacterCounts[character];
         const maxCount = maxCharacterCounts[character];
-        return minCount <= count && count <= maxCount;
+        return count <= maxCount;
     });
+};
+const calculateMinCharacterCounts = (correctCharacters, misplacedCharacters)=>_statefulWordGuesser.Character.ALL_CHARACTERS.reduce((counts, character)=>{
+        const correctCharacterCount = correctCharacters.filter((c)=>c === character
+        ).length;
+        const misplacedCharacterCount = misplacedCharacters.filter((c)=>c === character
+        ).length;
+        counts[character] = correctCharacterCount + misplacedCharacterCount;
+        return counts;
+    }, {
+    })
+;
+const calculateMaxCharacterCounts = (correctCharacters, misplacedCharacters, incorrectCharacters, guess)=>{
+    const numberOfCorrectCharacters = correctCharacters.filter(_utility.isNotNull).length;
+    const numberOfMisplacedCharacters = misplacedCharacters.filter(_utility.isNotNull).length;
+    const maxCharacterCounts = _statefulWordGuesser.Character.ALL_CHARACTERS.reduce((counts, character)=>{
+        const correctCharacterCount = correctCharacters.filter((c)=>c === character
+        ).length;
+        const misplacedCharacterCount = misplacedCharacters.filter((c)=>c === character
+        ).length;
+        if (incorrectCharacters.has(character)) counts[character] = correctCharacterCount + misplacedCharacterCount;
+        else counts[character] = guess.length - numberOfCorrectCharacters - numberOfMisplacedCharacters + correctCharacterCount + misplacedCharacterCount;
+        return counts;
+    }, {
+    });
+    return maxCharacterCounts;
 };
 
 },{"../utility":"lXZc1","./StatefulWordGuesser":"fiDfi","@parcel/transformer-js/src/esmodule-helpers.js":"ciiiV"}]},["emU3S","imGyl","ipvmp"], "ipvmp", "parcelRequireea44")
