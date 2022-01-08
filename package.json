@@ -21,7 +21,8 @@
     "deploy": "gh-pages -d dist",
     "test": "jest",
     "test:watch": "jest --watch-all",
-    "performance": "ts-node --project tsconfig.perf.json perf"
+    "performance": "ts-node --project tsconfig.node.json perf",
+    "acceptance": "ts-node --project tsconfig.node.json acceptance"
   },
   "repository": {
     "type": "git",
